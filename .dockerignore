@@ -1,0 +1,29 @@
+# Allow only application/build inputs. Local state and credentials stay outside
+# the build context, including when new repository folders are introduced.
+**
+!package.json
+!package-lock.json
+!next.config.ts
+!next-env.d.ts
+!tsconfig.json
+!src/
+!src/**
+!public/
+!public/**
+!contracts/
+!contracts/**
+!scripts/
+!scripts/contract-check.mjs
+!scripts/contract-types.mjs
+!scripts/build.mjs
+
+**/.env
+**/.env.*
+**/gha-creds-*.json
+**/*.jks
+**/*.keystore
+**/*.p12
+**/*.pfx
+**/node_modules
+**/.next
+**/.git

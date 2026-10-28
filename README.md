@@ -1,21 +1,21 @@
 # Blogpost web
 
-Initial development of the reading-first Next.js application in the [web plan](../BLOGPOST_FRONTEND_WEB_PLAN.md). This is a separate web checkout; the sibling backend owns domain rules, identity, persistence, media storage, and shared local infrastructure.
+Initial development of the reading-first Next.js application in the [web plan](https://github.com/oriorasajambu/blogpost-backend/blob/rc/docs/plans/BLOGPOST_FRONTEND_WEB_PLAN.md). This is a separate web checkout; the sibling backend owns domain rules, identity, persistence, media storage, and shared local infrastructure. In the original multi-checkout workspace, the local planning source is `../BLOGPOST_FRONTEND_WEB_PLAN.md`; parent-directory paths are local workspace references, not files supplied by a standalone web clone.
 
 The foundation is public-reading only. Login stays disabled and configuration rejects `WEB_LOGIN_ENABLED=true` until the invitation/session/CSRF stage is implemented. Version `0.0.0` has `publish: false`; the API `1.0.0` snapshot remains an unreleased **draft**, not an approved frozen contract. No cloud resources or deployment pipeline are configured by this checkout. License: **UNLICENSED**, pending the owner's license decision.
 
 ## Toolchain
 
-| Input | Pinned version |
-|---|---|
-| Host Node.js / `.node-version` | `24.16.0` |
-| npm / `packageManager` | `11.13.0` |
-| Next.js | `16.4.3` |
-| React / React DOM | `19.3.1` |
-| TypeScript | `5.9.3` |
-| Docker Node.js | `24.22.1-bookworm-slim`, with the same fixed digest as the backend |
+| Input                          | Pinned version                                                     |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Host Node.js / `.node-version` | `24.16.0`                                                          |
+| npm / `packageManager`         | `11.13.0`                                                          |
+| Next.js                        | `16.4.3`                                                           |
+| React / React DOM              | `19.3.1`                                                           |
+| TypeScript                     | `5.9.3`                                                            |
+| Docker Node.js                 | `24.22.1-bookworm-slim`, with the same fixed digest as the backend |
 
-The backend and its mock toolchain independently pin Node `24.22.1`; use that version or the backend's Docker recipe when running backend tasks. The available web host is `24.16.0`, within this package's Node 24 engine range. Align and revalidate these runtime pins before release rather than assuming host and container checks are equivalent. Exact dependency versions and `package-lock.json` are committed; use `npm ci` for repeatable installation.
+The backend and its mock toolchain independently pin Node `24.22.1`; use that version or the backend's Docker recipe when running backend tasks. The available web host is `24.16.0`, within this package's Node 24 engine range. Align and revalidate these runtime pins before release rather than assuming host and container checks are equivalent. Dependencies have exact manifest versions and a `package-lock.json`; use `npm ci` for repeatable installation.
 
 ## Run locally
 
@@ -36,15 +36,15 @@ npm ci
 npm run mock
 ```
 
-The mock starts a scenario server at loopback `4020` and the schema-validating Prism proxy at client-facing `4010`. It installs its isolated locked proxy toolchain when necessary. Stop it with Ctrl+C; its synthetic state resets on restart. `MOCK_PORT` and `MOCK_SCENARIO_PORT` support separate instances. See the [backend mock instructions](../blogpost-backend/mock/README.md) for the backend-owned Docker alternative and limitations.
+The mock starts a scenario server at loopback `4020` and the schema-validating Prism proxy at client-facing `4010`. It installs its isolated locked proxy toolchain when necessary. Stop it with Ctrl+C; its synthetic state resets on restart. `MOCK_PORT` and `MOCK_SCENARIO_PORT` support separate instances. See the [backend mock instructions](https://github.com/oriorasajambu/blogpost-backend/blob/rc/mock/README.md) for the backend-owned Docker alternative and limitations. In the original workspace, the same local instructions are at `../blogpost-backend/mock/README.md`.
 
 Open `/posts/a-reviewed-article`, `/categories/engineering`, `/tags/learning`, `/authors/synthetic-author`, or search for `reviewed article`. The seeded cover is a single test pixel. Public reading sends no fixture identity. The web app fetches the configured backend directly on the server and never replaces an outage with invented articles or a successful empty result.
 
-For the real API, follow the [backend local setup](../blogpost-backend/README.md), then set the local web copy's `BACKEND_ORIGIN` to that stack's printed API origin and `WEB_ORIGIN` to its reserved browser origin. A successful mock journey does not establish real PostgreSQL/auth/provider behavior. Backend-owned Compose currently provides API/auth/database/mock services; attaching this web development target to the shared stack remains integration work.
+For the real API, follow the [backend local setup](https://github.com/oriorasajambu/blogpost-backend/blob/rc/README.md), then set the local web copy's `BACKEND_ORIGIN` to that stack's printed API origin and `WEB_ORIGIN` to its reserved browser origin. A successful mock journey does not establish real PostgreSQL/auth/provider behavior. Backend-owned Compose currently provides API/auth/database/mock services; attaching this web development target to the shared stack remains integration work.
 
 ## Public foundation
 
-The initial slice covers the public feed, article, category/tag collections, author profile and filtered search, with explicit loading/empty/unavailable states. It uses server-rendered, request-time backend reads and shared metadata results rather than a persistent article cache. Public media passes through the same-origin route; the default Next image optimizer is not used for withdrawable assets. Canonical and absolute social URLs require a configured `WEB_ORIGIN`; incoming Host headers do not supply it.
+The initial slice covers the public feed, article, category/tag collections, author profile and filtered search, with explicit empty/unavailable/validation states and a reusable loading skeleton. It uses server-rendered, request-time backend reads and shared metadata results rather than a persistent article cache. Public media passes through the same-origin route; the default Next image optimizer is not used for withdrawable assets. Canonical and absolute social URLs require a configured `WEB_ORIGIN`; incoming Host headers do not supply it.
 
 Development and Staging show an environment banner. Staging is noindex. A light/dark override respects the initial system preference, while typography and navigation adapt to phone and desktop layouts. Markdown renders with raw HTML disabled and media references restricted to approved same-origin routes.
 
@@ -62,11 +62,17 @@ npm run typecheck
 npm test
 npm run build
 npm run verify
+npx playwright install chromium
+npm run test:e2e
 ```
 
-`contract:generate` checks the snapshot and regenerates TypeScript. `contract:check` checks checksums and reproducibility. `verify` checks foundation version metadata, repository policy and forbidden filenames; it does not replace a pinned secret scanner. `npm run build` compiles standalone output without contacting a running backend. Browser checks use `npm run test:e2e` when the Playwright test setup and required browser are installed; record the actual suites run rather than inferring coverage from that script's existence.
+`contract:generate` checks the snapshot and regenerates TypeScript. `contract:check` checks checksums and reproducibility. `verify` checks foundation version metadata, repository policy and forbidden filenames; it does not replace a pinned secret scanner. `npm run build` compiles standalone output without contacting a running backend. Playwright starts the production Next server on `3100` and a contract-fixture HTTP server on `4110`; it does not use the saved SQL database or authenticate real Google accounts.
 
-The secret-free workflow provides PR-only `ci-gate` and separate `push-gate`. Normal work targets `rc`; main promotion deliberately fails until frozen-contract, real-backend, staging/manual-evidence and release/deployment controls are ready. Owner review and merge remain manual under the [VCS guideline](../VCS_GUIDELINE.md).
+Verification recorded on 29 October 2026: production compilation, lint, type checking, contract checks and all 30 focused unit tests passed (17 adapter tests, 10 reading/security-policy tests, and 3 media-error tests). All 15 Playwright tests passed, covering public SSR/search/collections, canonical `308`, actual unavailable `404`, immediate and delayed outage `500` responses without false `404` or empty success, next-request article/media withdrawal, required headers/credential stripping, safe Markdown, theme persistence, automated axe checks in both themes, and phone navigation/reflow.
+
+A separate read-only frontend smoke against the existing real API/PostgreSQL stack returned `200` for valid empty home/search results and `404` for an unavailable article. That database contained no published fixtures, so the published article/search/media journey against a real backend remains pending. The saved API container used current mounted source with an older artifact; this smoke does not establish clean artifact provenance or full conformance. Docker image builds, manual screen-reader/zoom review, real-provider login, and the remaining staff/recovery journeys are still unverified.
+
+The secret-free workflow installs Chromium and runs the browser suite after contract/lint/types/unit/build checks. It provides PR-only `ci-gate` and separate `push-gate`. Normal work targets `rc`; main promotion deliberately fails until frozen-contract, real-backend, staging/manual-evidence and release/deployment controls are ready. Owner review and merge remain manual under the [VCS guideline](https://github.com/oriorasajambu/blogpost-backend/blob/rc/docs/plans/VCS_GUIDELINE.md). Local `main` and `rc` bootstrap branches exist, and development is on `chore/repository-foundation`; no remote, push, GitHub ruleset or cloud deployment has been configured for this checkout.
 
 ## Docker targets
 
