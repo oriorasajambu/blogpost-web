@@ -1,24 +1,30 @@
 import { ReadingLink as Link } from '@/components/layout/reading-link';
 import type { Metadata } from 'next';
-import { canonicalMetadata } from '@/lib/metadata';
-import { getFeed } from '@/lib/api-server';
-import { queryValue, readingPost, type SearchParams } from '@/lib/reading';
+import { publicMetadata } from '@/lib/metadata';
+import { getReadingFeed, queryValue, readingPost, type SearchParams } from '@/lib/reading';
 import { ArticleCard, ArticleList } from '@/components/article/article-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageIntro } from '@/components/ui/page-intro';
+import { ExpiredPage } from '@/components/ui/expired-page';
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: SearchParams;
 }): Promise<Metadata> {
   return {
-    ...canonicalMetadata('/'),
+    ...publicMetadata({
+      title: 'Ideas worth your time',
+      description:
+        'Thoughtful stories, useful ideas, and fresh perspectives. A quiet place to read.',
+      path: '/',
+    }),
     ...((await searchParams).cursor ? { robots: { index: false, follow: true } } : {}),
   };
 }
 export default async function Home({ searchParams }: { searchParams: SearchParams }) {
   const cursor = queryValue((await searchParams).cursor, 2048);
-  const result = await getFeed({ cursor: cursor || undefined, pageSize: 12 });
+  const result = await getReadingFeed({ cursor: cursor || undefined, pageSize: 12 });
+  if (!result) return <ExpiredPage basePath="/" />;
   const posts = result.data.map(readingPost);
   const pagination = result.meta.pagination;
   return (

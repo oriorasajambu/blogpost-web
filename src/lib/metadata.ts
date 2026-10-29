@@ -1,7 +1,6 @@
 import 'server-only';
-import type { Metadata } from 'next';
 import { getConfig } from './config';
-export function canonicalMetadata(path: string): Pick<Metadata, 'alternates'> {
-  const origin = getConfig().webOrigin;
-  return origin ? { alternates: { canonical: `${origin}${path}` } } : {};
+import { publicationMetadata } from './metadata-policy';
+export function publicMetadata(details: { title: string; description: string; path: string }) {
+  return publicationMetadata({ ...details, origin: getConfig().webOrigin });
 }

@@ -1,4 +1,5 @@
 import { Icon } from './icon';
+import { maxSearchCharacters } from '@/lib/reading-input';
 
 export type FilterOption = { value: string; label: string };
 
@@ -35,12 +36,16 @@ export function SearchForm({
           name="q"
           defaultValue={query}
           placeholder="A subject, a question, a new perspective…"
-          maxLength={200}
+          maxLength={maxSearchCharacters * 2}
+          aria-describedby="search-query-hint"
         />
         <button type="submit" className="button-primary">
           Search <Icon name="arrow" size={17} />
         </button>
       </div>
+      <p id="search-query-hint" className="field-label">
+        Use up to 200 characters.
+      </p>
       <div className="search-filters">
         {categories.length > 0 && (
           <label>

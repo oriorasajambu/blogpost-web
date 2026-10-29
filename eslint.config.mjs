@@ -6,6 +6,7 @@ export default defineConfig([
   ...nextTs,
   globalIgnores([
     '.next/**',
+    '.local/**',
     'node_modules/**',
     'src/lib/api-types.ts',
     'playwright-report/**',

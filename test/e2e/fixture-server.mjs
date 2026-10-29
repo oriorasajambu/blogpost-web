@@ -1,5 +1,6 @@
 // Test process only. The application never imports this server or falls back to it.
 import http from 'node:http';
+import https from 'node:https';
 import { readFileSync } from 'node:fs';
 import {
   applyReadingArticle,
@@ -30,13 +31,15 @@ const image = Buffer.from(
 let mode = 'normal';
 let requests = [];
 const isReading = () => ['reading', 'reading-delay', 'reading-long-labels'].includes(mode);
+const contractVersion = () => (mode === 'compatible-minor' ? '1.1.0' : '1.0.0');
 
 function send(res, status, body) {
+  if (body.meta) body.meta.contractVersion = contractVersion();
   res.writeHead(status, {
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
     'x-trace-id': traceId,
-    'x-api-contract-version': '1.0.0',
+    'x-api-contract-version': contractVersion(),
   });
   res.end(JSON.stringify(body));
 }
@@ -48,6 +51,7 @@ function page(body, url) {
   if (p?.kind === 'PAGE') {
     p.page = Number(url.searchParams.get('page') || '1');
     if (p.page > 1) body.data = [];
+    p.hasMore = p.page < p.totalPages;
   }
   if (p && url.searchParams.has('pageSize')) p.pageSize = Number(url.searchParams.get('pageSize'));
   return body;
@@ -55,13 +59,19 @@ function page(body, url) {
 function article() {
   const body = fixture('resolvePublicPostSlug');
   if (isReading()) body.data.post = applyReadingArticle(body.data.post);
+  if (mode === 'corrected') {
+    body.data.post.title = 'A corrected article';
+    body.data.post.markdown = 'A newly published correction.';
+    body.data.post.updatedAt = '2026-10-26T10:00:00.000Z';
+    body.data.post.publishedRevisionId = '20000000-0000-4000-8000-000000000003';
+  }
   if (mode === 'malicious')
     body.data.post.markdown =
       '## A safe heading\n\n<script>window.__markdownExecuted = true</script>\n\n[Unsafe link](javascript:alert(1))\n\n![Remote image](https://example.invalid/tracker.png)\n\n```typescript\nconst answer = 42;\n```\n\n| Name | Value |\n| --- | --- |\n| One | Two |';
   return body;
 }
 
-const server = http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1:4110');
   if (url.pathname === '/__test/health') return send(res, 200, { ready: true });
   if (url.pathname === '/__test/mode' && req.method === 'POST') {
@@ -83,6 +93,13 @@ const server = http.createServer(async (req, res) => {
         'reading-delay',
         'reading-delay-outage',
         'reading-long-labels',
+        'corrected',
+        'taxonomy-pages',
+        'cursor-pages',
+        'invalid-response',
+        'redirect-outage',
+        'compatible-minor',
+        'invalid-cursor',
       ].includes(requested)
     )
       return send(res, 400, { error: 'Unknown test mode' });
@@ -103,9 +120,13 @@ const server = http.createServer(async (req, res) => {
     hasCookie: !!req.headers.cookie,
     hasAuthorization: !!req.headers.authorization,
     hasWebSession: !!req.headers['x-blogpost-web-session'],
+    traceparent: req.headers.traceparent ?? null,
   });
   if (requests.length > 500) requests.shift();
   if (mode === 'outage') return send(res, 503, errorFixture('dependency-unavailable'));
+  if (mode === 'invalid-response') return send(res, 200, { invalid: true });
+  if (mode === 'redirect-outage' && url.pathname === '/v1/public/posts/by-slug/a-reviewed-article')
+    return send(res, 503, errorFixture('dependency-unavailable'));
   if (mode === 'slow-outage' && !url.pathname.endsWith('/categories')) {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return send(res, 503, errorFixture('dependency-unavailable'));
@@ -119,6 +140,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (url.pathname === '/v1/public/categories') {
     const body = fixture('listPublicCategories');
+    if (mode === 'taxonomy-pages') return taxonomyPage(body, url, 'category', res);
     if (mode === 'reading-long-labels') {
       const original = body.data[0];
       body.data = [
@@ -134,15 +156,38 @@ const server = http.createServer(async (req, res) => {
     }
     return send(res, 200, page(body, url));
   }
-  if (url.pathname === '/v1/public/tags')
-    return send(res, 200, page(fixture('listPublicTags'), url));
+  if (url.pathname === '/v1/public/tags') {
+    const body = fixture('listPublicTags');
+    if (mode === 'taxonomy-pages') return taxonomyPage(body, url, 'tag', res);
+    return send(res, 200, page(body, url));
+  }
   if (url.pathname === '/v1/public/authors/synthetic-author')
     return send(res, 200, fixture('getPublicAuthor'));
   if (url.pathname === '/v1/public/posts' || url.pathname === '/v1/public/search') {
+    if (mode === 'invalid-cursor' && url.searchParams.has('cursor')) {
+      const error = errorFixture('resource-not-found');
+      error.statusCode = 400;
+      error.error.code = 'INVALID_CURSOR';
+      return send(res, 400, error);
+    }
     const search = url.pathname.endsWith('/search');
     const body = fixture(search ? 'searchPublicPosts' : 'listPublicPosts');
     if (isReading()) body.data = body.data.map(applyReadingSummary);
     const source = body.data[0];
+    if (!search && mode === 'cursor-pages') {
+      if (url.searchParams.has('cursor')) {
+        body.data[0] = {
+          ...source,
+          id: '10000000-0000-4000-8000-000000000002',
+          slug: 'another-reviewed-article',
+          title: 'Another reviewed article',
+          cover: null,
+        };
+      } else {
+        body.meta.pagination.hasMore = true;
+        body.meta.pagination.nextCursor = 'synthetic-next-page';
+      }
+    }
     const query = url.searchParams.get('q')?.trim().toLowerCase();
     if (search && query === 'the') {
       const error = errorFixture('resource-not-found');
@@ -209,6 +254,7 @@ const server = http.createServer(async (req, res) => {
       'cache-control': 'no-store',
       'content-length': asset.bytes.length,
       'x-trace-id': traceId,
+      'x-api-contract-version': contractVersion(),
     });
     return res.end(asset.bytes);
   }
@@ -221,14 +267,51 @@ const server = http.createServer(async (req, res) => {
       'cache-control': 'no-store',
       'content-length': image.length,
       'x-trace-id': traceId,
+      'x-api-contract-version': contractVersion(),
     });
     return res.end(image);
   }
   return missing(res);
-});
+};
+
+function taxonomyPage(body, url, kind, res) {
+  const size = Number(url.searchParams.get('pageSize') || '50');
+  const number = Number(url.searchParams.get('page') || '1');
+  const first = body.data[0];
+  body.data = Array.from({ length: 51 }, (_, index) => ({
+    ...first,
+    id: `30000000-0000-4000-8000-${String(index + (kind === 'tag' ? 100 : 1)).padStart(12, '0')}`,
+    name: `${kind === 'tag' ? 'Tag' : 'Category'} ${index + 1}`,
+    slug: `${kind}-${index + 1}`,
+  })).slice((number - 1) * size, number * size);
+  body.meta.pagination = {
+    kind: 'PAGE',
+    page: number,
+    pageSize: size,
+    totalItems: 51,
+    totalPages: Math.ceil(51 / size),
+    hasMore: number < Math.ceil(51 / size),
+    truncated: false,
+  };
+  return send(res, 200, body);
+}
+
+// Share the same deterministic HTTP handler with the environment test's trusted TLS listener.
+const server = http.createServer(handler);
 
 server.listen(4110, '127.0.0.1', () =>
   console.log('E2E contract fixtures ready at http://127.0.0.1:4110'),
 );
 for (const signal of ['SIGINT', 'SIGTERM'])
   process.on(signal, () => server.close(() => process.exit(0)));
+if (process.env.TEST_TLS_CERT_FILE && process.env.TEST_TLS_KEY_FILE) {
+  const tlsServer = https.createServer(
+    {
+      cert: readFileSync(process.env.TEST_TLS_CERT_FILE),
+      key: readFileSync(process.env.TEST_TLS_KEY_FILE),
+    },
+    handler,
+  );
+  tlsServer.listen(4111, '127.0.0.1');
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => tlsServer.close());
+}

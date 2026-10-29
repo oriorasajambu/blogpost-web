@@ -104,7 +104,7 @@ test('metadata describes the visitor, retains valid bundle versions, and omits b
     assert.equal(headers.has(forbidden), false, forbidden);
 });
 
-test('malformed diagnostics fall back without forwarding invalid trace identifiers', () => {
+test('malformed diagnostics fall back and start a valid trace context', () => {
   const headers = diagnosticHeaders(
     new Headers({
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
@@ -118,7 +118,10 @@ test('malformed diagnostics fall back without forwarding invalid trace identifie
   assert.equal(headers.get('x-device-os'), 'WINDOWS');
   assert.equal(headers.get('x-app-version'), '0.1.0');
   assert.equal(headers.get('x-app-language'), 'en');
-  assert.equal(headers.has('traceparent'), false);
+  assert.match(
+    headers.get('traceparent') ?? '',
+    /^00-(?!0{32})[0-9a-f]{32}-(?!0{16})[0-9a-f]{16}-00$/,
+  );
   assert.equal(
     diagnosticHeaders(
       new Headers({ 'accept-language': 'fr-CA,fr;q=0.8,en;q=0.5' }),
@@ -126,6 +129,22 @@ test('malformed diagnostics fall back without forwarding invalid trace identifie
       '0.1.0',
     ).get('x-app-language'),
     'fr-CA',
+  );
+});
+
+test('anonymous requests generate fresh trace contexts and report unknown or ChromeOS platforms', () => {
+  const first = diagnosticHeaders(new Headers(), installationId, '0.0.0');
+  const second = diagnosticHeaders(new Headers(), installationId, '0.0.0');
+  assert.equal(first.get('x-device-os'), 'UNKNOWN');
+  assert.match(first.get('traceparent') ?? '', /^00-[a-f0-9]{32}-[a-f0-9]{16}-00$/);
+  assert.notEqual(first.get('traceparent'), second.get('traceparent'));
+  assert.equal(
+    diagnosticHeaders(
+      new Headers({ 'user-agent': 'Mozilla/5.0 (X11; CrOS x86_64 14541.0.0)' }),
+      installationId,
+      '0.0.0',
+    ).get('x-device-os'),
+    'CHROMEOS',
   );
 });
 

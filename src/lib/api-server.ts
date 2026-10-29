@@ -2,13 +2,8 @@ import 'server-only';
 import { cache } from 'react';
 import { getConfig } from '@/lib/config';
 import { getRequestContext } from '@/lib/request-context';
-import {
-  ContractError,
-  errorMessage,
-  validateEnvelope,
-  validatePublicResponse,
-  type PublicOperation,
-} from './api-contract';
+import { errorMessage, validatePublicResponse, type PublicOperation } from './api-contract';
+import { validateApiResponse } from './api-response';
 import type { components } from './api-types';
 
 export type {
@@ -72,11 +67,8 @@ export async function backendRequest<T = unknown>(
   const headerTrace = response.headers.get('X-Trace-ID') ?? undefined;
   const traceId = headerTrace && /^[a-f0-9]{32}$/.test(headerTrace) ? headerTrace : undefined;
   try {
-    if (!response.headers.get('content-type')?.toLowerCase().includes('application/json'))
-      throw new ContractError();
     body = await response.json();
-    const envelope = validateEnvelope(body, response.status);
-    if (traceId && traceId !== envelope.traceId) throw new ContractError();
+    const envelope = validateApiResponse(body, response.status, response.headers);
     if (!response.ok) {
       const error = envelope.error as { code: string };
       throw new ApiError(

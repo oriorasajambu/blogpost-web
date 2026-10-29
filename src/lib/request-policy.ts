@@ -14,11 +14,13 @@ export function diagnosticHeaders(
       ? 'IOS'
       : /Windows/i.test(ua)
         ? 'WINDOWS'
-        : /Macintosh/i.test(ua)
-          ? 'MACOS'
-          : /Linux/i.test(ua)
-            ? 'LINUX'
-            : 'WEB';
+        : /CrOS/i.test(ua)
+          ? 'CHROMEOS'
+          : /Macintosh/i.test(ua)
+            ? 'MACOS'
+            : /Linux/i.test(ua)
+              ? 'LINUX'
+              : 'UNKNOWN';
   const requestedVersion = source.get('x-app-version') ?? '';
   const requestedLanguage =
     source.get('x-app-language') ??
@@ -44,5 +46,10 @@ export function diagnosticHeaders(
   const trace = source.get('traceparent');
   if (trace && /^00-(?!0{32})[0-9a-f]{32}-(?!0{16})[0-9a-f]{16}-[0-9a-f]{2}$/.test(trace))
     result.set('traceparent', trace);
+  else {
+    const traceId = crypto.randomUUID().replaceAll('-', '');
+    const parentId = crypto.randomUUID().replaceAll('-', '').slice(0, 16);
+    result.set('traceparent', `00-${traceId}-${parentId}-00`);
+  }
   return result;
 }

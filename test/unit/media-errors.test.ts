@@ -36,6 +36,19 @@ test('malformed media errors become a temporary proxy failure without disclosing
   assert.equal(body.error.code, 'INVALID_API_RESPONSE');
   assert.ok(!JSON.stringify(body).includes('storage details'));
 });
+
+test('media errors reject missing or mismatched response diagnostics', async () => {
+  const invalidHeaders: Record<string, string>[] = [
+    {},
+    { 'X-Trace-ID': '0123456789abcdef0123456789abcdef', 'X-API-Contract-Version': '1.0.0' },
+    { 'X-Trace-ID': missing.traceId, 'X-API-Contract-Version': '2.0.0' },
+  ];
+  for (const headers of invalidHeaders) {
+    const response = await forwardMediaError(Response.json(missing, { status: 404, headers }));
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).error.code, 'INVALID_API_RESPONSE');
+  }
+});
 test('locally owned media errors use the common envelope and fresh trace identifier', async () => {
   const first = ownedError(503, 'DEPENDENCY_UNAVAILABLE', 'The image is temporarily unavailable.');
   const second = ownedError(503, 'DEPENDENCY_UNAVAILABLE', 'The image is temporarily unavailable.');

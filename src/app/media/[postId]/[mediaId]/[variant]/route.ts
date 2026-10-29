@@ -2,6 +2,7 @@ import { getConfig } from '@/lib/config';
 import { getRequestContext } from '@/lib/request-context';
 import { resourceUuidPattern } from '@/lib/request-policy';
 import { forwardMediaError, ownedError } from '@/lib/api-errors';
+import { validateApiDiagnostics } from '@/lib/api-response';
 const noStore = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 export async function GET(
   _request: Request,
@@ -25,18 +26,29 @@ export async function GET(
       },
     );
     if (!response.ok) return forwardMediaError(response);
-    const type = response.headers.get('Content-Type')?.split(';')[0];
-    if (!type || !['image/jpeg', 'image/png', 'image/webp'].includes(type))
+    const type = response.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase();
+    if (
+      response.status !== 200 ||
+      !type ||
+      !['image/jpeg', 'image/png', 'image/webp'].includes(type)
+    ) {
+      await response.body?.cancel();
       return ownedError(502, 'INVALID_API_RESPONSE', 'The image is temporarily unavailable.');
+    }
+    let diagnostics;
+    try {
+      diagnostics = validateApiDiagnostics(response.headers);
+    } catch {
+      await response.body?.cancel();
+      return ownedError(502, 'INVALID_API_RESPONSE', 'The image is temporarily unavailable.');
+    }
     const headers = new Headers({
       ...noStore,
       'Content-Type': type,
       'Content-Disposition': 'inline',
     });
-    for (const name of ['X-Trace-ID', 'X-API-Contract-Version']) {
-      const value = response.headers.get(name);
-      if (value) headers.set(name, value);
-    }
+    headers.set('X-Trace-ID', diagnostics.traceId);
+    headers.set('X-API-Contract-Version', diagnostics.contractVersion);
     return new Response(response.body, { headers });
   } catch {
     return ownedError(503, 'DEPENDENCY_UNAVAILABLE', 'The image is temporarily unavailable.');

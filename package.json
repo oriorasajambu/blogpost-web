@@ -16,6 +16,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test test/unit/*.test.ts",
     "test:e2e": "playwright test",
+    "test:seo": "playwright test --config playwright.seo.config.ts",
+    "test:live": "playwright test --config playwright.live.config.ts",
     "contract:generate": "node scripts/contract-types.mjs",
     "contract:check": "node scripts/contract-types.mjs --check",
     "verify": "node scripts/verify-foundation.mjs",

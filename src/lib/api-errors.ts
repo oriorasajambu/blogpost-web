@@ -1,4 +1,4 @@
-import { validateEnvelope } from './api-contract';
+import { validateApiResponse } from './api-response';
 export function ownedError(status: number, code: string, title: string) {
   const traceId = crypto.randomUUID().replaceAll('-', '');
   return Response.json(
@@ -24,10 +24,9 @@ export function ownedError(status: number, code: string, title: string) {
 }
 export async function forwardMediaError(response: Response) {
   try {
-    if (!response.headers.get('Content-Type')?.includes('application/json'))
-      throw new Error('Non-JSON API error.');
+    if (response.status < 400) throw new Error('Expected an API error.');
     const body: unknown = await response.json();
-    validateEnvelope(body, response.status);
+    validateApiResponse(body, response.status, response.headers);
     const headers = new Headers({
       'Cache-Control': 'no-store',
       'X-Content-Type-Options': 'nosniff',

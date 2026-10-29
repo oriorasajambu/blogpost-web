@@ -1,4 +1,5 @@
 import type { components } from './api-types';
+import { versionPattern } from './request-policy';
 
 export type PublicPostSummary = components['schemas']['PublicPostSummary'];
 export type PublicPost = components['schemas']['PublicPost'];
@@ -28,6 +29,11 @@ export class ContractError extends Error {
   }
 }
 
+// The generated schema stays pinned, while additive v1 runtime responses remain compatible.
+export function isSupportedContractVersion(value: unknown): value is string {
+  return typeof value === 'string' && versionPattern.test(value) && value.startsWith('1.');
+}
+
 function assert(condition: unknown): asserts condition {
   if (!condition) throw new ContractError();
 }
@@ -36,7 +42,10 @@ function object(value: unknown): asserts value is RecordValue {
 }
 function text(value: unknown, max = Infinity, nonempty = false): asserts value is string {
   assert(
-    typeof value === 'string' && Array.from(value).length <= max && (!nonempty || /\S/.test(value)),
+    typeof value === 'string' &&
+      value.isWellFormed() &&
+      Array.from(value).length <= max &&
+      (!nonempty || /\S/.test(value)),
   );
 }
 function integer(value: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): asserts value is number {
@@ -168,7 +177,7 @@ export function validateEnvelope(value: unknown, status: number): RecordValue {
   text(value.message.title);
   text(value.message.descriptions);
   object(value.meta);
-  assert(value.meta.contractVersion === '1.0.0');
+  assert(isSupportedContractVersion(value.meta.contractVersion));
   assert('pagination' in value.meta && 'idempotency' in value.meta);
   if (value.meta.idempotency !== null) {
     object(value.meta.idempotency);

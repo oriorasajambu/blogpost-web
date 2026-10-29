@@ -45,6 +45,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - run: npm run test:seo
 
   ci-gate:
     if: github.event_name == 'pull_request' && always()

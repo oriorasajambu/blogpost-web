@@ -38,17 +38,44 @@ for (const [schema, file] of fixtures) {
 
 test('accepts additive fields without losing list envelope pagination', () => {
   const response = fixture('listPublicPosts');
+  response.meta.contractVersion = '1.1.0';
   response.future = { enabled: true };
   response.data[0].future = 'safe';
   const result = validatePublicResponse('ListPublicPostsEnvelope', response);
   assert.ok(Array.isArray(result.data));
   assert.equal(result.meta.pagination.kind, 'CURSOR');
+  assert.equal(result.meta.contractVersion, '1.1.0');
+});
+
+test('rejects incompatible major and malformed runtime contract versions', () => {
+  for (const version of ['2.0.0', '0.9.0', '01.0.0', '1.1', 'v1.1.0', '', null]) {
+    const response = fixture('listPublicPosts');
+    response.meta.contractVersion = version;
+    assert.throws(() => validatePublicResponse('ListPublicPostsEnvelope', response), ContractError);
+  }
 });
 
 test('rejects missing required fields instead of inventing empty content', () => {
   const response = fixture('listPublicPosts');
   delete response.data[0].summary;
   assert.throws(() => validatePublicResponse('ListPublicPostsEnvelope', response), ContractError);
+});
+
+test('rejects unpaired UTF-16 surrogates while accepting valid Unicode scalar text', () => {
+  const response = fixture('resolvePublicPostSlug');
+  response.data.post.title = 'A curious reader 👩🏽‍💻';
+  assert.ok(validatePublicResponse('ResolvePublicPostSlugEnvelope', response));
+  response.data.post.title = 'An invalid title \ud800';
+  assert.throws(
+    () => validatePublicResponse('ResolvePublicPostSlugEnvelope', response),
+    ContractError,
+  );
+  response.data.post.title = 'A valid title';
+  response.data.post.markdown = 'An invalid source \udc00';
+  assert.throws(
+    () => validatePublicResponse('ResolvePublicPostSlugEnvelope', response),
+    ContractError,
+  );
 });
 
 test('rejects HTTP/envelope status disagreement', () => {

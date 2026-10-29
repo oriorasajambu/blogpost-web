@@ -1,19 +1,28 @@
 import type { Metadata } from 'next';
-import { ApiError, getAuthor, getCategories, getTags, searchPosts } from '@/lib/api-server';
-import { queryValue, pageNumber, readingPost, slugPattern, type SearchParams } from '@/lib/reading';
+import { ApiError, getAuthor, searchPosts } from '@/lib/api-server';
+import {
+  getPublicTaxonomy,
+  queryValue,
+  pageNumber,
+  readingPost,
+  slugPattern,
+  type SearchParams,
+} from '@/lib/reading';
 import { resourceUuidPattern } from '@/lib/request-policy';
 import { ArticleList } from '@/components/article/article-card';
 import { PageIntro } from '@/components/ui/page-intro';
 import { SearchForm } from '@/components/ui/search-form';
 import { Pagination } from '@/components/ui/pagination';
 import { EmptyState } from '@/components/ui/empty-state';
+import { searchQuery } from '@/lib/reading-input';
 export const metadata: Metadata = {
   title: 'Search the journal',
   robots: { index: false, follow: false },
 };
 export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const q = queryValue(params.q).trim();
+  const query = searchQuery(params.q);
+  const q = query.value;
   const page = pageNumber(params.page);
   const id = (key: string) => {
     const value = queryValue(params[key], 36);
@@ -25,7 +34,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   const linkedAuthorId = queryValue(params.authorId).trim();
   async function search() {
     let authorId = resourceUuidPattern.test(linkedAuthorId) ? linkedAuthorId : undefined;
-    let feedback: string | undefined;
+    let feedback = query.feedback;
+    if (feedback) return { result: undefined, feedback, authorId };
     if (Array.isArray(params.author)) feedback = 'Use one author handle at a time.';
     else if (author) {
       if (author.length > 120 || !slugPattern.test(author))
@@ -63,8 +73,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
     }
   }
   const [categories, tags, searchState] = await Promise.all([
-    getCategories({ pageSize: 50 }),
-    getTags({ pageSize: 50 }),
+    getPublicTaxonomy('categories'),
+    getPublicTaxonomy('tags'),
     search(),
   ]);
   const { result, feedback, authorId } = searchState;
@@ -91,8 +101,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
         tagId={tagId}
         author={author}
         authorId={author ? undefined : linkedAuthorId}
-        categories={categories.data.map((item) => ({ value: item.id, label: item.name }))}
-        tags={tags.data.map((item) => ({ value: item.id, label: item.name }))}
+        categories={categories.map((item) => ({ value: item.id, label: item.name }))}
+        tags={tags.map((item) => ({ value: item.id, label: item.name }))}
       />
       {feedback ? (
         <section className="error-panel" role="alert" aria-labelledby="search-feedback">
