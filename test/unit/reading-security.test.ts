@@ -210,7 +210,7 @@ test('Markdown tables have header semantics and overflow access; unsupported GFM
   const html = render(
     '| Name | Value |\n| --- | --- |\n| One | Two |\n\n~~Not strikethrough~~\n\n- [ ] Plain task syntax\n\n```typescript\nconst answer = 42;\n```',
   );
-  assert.ok(html.includes('<th>Name</th>'));
+  assert.ok(html.includes('<th scope="col">Name</th>'));
   assert.ok(html.includes('role="region"'));
   assert.ok(html.includes('tabindex="0"'));
   assert.ok(html.includes('~~Not strikethrough~~'));

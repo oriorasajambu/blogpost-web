@@ -1,39 +1,50 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { Icon } from '@/components/ui/icon';
+import { themeStorageKey, type Theme } from '@/lib/theme';
 
-/** Run in the document head before paint; explicit theme overrides the system. */
-export const themeScript =
-  "try{var t=localStorage.getItem('blogpost-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}";
+const themeChanged = 'blogpost:theme-changed';
+function subscribe(onChange: () => void) {
+  const media = matchMedia('(prefers-color-scheme: dark)');
+  const systemChanged = () => {
+    if (document.documentElement.dataset.themePreference !== 'system') return;
+    document.documentElement.dataset.theme = media.matches ? 'dark' : 'light';
+    onChange();
+  };
+  const storageChanged = (event: StorageEvent) => {
+    if (event.key !== themeStorageKey && event.key !== null) return;
+    const preference =
+      event.newValue === 'light' || event.newValue === 'dark' ? event.newValue : 'system';
+    document.documentElement.dataset.themePreference = preference;
+    document.documentElement.dataset.theme =
+      preference === 'system' ? (media.matches ? 'dark' : 'light') : preference;
+    onChange();
+  };
+  media.addEventListener('change', systemChanged);
+  window.addEventListener('storage', storageChanged);
+  window.addEventListener(themeChanged, onChange);
+  return () => {
+    media.removeEventListener('change', systemChanged);
+    window.removeEventListener('storage', storageChanged);
+    window.removeEventListener(themeChanged, onChange);
+  };
+}
+const snapshot = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+const serverSnapshot = () => null;
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark' | null>(null);
-  useEffect(() => {
-    const update = () =>
-      setTheme(
-        document.documentElement.dataset.theme === 'dark'
-          ? 'dark'
-          : document.documentElement.dataset.theme === 'light'
-            ? 'light'
-            : matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'light',
-      );
-    update();
-    const media = matchMedia('(prefers-color-scheme: dark)');
-    media.addEventListener('change', update);
-    return () => media.removeEventListener('change', update);
-  }, []);
+  const theme = useSyncExternalStore<Theme | null>(subscribe, snapshot, serverSnapshot);
   function toggle() {
     const next = theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
-    setTheme(next);
+    document.documentElement.dataset.themePreference = next;
     try {
-      localStorage.setItem('blogpost-theme', next);
+      localStorage.setItem(themeStorageKey, next);
     } catch {
       /* Theme still works for this page when storage is unavailable. */
     }
+    window.dispatchEvent(new Event(themeChanged));
   }
   return (
     <button

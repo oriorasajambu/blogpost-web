@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { ReadingLink as Link } from './reading-link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
@@ -21,12 +21,19 @@ export function SiteHeader({
   const menuButton = useRef<HTMLButtonElement>(null);
   function onEscape(event: React.KeyboardEvent) {
     if (event.key === 'Escape' && menuOpen) {
+      event.preventDefault();
       setOpenPath(null);
       menuButton.current?.focus();
     }
   }
   return (
-    <header className="site-header" onKeyDown={onEscape}>
+    <header
+      className="site-header"
+      onKeyDown={onEscape}
+      onBlur={(event) => {
+        if (menuOpen && !event.currentTarget.contains(event.relatedTarget)) setOpenPath(null);
+      }}
+    >
       <div className="container header-top">
         <Link href="/" className="brand" aria-label="Blogpost home">
           blogpost<span className="brand-dot">.</span>

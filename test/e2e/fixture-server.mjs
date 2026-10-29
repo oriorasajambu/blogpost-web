@@ -1,6 +1,13 @@
 // Test process only. The application never imports this server or falls back to it.
 import http from 'node:http';
 import { readFileSync } from 'node:fs';
+import {
+  applyReadingArticle,
+  applyReadingSummary,
+  decorativeMediaId,
+  readingImages,
+  readingMediaId,
+} from './reading-fixtures.mjs';
 
 const fixture = (name) =>
   JSON.parse(
@@ -22,6 +29,7 @@ const image = Buffer.from(
 );
 let mode = 'normal';
 let requests = [];
+const isReading = () => ['reading', 'reading-delay', 'reading-long-labels'].includes(mode);
 
 function send(res, status, body) {
   res.writeHead(status, {
@@ -46,6 +54,7 @@ function page(body, url) {
 }
 function article() {
   const body = fixture('resolvePublicPostSlug');
+  if (isReading()) body.data.post = applyReadingArticle(body.data.post);
   if (mode === 'malicious')
     body.data.post.markdown =
       '## A safe heading\n\n<script>window.__markdownExecuted = true</script>\n\n[Unsafe link](javascript:alert(1))\n\n![Remote image](https://example.invalid/tracker.png)\n\n```typescript\nconst answer = 42;\n```\n\n| Name | Value |\n| --- | --- |\n| One | Two |';
@@ -62,7 +71,20 @@ const server = http.createServer(async (req, res) => {
       if (raw.length > 1024) return send(res, 413, {});
     }
     const requested = JSON.parse(raw || '{}').mode;
-    if (!['normal', 'outage', 'slow-outage', 'withdrawn', 'empty', 'malicious'].includes(requested))
+    if (
+      ![
+        'normal',
+        'outage',
+        'slow-outage',
+        'withdrawn',
+        'empty',
+        'malicious',
+        'reading',
+        'reading-delay',
+        'reading-delay-outage',
+        'reading-long-labels',
+      ].includes(requested)
+    )
       return send(res, 400, { error: 'Unknown test mode' });
     mode = requested;
     requests = [];
@@ -88,8 +110,30 @@ const server = http.createServer(async (req, res) => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
     return send(res, 503, errorFixture('dependency-unavailable'));
   }
-  if (url.pathname === '/v1/public/categories')
-    return send(res, 200, page(fixture('listPublicCategories'), url));
+  if (mode === 'reading-delay-outage' && !url.pathname.endsWith('/categories')) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return send(res, 503, errorFixture('dependency-unavailable'));
+  }
+  if (mode === 'reading-delay' && url.pathname.includes('/posts/by-slug/')) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+  }
+  if (url.pathname === '/v1/public/categories') {
+    const body = fixture('listPublicCategories');
+    if (mode === 'reading-long-labels') {
+      const original = body.data[0];
+      body.data = [
+        original,
+        ...Array.from({ length: 5 }, (_, index) => ({
+          ...original,
+          id: `30000000-0000-4000-8000-00000000001${index}`,
+          slug: `a-long-category-${index}`,
+          name: index === 0 ? 'W'.repeat(80) : `A thoughtful category with a longer name ${index}`,
+        })),
+      ];
+      body.meta.pagination.totalItems = body.data.length;
+    }
+    return send(res, 200, page(body, url));
+  }
   if (url.pathname === '/v1/public/tags')
     return send(res, 200, page(fixture('listPublicTags'), url));
   if (url.pathname === '/v1/public/authors/synthetic-author')
@@ -97,6 +141,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/v1/public/posts' || url.pathname === '/v1/public/search') {
     const search = url.pathname.endsWith('/search');
     const body = fixture(search ? 'searchPublicPosts' : 'listPublicPosts');
+    if (isReading()) body.data = body.data.map(applyReadingSummary);
     const source = body.data[0];
     const query = url.searchParams.get('q')?.trim().toLowerCase();
     if (search && query === 'the') {
@@ -150,6 +195,22 @@ const server = http.createServer(async (req, res) => {
     const body = fixture('getPublicPost');
     body.data = article().data.post;
     return send(res, 200, body);
+  }
+  if (
+    isReading() &&
+    new RegExp(
+      `^/v1/public/posts/${postId}/media/(${readingMediaId}|${decorativeMediaId})/(w480|w960|w1600)$`,
+    ).test(url.pathname)
+  ) {
+    const name = url.pathname.split('/').at(-1);
+    const asset = readingImages.get(name);
+    res.writeHead(200, {
+      'content-type': 'image/png',
+      'cache-control': 'no-store',
+      'content-length': asset.bytes.length,
+      'x-trace-id': traceId,
+    });
+    return res.end(asset.bytes);
   }
   if (
     new RegExp(`^/v1/public/posts/${postId}/media/${mediaId}/(w480|w960|w1600)$`).test(url.pathname)

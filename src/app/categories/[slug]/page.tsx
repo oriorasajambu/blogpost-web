@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { getFeed } from '@/lib/api-server';
 import { getTaxon, queryValue, readingPost, type SearchParams } from '@/lib/reading';
 import { ArticleList } from '@/components/article/article-card';

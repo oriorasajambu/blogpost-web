@@ -7,6 +7,7 @@ export const metadata: Metadata = {
 export default function SignIn() {
   return (
     <EmptyState
+      headingLevel={1}
       title="Staff sign-in is not enabled yet."
       description="The journal is open to everyone. The invited staff workspace is being developed in the next stage."
       actionHref="/"

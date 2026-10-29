@@ -1,0 +1,137 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- status: Development · Local workspace
+- banner:
+  - link "Blogpost home":
+    - /url: /
+    - text: blogpost.
+  - text: Ideas worth your time.
+  - navigation "Utility navigation":
+    - link "Search articles":
+      - /url: /search
+    - button "Switch to dark theme"
+  - navigation "Main navigation":
+    - link "Latest":
+      - /url: /
+    - link "Engineering":
+      - /url: /categories/engineering
+    - link "Explore":
+      - /url: /search
+- main:
+  - article:
+    - link "Engineering":
+      - /url: /categories/engineering
+    - 'heading "The art of noticing: a field guide to everyday curiosity" [level=1]'
+    - paragraph: A small pause can change what we see. This synthetic article exercises the typography, images, tables, and keyboard controls of the reading interface.
+    - link "Synthetic author":
+      - /url: /authors/synthetic-author
+    - paragraph:
+      - time: Oct 25, 2026
+    - 'button "Copy link to The art of noticing: a field guide to everyday curiosity"': Share story
+    - status
+    - figure:
+      - img "A synthetic landscape of green hills and a warm sun"
+    - heading "A slower look" [level=2]
+    - paragraph: Curiosity does not need a grand expedition. Sometimes it starts with an ordinary walk, a familiar street, and a little time to notice what has changed. This synthetic story is written for reading-interface verification, with enough content to inspect measure, rhythm, and responsive reflow.
+    - heading "Notice the details" [level=3]
+    - paragraph:
+      - text: A reader should be able to settle into a line of text without losing their place.
+      - strong: A clear emphasis
+      - text: ", a gentle"
+      - emphasis: change of voice
+      - text: ", and an inline"
+      - code: observation.note
+      - text: "all have useful roles. Unicode belongs here too: café, naïve, 日本語, and a small 🌱."
+    - blockquote:
+      - paragraph: Attention is a practice. Make a little room for something you have not noticed before.
+    - heading "Keep the hierarchy" [level=4]
+    - list:
+      - listitem:
+        - text: Begin with what is nearby.
+        - list:
+          - listitem: Observe a shape, a sound, or a color.
+          - listitem:
+            - text: Ask one question about it.
+            - list:
+              - listitem: Make the question specific.
+      - listitem: Write down the detail you want to remember.
+    - heading "A landscape to pause with" [level=3]
+    - paragraph:
+      - img "A synthetic green landscape with a warm sun"
+    - paragraph: The illustration above is a local, deterministic test asset. It lets us verify image dimensions, alternative text, loading failures, and a layout that remains stable while reading. This paragraph should remain comfortable on a wide display and reflow into a single column at phone width.
+    - paragraph
+    - heading "Working with a long example" [level=3]
+    - paragraph: The following code intentionally contains a very long line. It should scroll inside its own labelled container while the page itself remains within the viewport.
+    - text: typescript
+    - button "Copy code"
+    - region "typescript code":
+      - code: "const observation = { place: \"The exceptionally long and deliberately unwrapped name of a quiet corner beside the river\", notes: [\"shape\", \"texture\", \"light\", \"movement\"] }; console.log(observation.notes.join(\", \"));"
+    - status
+    - paragraph: The copy control must remain reachable by keyboard. If clipboard access is unavailable, a useful explanation should stay available to both sighted readers and assistive technology.
+    - heading "Comparing what we noticed" [level=3]
+    - region "Scrollable article table":
+      - table:
+        - rowgroup:
+          - row "Observation First impression A second look Time of day Useful question What to keep":
+            - columnheader "Observation"
+            - columnheader "First impression"
+            - columnheader "A second look"
+            - columnheader "Time of day"
+            - columnheader "Useful question"
+            - columnheader "What to keep"
+        - rowgroup:
+          - row "River light A bright reflection Moving bands of warm and cool color Early morning How does the light change? A short written note":
+            - cell "River light"
+            - cell "A bright reflection"
+            - cell "Moving bands of warm and cool color"
+            - cell "Early morning"
+            - cell "How does the light change?"
+            - cell "A short written note"
+          - row "Garden wall A rough surface A pattern of moss and weathered stone Late afternoon Which textures repeat? A careful sketch":
+            - cell "Garden wall"
+            - cell "A rough surface"
+            - cell "A pattern of moss and weathered stone"
+            - cell "Late afternoon"
+            - cell "Which textures repeat?"
+            - cell "A careful sketch"
+          - row "Familiar path The usual route A new perspective after the rain After a shower What is different today? One specific detail":
+            - cell "Familiar path"
+            - cell "The usual route"
+            - cell "A new perspective after the rain"
+            - cell "After a shower"
+            - cell "What is different today?"
+            - cell "One specific detail"
+    - heading "When an image is unavailable" [level=3]
+    - paragraph:
+      - img "An unavailable field-notes diagram (image unavailable)": "Image unavailable: An unavailable field-notes diagram"
+    - paragraph: Missing media should explain what is unavailable without hiding the rest of a story. The reader can continue through this article using headings, links, and ordinary keyboard navigation.
+    - heading "Leave a little room" [level=3]
+    - paragraph:
+      - text: Return to the
+      - link "latest stories":
+        - /url: /
+      - text: ", explore the"
+      - link "engineering collection":
+        - /url: /categories/engineering
+      - text: ", or follow this story's"
+      - link "learning thread":
+        - /url: /tags/learning
+      - text: . Descriptive links give readers enough context before they decide where to go.
+    - paragraph: "An especially long text token should also reflow: curiosity_is_a_practice_of_observing_the_ordinary_and_recording_small_details_without_requiring_the_page_to_scroll_sideways_at_phone_width."
+    - separator
+    - paragraph: This is the end of the synthetic reading fixture. It is not published content and is only served by the isolated browser-test process.
+    - navigation "Article tags":
+      - text: Filed under
+      - link "Learning":
+        - /url: /tags/learning
+- contentinfo:
+  - link "blogpost.":
+    - /url: /
+  - paragraph: A little perspective. A lot to discover.
+  - link "Latest stories":
+    - /url: /
+  - link "Explore the archive":
+    - /url: /search
+  - text: Made for a good read.
+- status
+- alert

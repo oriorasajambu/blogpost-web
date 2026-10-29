@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { ReadingLink as Link } from './reading-link';
 
 export function SiteFooter() {
   return (

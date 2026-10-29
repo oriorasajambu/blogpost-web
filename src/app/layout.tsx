@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter, EnvironmentBanner } from '@/components/layout/site-footer';
-import { themeScript } from '@/components/layout/theme-toggle';
+import { themeScript } from '@/lib/theme';
+import { ReadingNavigation, ReadingContent } from '@/components/layout/reading-navigation';
 import { getConfig } from '@/lib/config';
 import { getCategories } from '@/lib/api-server';
 import './globals.css';
@@ -27,12 +28,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-        <EnvironmentBanner environment={config.environment} />
-        <SiteHeader categories={categories} loginEnabled={config.loginEnabled} />
-        <main id="main-content" className="container" tabIndex={-1}>
-          {children}
-        </main>
-        <SiteFooter />
+        <ReadingNavigation>
+          <EnvironmentBanner environment={config.environment} />
+          <SiteHeader categories={categories} loginEnabled={config.loginEnabled} />
+          <ReadingContent>{children}</ReadingContent>
+          <SiteFooter />
+        </ReadingNavigation>
       </body>
     </html>
   );

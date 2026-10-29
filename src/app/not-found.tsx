@@ -2,6 +2,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 export default function NotFound() {
   return (
     <EmptyState
+      headingLevel={1}
       title="This story is unavailable."
       description="The page may have moved or the article may no longer be published."
       actionHref="/"

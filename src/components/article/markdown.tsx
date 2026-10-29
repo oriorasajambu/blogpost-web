@@ -3,7 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import { gfmTable } from 'micromark-extension-gfm-table';
 import { gfmTableFromMarkdown } from 'mdast-util-gfm-table';
 import type { Plugin } from 'unified';
-import { mediaUrl, safeMarkdownUrl } from '@/lib/markdown';
+import { mediaSources, mediaUrl, safeMarkdownUrl } from '@/lib/markdown';
+import { structureArticleHeadings } from '@/lib/article-outline';
 import { CodeBlock } from './code-block';
 import { MediaImage } from './media-image';
 
@@ -17,6 +18,10 @@ const remarkTables: Plugin = function () {
   (data.micromarkExtensions ??= []).push({ disable: { null: ['htmlFlow', 'htmlText'] } });
   (data.micromarkExtensions ??= []).push(gfmTable());
   (data.fromMarkdownExtensions ??= []).push(gfmTableFromMarkdown());
+};
+
+const rehypeArticleHeadings: Plugin = () => (tree) => {
+  structureArticleHeadings(tree as Parameters<typeof structureArticleHeadings>[0]);
 };
 
 function textContent(node: ReactNode): string {
@@ -38,12 +43,18 @@ export function Markdown({
 }: {
   source: string;
   postId: string;
-  media?: Array<{ mediaId: string; width: number; height: number }>;
+  media?: Array<{
+    mediaId: string;
+    width: number;
+    height: number;
+    variants?: ReadonlyArray<{ name: string; width: number }>;
+  }>;
 }) {
   return (
     <div className="article-body">
       <ReactMarkdown
         remarkPlugins={[remarkTables]}
+        rehypePlugins={[rehypeArticleHeadings]}
         skipHtml
         allowedElements={[
           'p',
@@ -92,20 +103,23 @@ export function Markdown({
               </a>
             );
           },
-          img({ src, alt }) {
+          img({ src, alt, title }) {
             const descriptor =
               typeof src === 'string'
                 ? media.find((item) => mediaUrl(`media://${item.mediaId}`, postId) === src)
                 : undefined;
-            return typeof src === 'string' && src && descriptor ? (
+            const decorative = !alt?.trim() && title === 'decorative';
+            return typeof src === 'string' && src && descriptor && (alt?.trim() || decorative) ? (
               <MediaImage
                 src={src}
-                alt={alt ?? ''}
+                alt={decorative ? '' : (alt ?? '')}
                 width={descriptor.width}
                 height={descriptor.height}
+                srcSet={mediaSources(postId, descriptor)}
+                sizes="(max-width: 48rem) calc(100vw - 2rem), 48rem"
               />
             ) : (
-              <span className="media-unavailable">
+              <span className="media-unavailable" aria-hidden={decorative || undefined}>
                 {alt ? `Image unavailable: ${alt}` : 'Image unavailable'}
               </span>
             );
@@ -130,6 +144,13 @@ export function Markdown({
               >
                 <table>{children}</table>
               </div>
+            );
+          },
+          th({ children, style }) {
+            return (
+              <th style={style} scope="col">
+                {children}
+              </th>
             );
           },
           input() {

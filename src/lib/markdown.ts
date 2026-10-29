@@ -20,3 +20,33 @@ export function mediaUrl(source: string, postId: string): string | undefined {
     ? `/media/${postId}/${match[1]}/w960`
     : undefined;
 }
+
+type ResponsiveMedia = {
+  mediaId: string;
+  variants?: ReadonlyArray<{ name: string; width: number }>;
+};
+
+/** Build same-origin image candidates from the backend's approved, actual variant widths. */
+export function mediaSources(postId: string, media: ResponsiveMedia): string | undefined {
+  if (!resourceUuidPattern.test(postId) || !resourceUuidPattern.test(media.mediaId))
+    return undefined;
+  const bounds = new Map([
+    ['w480', 480],
+    ['w960', 960],
+    ['w1600', 1600],
+  ]);
+  const candidates = new Map<number, string>();
+  for (const variant of media.variants ?? []) {
+    const limit = bounds.get(variant.name);
+    if (!limit || !Number.isInteger(variant.width) || variant.width < 1 || variant.width > limit)
+      continue;
+    if (!candidates.has(variant.width))
+      candidates.set(variant.width, `/media/${postId}/${media.mediaId}/${variant.name}`);
+  }
+  return (
+    [...candidates.entries()]
+      .sort(([left], [right]) => left - right)
+      .map(([width, path]) => `${path} ${width}w`)
+      .join(', ') || undefined
+  );
+}

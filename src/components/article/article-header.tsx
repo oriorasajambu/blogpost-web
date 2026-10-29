@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { formatDate, type ReadingPost } from './article-card';
 import { ShareButton } from './share-button';
 import { MediaImage } from './media-image';
@@ -45,6 +45,8 @@ export function ArticleHeader({ post }: { post: ReadingPost }) {
             alt={post.coverImage.alt}
             width={post.coverImage.width}
             height={post.coverImage.height}
+            srcSet={post.coverImage.srcSet}
+            sizes="(max-width: 48rem) calc(100vw - 2rem), 72rem"
             loading="eager"
           />
         </figure>

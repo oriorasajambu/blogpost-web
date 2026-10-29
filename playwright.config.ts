@@ -21,7 +21,7 @@ export default defineConfig({
       timeout: 15_000,
     },
     {
-      command: 'npm run start -- --port 3100',
+      command: 'npm run start -- --port 3100 --hostname 127.0.0.1',
       url: 'http://localhost:3100/health/live',
       reuseExistingServer: false,
       timeout: 60_000,

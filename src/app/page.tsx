@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import type { Metadata } from 'next';
 import { canonicalMetadata } from '@/lib/metadata';
 import { getFeed } from '@/lib/api-server';

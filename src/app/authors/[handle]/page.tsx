@@ -4,7 +4,7 @@ import { assertSlug, queryValue, readingPost, type SearchParams } from '@/lib/re
 import { ArticleList } from '@/components/article/article-card';
 import { PageIntro } from '@/components/ui/page-intro';
 import { EmptyState } from '@/components/ui/empty-state';
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { cache } from 'react';
 import type { Metadata } from 'next';
 import { canonicalMetadata } from '@/lib/metadata';

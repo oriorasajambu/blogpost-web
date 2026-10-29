@@ -1,7 +1,11 @@
-export function ArticleSkeleton() {
+export function ArticleSkeleton({ announce = true }: { announce?: boolean }) {
   return (
-    <div role="status" aria-label="Loading articles">
-      <span className="sr-only">Loading articles…</span>
+    <div
+      role={announce ? 'status' : undefined}
+      aria-label={announce ? 'Loading articles' : undefined}
+      aria-hidden={!announce || undefined}
+    >
+      {announce && <span className="sr-only">Loading articles…</span>}
       {Array.from({ length: 3 }, (_, index) => (
         <div className="loading-card" aria-hidden="true" key={index}>
           <div className="skeleton skeleton-short" />

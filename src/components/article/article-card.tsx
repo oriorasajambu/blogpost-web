@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { Icon } from '@/components/ui/icon';
 import { MediaImage } from './media-image';
 
@@ -12,7 +12,7 @@ export type ReadingPost = {
   author: { displayName: string; handle: string };
   category?: { name: string; slug: string };
   tags?: Array<{ name: string; slug: string }>;
-  coverImage?: { src: string; alt: string; width: number; height: number };
+  coverImage?: { src: string; alt: string; width: number; height: number; srcSet?: string };
 };
 
 export function formatDate(value: string) {
@@ -78,6 +78,12 @@ export function ArticleCard({
             alt={post.coverImage.alt}
             width={post.coverImage.width}
             height={post.coverImage.height}
+            srcSet={post.coverImage.srcSet}
+            sizes={
+              featured
+                ? '(max-width: 48rem) calc(100vw - 2rem), 30rem'
+                : '(max-width: 48rem) calc(100vw - 2rem), 14rem'
+            }
             loading={featured ? 'eager' : 'lazy'}
           />
         </div>

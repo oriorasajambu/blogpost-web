@@ -3,6 +3,7 @@ import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { ApiError, getCategories, getTags, type PublicPostSummary } from './api-server';
 import type { ReadingPost } from '@/components/article/article-card';
+import { mediaSources } from './markdown';
 export const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function assertSlug(slug: string) {
   if (slug.length > 120 || !slugPattern.test(slug)) notFound();
@@ -13,6 +14,7 @@ export function readingPost(post: PublicPostSummary): ReadingPost {
     coverImage: post.cover
       ? {
           src: `/media/${post.id}/${post.cover.mediaId}/w960`,
+          srcSet: mediaSources(post.id, post.cover),
           alt: post.cover.decorative ? '' : post.cover.altText,
           width: post.cover.width,
           height: post.cover.height,

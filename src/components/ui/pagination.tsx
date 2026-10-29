@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { Icon } from './icon';
 
 export function Pagination({
