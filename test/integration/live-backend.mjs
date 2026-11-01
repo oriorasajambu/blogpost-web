@@ -7,7 +7,10 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 // This runner owns only the disposable resources recorded in its context file.
 const root = resolve(import.meta.dirname, '../..');
-const directory = resolve(root, '.local/live-public');
+const identitySuite = process.env.LIVE_TEST_SUITE === 'identity';
+const purpose = identitySuite ? 'identity' : 'public';
+const fixtureFile = identitySuite ? 'live-identity-fixture.mjs' : 'live-backend-fixture.mjs';
+const directory = resolve(root, `.local/live-${purpose}`);
 const contextFile = resolve(directory, 'context.json');
 const action = process.argv[2] ?? 'status';
 const backend = resolve(process.env.LIVE_BACKEND_SOURCE ?? resolve(root, '../blogpost-backend'));
@@ -52,7 +55,7 @@ if (action === 'start') {
     if (error.code !== 'ENOENT') throw error;
   }
   const suffix = randomBytes(6).toString('hex');
-  const name = `blogpost-web-public-${suffix}`;
+  const name = `blogpost-web-${purpose}-${suffix}`;
   const source = resolve(directory, `source-${suffix}`);
   const sourceSha = run('git', ['rev-parse', 'HEAD'], backend);
   const branch = run('git', ['branch', '--show-current'], backend);
@@ -104,6 +107,8 @@ if (action === 'start') {
   ]);
   const apiPort = await freePort();
   const webPort = await freePort();
+  const authPort = identitySuite ? await freePort() : undefined;
+  const project = `demo-blogpost-identity-${suffix}`;
   context = {
     schemaVersion: 1,
     state: 'starting',
@@ -116,13 +121,15 @@ if (action === 'start') {
     webPort,
     backendOrigin: `http://127.0.0.1:${apiPort}`,
     webOrigin: `http://localhost:${webPort}`,
+    ...(identitySuite
+      ? { authPort, authOrigin: `http://127.0.0.1:${authPort}`, identityProjectId: project }
+      : {}),
     runtimeInputDigest: prepared.runtimeInputDigest,
     sourceInputDigest: prepared.sourceInputDigest,
     contractStatus: 'DRAFT',
     createdAt: new Date().toISOString(),
   };
   await writeFile(contextFile, JSON.stringify(context, null, 2) + '\n');
-  const project = `demo-blogpost-identity-${suffix}`;
   const env = {
     APP_ENV: 'development',
     NODE_ENV: 'development',
@@ -176,6 +183,7 @@ if (action === 'start') {
     '--network-alias',
     'auth',
     ...logArgs,
+    ...(identitySuite ? ['--publish', `127.0.0.1:${authPort}:9099`] : []),
     '--tmpfs',
     '/emulator/data:rw,size=32m',
     ...envArgs({ IDENTITY_PROJECT_ID: project }),
@@ -253,8 +261,8 @@ if (action === 'start') {
   if (!ready) throw new Error('Disposable API did not become ready');
   docker([
     'cp',
-    resolve(import.meta.dirname, 'live-backend-fixture.mjs'),
-    `${name}-api:/app/test/web-public-fixture.mjs`,
+    resolve(import.meta.dirname, fixtureFile),
+    `${name}-api:/app/test/web-${purpose}-fixture.mjs`,
   ]);
   context.fixture = JSON.parse(
     docker([
@@ -263,7 +271,7 @@ if (action === 'start') {
       'node',
       '--import',
       'tsx',
-      'test/web-public-fixture.mjs',
+      `test/web-${purpose}-fixture.mjs`,
       'seed',
     ]),
   );
@@ -272,12 +280,31 @@ if (action === 'start') {
   console.log(JSON.stringify(context, null, 2));
 } else {
   context = JSON.parse(await readFile(contextFile, 'utf8'));
-  if (!/^blogpost-web-public-[a-f0-9]{12}$/.test(context.name))
+  if (!new RegExp(`^blogpost-web-${purpose}-[a-f0-9]{12}$`).test(context.name))
     throw new Error('Invalid disposable resource identity');
   if (action === 'status') {
     docker(['inspect', '--format', '{{.State.Status}}', `${context.name}-api`]);
     console.log(JSON.stringify(context, null, 2));
-  } else if (['draft', 'correct', 'rename', 'withdraw'].includes(action)) {
+  } else if (
+    (identitySuite
+      ? [
+          'token',
+          'invitation',
+          'renew-invitation',
+          'private-post',
+          'account',
+          'expire-invitation',
+          'disable',
+          'enable',
+          'revoke',
+          'expired-session',
+          'stale-id-token',
+          'state',
+          'identity-capacity',
+        ]
+      : ['draft', 'correct', 'rename', 'withdraw']
+    ).includes(action)
+  ) {
     const result = JSON.parse(
       docker([
         'exec',
@@ -285,12 +312,15 @@ if (action === 'start') {
         'node',
         '--import',
         'tsx',
-        'test/web-public-fixture.mjs',
+        `test/web-${purpose}-fixture.mjs`,
         action,
+        ...(identitySuite ? process.argv.slice(3) : []),
       ]),
     );
-    context.fixture = result;
-    await writeFile(contextFile, JSON.stringify(context, null, 2) + '\n');
+    if (!identitySuite) {
+      context.fixture = result;
+      await writeFile(contextFile, JSON.stringify(context, null, 2) + '\n');
+    }
     console.log(JSON.stringify(result));
   } else if (action === 'stop') {
     // Inventory failures propagate: an unavailable daemon is not proof of absence.
@@ -306,7 +336,5 @@ if (action === 'start') {
     await writeFile(contextFile, JSON.stringify(context, null, 2) + '\n');
     console.log('Stopped only this disposable test stack; no saved volumes were used.');
   } else
-    throw new Error(
-      'Usage: node test/integration/live-backend.mjs start|status|draft|correct|rename|withdraw|stop',
-    );
+    throw new Error('Use start, status, stop or a supported fixture action for this test suite.');
 }

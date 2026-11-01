@@ -1,0 +1,164 @@
+{
+  "tool": "gitleaks",
+  "version": "8.30.1",
+  "verifiedArchiveSHA256": "d29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e",
+  "sourceScope": "Exact git tracked plus untracked nonignored working files; no Git history",
+  "sourceFiles": 189,
+  "sourceManifestSHA256": "73ad5c86b7412e12ad34418d771c43799d1dc8552d6cbc1c17c95280451c8ac5",
+  "sourceRawFindings": 23,
+  "sourceReviewedSyntheticExamples": 23,
+  "sourceUnreviewed": 0,
+  "browserScope": ".next/static only; no server or runtime environment files",
+  "browserFiles": 21,
+  "browserRawFindings": 0,
+  "nextBuildId": "build-TfctsWXpff2fKS",
+  "ignoreCommentsDisabled": true,
+  "redactPercent": 100,
+  "classification": [
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 2711,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 2948,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 3449,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 4464,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 4972,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 5394,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 5800,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 6202,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 6628,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 7168,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 8405,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 8877,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 9401,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 9937,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 10842,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 11284,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 11763,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 12205,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 12882,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 13136,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 13896,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 14357,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 14615,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    }
+  ],
+  "checkedAt": "2026-10-30T06:53:54.0182514Z",
+  "browserCanaryCheck": {
+    "sourceMaps": 0,
+    "filesChecked": 21,
+    "scope": "Synthetic runtime secret, internal backend origin and server-only setting/header markers",
+    "canaryMatches": 0
+  }
+}

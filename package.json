@@ -18,6 +18,7 @@
     "test:e2e": "playwright test",
     "test:seo": "playwright test --config playwright.seo.config.ts",
     "test:live": "playwright test --config playwright.live.config.ts",
+    "test:identity": "playwright test --config playwright.identity.config.ts",
     "contract:generate": "node scripts/contract-types.mjs",
     "contract:check": "node scripts/contract-types.mjs --check",
     "verify": "node scripts/verify-foundation.mjs",
@@ -25,6 +26,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "firebase": "13.1.0",
     "mdast-util-gfm-table": "2.0.0",
     "micromark-extension-gfm-table": "2.1.2",
     "next": "16.4.3",
@@ -46,6 +48,11 @@
     "prettier": "3.9.10",
     "tsx": "4.23.15",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "1.13.7"
+    }
   },
   "license": "UNLICENSED"
 }

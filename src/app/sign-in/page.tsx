@@ -1,10 +1,29 @@
 import type { Metadata } from 'next';
 import { EmptyState } from '@/components/ui/empty-state';
+import { getConfig } from '@/lib/config';
+import { AuthPanel } from '@/features/auth/auth-panel';
+import { staffNamespace } from '@/features/auth/staff-access';
+import { safeReturnTo } from '@/lib/auth-navigation';
+import '@/features/auth/auth.css';
 export const metadata: Metadata = {
   title: 'Staff access',
   robots: { index: false, follow: false },
 };
-export default function SignIn() {
+export default async function SignIn({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const config = getConfig();
+  const params = await searchParams;
+  if (config.loginEnabled)
+    return (
+      <AuthPanel
+        namespace={staffNamespace()}
+        returnTo={safeReturnTo(params.returnTo)}
+        redirectReturn={params.oauth === 'return'}
+      />
+    );
   return (
     <EmptyState
       headingLevel={1}

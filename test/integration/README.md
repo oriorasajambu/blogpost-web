@@ -41,3 +41,61 @@ Set `LIVE_BACKEND_SOURCE` to use a different local backend checkout or
 runner inputs, never application runtime configuration. Running this journey
 does not establish real Google provider, cloud storage, Production or contract
 release conformance.
+
+## Identity and session journey
+
+The identity suite uses its own clean-source stack and context, independently of
+the public-reading suite. OpenSSL is required for its local HTTPS certificate.
+It launches full Chromium through Playwright's `chromium` channel. The default
+headless-shell browser left the emulator iframe's Google loader pending in this
+Windows environment; full Chromium completed the same unmodified resources and
+auth flows. The acceptance report records its engine/version and completed
+iframe/loader byte counts. It does not substitute auth responses or disable TLS.
+
+```text
+node test/integration/live-identity-backend.mjs start
+npx playwright test --config playwright.identity.config.ts
+node test/integration/live-identity-backend.mjs stop
+```
+
+The suite checks actual PostgreSQL membership and emulator-backed five-day web
+sessions for author/editor/admin/uninvited accounts, invitation matching/expiry
+and one-time acceptance, session revocation, CSRF and proxy boundaries, private
+draft separation, and the Firebase web SDK's popup with synthetic Google
+accounts. Logout covers unsynced-work export/cancellation and failed browser
+storage clearance. Token URL capture and encrypted redirect receipts are tested
+through the same web routes used by the application.
+
+Popup tests wait for the emulator handler navigation and its scripts to finish
+and observe its iframe relay readiness before selecting an account. They inspect Firebase IndexedDB records while the
+authenticated exchange is paused, verifying in-memory persistence before SDK
+logout can erase evidence. A mismatched popup account can choose the invited
+account and complete the original acceptance flow.
+
+Relay readiness uses bounded timer polling because the SDK iframe is hidden;
+animation-frame polling can pause there. The wait only observes the pinned
+emulator's initialized relay and never injects credentials or auth events.
+
+The launcher additionally bridges the isolated API over trusted local TLS and
+serves a staging-policy web instance through browser HTTPS. That verifies actual
+browser acceptance of `__Host-` Secure/HttpOnly cookies; it is not a deployed
+staging environment or a configured real Google provider check. The development
+instance uses only a loopback Authentication Emulator, with separate stack cookie
+and staff-storage names.
+
+Credentials and invitation secrets remain in disposable-container state or test
+process memory. Identity tracing, screenshots and videos are disabled so bearer
+tokens, cookies and invitation values cannot enter captured browser artifacts.
+Only sanitized provenance/cookie policy evidence is written under
+`docs/identity-sessions`. `renew-invitation` creates fresh synthetic accounts for
+reruns; no production scenario endpoint or fixture credential is added to app
+code. Stop only this stack using the runner after verification.
+
+The report binds its results to sorted path/SHA-256 manifests of production
+source, public assets, contracts, package inputs, configuration and the compiled
+server/browser build. It checks these before and after the suite; a changed input
+or build prevents a passing acceptance record. Environment files are excluded.
+
+Independent cases reuse synthetic members. Before each case, the fixture reads
+the actual SQL identity quota and waits for expiry when needed. It never clears
+rate buckets, disables throttling, or retries a failed application assertion.

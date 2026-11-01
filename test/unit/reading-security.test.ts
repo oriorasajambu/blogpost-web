@@ -10,6 +10,39 @@ import { Markdown } from '../../src/components/article/markdown';
 const postId = '10000000-0000-4000-8000-000000000001';
 const mediaId = '50000000-0000-4000-8000-000000000001';
 const installationId = '90000000-0000-4000-8000-000000000001';
+test('W3C vendor trace state follows only a valid parent and retains bounded unique entries', () => {
+  const traceparent = '00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01';
+  const tracestate = 'tenant@vendor=opaque value, other=abc123';
+  assert.equal(
+    diagnosticHeaders(new Headers({ traceparent, tracestate }), installationId, '0.0.0').get(
+      'tracestate',
+    ),
+    tracestate,
+  );
+  for (const invalid of [
+    'vendor=one,vendor=two',
+    'Vendor=value',
+    'vendor=bad=value',
+    `vendor=${'x'.repeat(513)}`,
+    'vendor=',
+  ])
+    assert.equal(
+      diagnosticHeaders(
+        new Headers({ traceparent, tracestate: invalid }),
+        installationId,
+        '0.0.0',
+      ).get('tracestate'),
+      null,
+    );
+  assert.equal(
+    diagnosticHeaders(
+      new Headers({ traceparent: 'invalid', tracestate }),
+      installationId,
+      '0.0.0',
+    ).get('tracestate'),
+    null,
+  );
+});
 const cloud = {
   APP_ENV: 'production',
   BACKEND_ORIGIN: 'https://api.example.test',
@@ -24,6 +57,7 @@ test('public-reading startup works before the final web origin is known', () => 
 });
 
 test('cloud configuration rejects local controls and unsafe origin shapes', () => {
+  assert.throws(() => parseConfig({ ...cloud, NODE_ENV: 'development' }), /NODE_ENV=production/);
   for (const backend of [
     'http://api.example.test',
     'https://localhost:8080',
