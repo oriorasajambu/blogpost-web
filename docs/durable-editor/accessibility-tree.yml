@@ -1,0 +1,130 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- status: Development · Local workspace
+- banner:
+  - link "Blogpost home":
+    - /url: /
+    - text: blogpost.
+  - text: Ideas worth your time.
+  - navigation "Utility navigation":
+    - link "Search articles":
+      - /url: /search
+    - button "Switch to light theme"
+    - link "Staff sign in":
+      - /url: /sign-in
+  - navigation "Main navigation":
+    - link "Latest":
+      - /url: /
+    - link "Editor integration":
+      - /url: /categories/editor-81503dcf-ae54-4498-a3e8-a5816acd8743
+    - link "Explore":
+      - /url: /search
+- main:
+  - paragraph:
+    - text: Signed in as
+    - strong: Identity EDITOR
+    - text: · editor
+  - button "Sign out"
+  - navigation "Staff navigation":
+    - link "Your workspace":
+      - /url: /studio/posts
+    - link "Your profile":
+      - /url: /studio/profile
+    - link "Review":
+      - /url: /studio/review
+    - link "Taxonomy":
+      - /url: /studio/taxonomy
+  - region "Write a draft":
+    - paragraph: Your writing desk
+    - heading "Write a draft" [level=1]
+    - paragraph: Shape an idea here. Sync when you’re ready to send it to the workspace.
+    - link "All your drafts":
+      - /url: /studio/posts
+    - status "Draft save status": Saved on this device at 02:37:44 PM Unsynced changes · Not synced to server Working revision — · Published revision — Draft
+    - group "Draft details":
+      - text: Draft details Title
+      - textbox "Title": Small habits, lasting ideas
+      - text: 27 / 160 characters Summary
+      - textbox "Summary": A quiet approach to collecting thoughts, finding a rhythm, and turning useful notes into a story.
+      - text: 97 / 320 characters Category
+      - combobox "Category":
+        - option "Choose a category later"
+        - option "Editor integration" [selected]
+      - group "Tags":
+        - text: Tags
+        - paragraph: Choose up to five · 1 selected
+        - checkbox "Boundary"
+        - text: Boundary
+        - checkbox "Durability"
+        - text: Durability
+        - checkbox "Learning"
+        - text: Learning
+        - checkbox "Recovery"
+        - text: Recovery
+        - checkbox "Tests"
+        - text: Tests
+        - checkbox "Writing" [checked]
+        - text: Writing
+      - text: Cover image
+      - combobox "Cover image":
+        - option "No cover image" [selected]
+    - tablist "Editor view":
+      - tab "Write" [selected]
+      - tab "Preview"
+    - tabpanel "Write":
+      - button "Heading"
+      - button "Bold"
+      - button "Italic"
+      - button "List"
+      - button "Quote"
+      - button "Link"
+      - button "Code"
+      - button "Table"
+      - button "Add image"
+      - text: Markdown
+      - textbox "Markdown": "## Start with one clear thought Good writing often begins with a small observation. Keep a few notes, give them room, and return with a fresh eye. - Save the detail that caught your attention. - Ask what it changes for the reader. - Leave space for a better question. > A useful draft is a place to think before it becomes a place to publish. ### Find your rhythm | Moment | A small practice | | --- | --- | | Morning | Capture one observation | | Afternoon | Connect two ideas | | Evening | Keep the strongest sentence | ```javascript const nextDraft = { idea: \"one clear thought\", readyToShare: false, }; ```"
+      - paragraph: CommonMark, fenced code, and simple tables. Raw HTML is disabled. Images stay private until published.
+    - tabpanel "Preview":
+      - article "Private draft preview":
+        - paragraph: Private preview · only you and authorized staff
+        - heading "Small habits, lasting ideas" [level=2]
+        - paragraph: A quiet approach to collecting thoughts, finding a rhythm, and turning useful notes into a story.
+        - heading "Start with one clear thought" [level=2]
+        - paragraph: Good writing often begins with a small observation. Keep a few notes, give them room, and return with a fresh eye.
+        - list:
+          - listitem: Save the detail that caught your attention.
+          - listitem: Ask what it changes for the reader.
+          - listitem: Leave space for a better question.
+        - blockquote:
+          - paragraph: A useful draft is a place to think before it becomes a place to publish.
+        - heading "Find your rhythm" [level=3]
+        - region "Scrollable preview table":
+          - table:
+            - rowgroup:
+              - row "Moment A small practice":
+                - columnheader "Moment"
+                - columnheader "A small practice"
+            - rowgroup:
+              - row "Morning Capture one observation":
+                - cell "Morning"
+                - cell "Capture one observation"
+              - row "Afternoon Connect two ideas":
+                - cell "Afternoon"
+                - cell "Connect two ideas"
+              - row "Evening Keep the strongest sentence":
+                - cell "Evening"
+                - cell "Keep the strongest sentence"
+        - code: "const nextDraft = { idea: \"one clear thought\", readyToShare: false, };"
+    - button "Sync"
+    - button "Export Markdown"
+- contentinfo:
+  - link "blogpost.":
+    - /url: /
+  - paragraph: A little perspective. A lot to discover.
+  - link "Latest stories":
+    - /url: /
+  - link "Explore the archive":
+    - /url: /search
+  - text: Made for a good read.
+- status
+- alert

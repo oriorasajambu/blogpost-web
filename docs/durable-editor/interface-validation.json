@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-11-02T07:37:45.196Z",
+  "browser": {
+    "engine": "chromium",
+    "version": "156.0.8078.4",
+    "channel": "chromium"
+  },
+  "webBuildId": "build-TfctsWXpff2fKS",
+  "sourceSHA256": "0695b815e34b7bffaf503d4bb2f47a217ea4ea5984ed1090f6fef655338f2412",
+  "buildSHA256": "04c551cc2b2b350064dc71200c951161b71958c4a88859306fa9fd8515b7193a",
+  "sourceAndBuildUnchanged": true,
+  "scope": "Intentional screenshots of synthetic editor content; real emulator-backed HttpOnly session; no auth, network, token or cookie capture",
+  "outputs": [
+    "docs/durable-editor/desktop-light.png",
+    "docs/durable-editor/desktop-light-content.png",
+    "docs/durable-editor/phone-light.png",
+    "docs/durable-editor/phone-light-content.png",
+    "docs/durable-editor/desktop-dark.png",
+    "docs/durable-editor/desktop-dark-content.png",
+    "docs/durable-editor/phone-dark.png",
+    "docs/durable-editor/phone-dark-content.png"
+  ]
+}

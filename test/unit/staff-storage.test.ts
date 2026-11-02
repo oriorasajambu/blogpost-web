@@ -81,9 +81,9 @@ test('staff cleanup clears only its namespace and account-scoped recovery remain
     ]),
   );
   session.setItem(`${namespace}:pending`, 'operation-key');
-  rememberStaffIdentity(namespace, 'member-one', 'provider-uid');
+  rememberStaffIdentity(namespace, 'account-one', 'provider-uid');
   assert.deepEqual(previousStaffIdentity(namespace), {
-    memberId: 'member-one',
+    memberId: 'account-one',
     identityUid: 'provider-uid',
   });
   let cleared = false;

@@ -1,0 +1,142 @@
+{
+  "checkedAt": "2026-11-02T07:41:55.762Z",
+  "scope": "Locked dependency tree; npm registry advisory results",
+  "allDependencies": {
+    "info": 0,
+    "low": 0,
+    "moderate": 18,
+    "high": 0,
+    "critical": 0,
+    "total": 18
+  },
+  "productionDependencies": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "findings": [
+    {
+      "name": "@eslint-community/eslint-utils",
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/@eslint-community/eslint-utils",
+        "node_modules/@next/eslint-plugin-next/node_modules/@eslint-community/eslint-utils"
+      ],
+      "direct": false
+    },
+    {
+      "name": "@eslint/config-array",
+      "severity": "moderate",
+      "nodes": ["node_modules/@eslint/config-array"],
+      "direct": false
+    },
+    {
+      "name": "@eslint/eslintrc",
+      "severity": "moderate",
+      "nodes": ["node_modules/@eslint/eslintrc"],
+      "direct": false
+    },
+    {
+      "name": "@next/eslint-plugin-next",
+      "severity": "moderate",
+      "nodes": ["node_modules/@next/eslint-plugin-next"],
+      "direct": false
+    },
+    {
+      "name": "@redocly/openapi-core",
+      "severity": "moderate",
+      "nodes": ["node_modules/@redocly/openapi-core"],
+      "direct": false
+    },
+    {
+      "name": "@typescript-eslint/eslint-plugin",
+      "severity": "moderate",
+      "nodes": ["node_modules/@typescript-eslint/eslint-plugin"],
+      "direct": false
+    },
+    {
+      "name": "@typescript-eslint/parser",
+      "severity": "moderate",
+      "nodes": ["node_modules/@typescript-eslint/parser"],
+      "direct": false
+    },
+    {
+      "name": "@typescript-eslint/type-utils",
+      "severity": "moderate",
+      "nodes": ["node_modules/@typescript-eslint/type-utils"],
+      "direct": false
+    },
+    {
+      "name": "@typescript-eslint/typescript-estree",
+      "severity": "moderate",
+      "nodes": ["node_modules/@typescript-eslint/typescript-estree"],
+      "direct": false
+    },
+    {
+      "name": "@typescript-eslint/utils",
+      "severity": "moderate",
+      "nodes": ["node_modules/@typescript-eslint/utils"],
+      "direct": false
+    },
+    {
+      "name": "eslint",
+      "severity": "moderate",
+      "nodes": ["node_modules/eslint"],
+      "direct": true
+    },
+    {
+      "name": "eslint-config-next",
+      "severity": "moderate",
+      "nodes": ["node_modules/eslint-config-next"],
+      "direct": true
+    },
+    {
+      "name": "eslint-plugin-import",
+      "severity": "moderate",
+      "nodes": ["node_modules/eslint-config-next/node_modules/eslint-plugin-import"],
+      "direct": false
+    },
+    {
+      "name": "eslint-plugin-jsx-a11y",
+      "severity": "moderate",
+      "nodes": ["node_modules/eslint-config-next/node_modules/eslint-plugin-jsx-a11y"],
+      "direct": false
+    },
+    {
+      "name": "eslint-plugin-react",
+      "severity": "moderate",
+      "nodes": ["node_modules/eslint-config-next/node_modules/eslint-plugin-react"],
+      "direct": false
+    },
+    {
+      "name": "minimatch",
+      "severity": "moderate",
+      "nodes": [
+        "node_modules/@eslint/config-array/node_modules/minimatch",
+        "node_modules/@eslint/eslintrc/node_modules/minimatch",
+        "node_modules/@redocly/openapi-core/node_modules/minimatch",
+        "node_modules/eslint-config-next/node_modules/minimatch",
+        "node_modules/eslint/node_modules/minimatch",
+        "node_modules/minimatch"
+      ],
+      "direct": false
+    },
+    {
+      "name": "openapi-typescript",
+      "severity": "moderate",
+      "nodes": ["node_modules/openapi-typescript"],
+      "direct": true
+    },
+    {
+      "name": "typescript-eslint",
+      "severity": "moderate",
+      "nodes": ["node_modules/typescript-eslint"],
+      "direct": false
+    }
+  ],
+  "advisory": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+  "disposition": "Remaining moderate findings are development lint/schema-tool dependencies using minimatch. No runtime findings, high or critical findings. Broad major-version overrides/downgrades were not applied; toolchain remediation remains release work."
+}

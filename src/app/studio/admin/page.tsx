@@ -1,4 +1,5 @@
 import { readStaffAccess, StaffAccessUnavailable } from '@/features/auth/staff-access';
+import Link from 'next/link';
 export default async function AdministrationAccessPage() {
   const access = await readStaffAccess('/studio/admin', ['ADMIN']);
   if (access.denied) return <StaffAccessUnavailable reason={access.denied} />;
@@ -10,9 +11,9 @@ export default async function AdministrationAccessPage() {
         Your role permits staff administration. Invitation and membership management is not
         available here yet.
       </p>
-      <a className="text-link" href="/studio/posts">
+      <Link className="text-link" href="/studio/posts" prefetch={false}>
         Return to your workspace
-      </a>
+      </Link>
     </section>
   );
 }

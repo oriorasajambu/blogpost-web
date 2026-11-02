@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter, EnvironmentBanner } from '@/components/layout/site-footer';
 import { themeScript } from '@/lib/theme';
+import { draftHistoryGuardScript } from '@/lib/draft-history-guard';
 import { ReadingNavigation, ReadingContent } from '@/components/layout/reading-navigation';
 import { getConfig } from '@/lib/config';
 import { getCategories } from '@/lib/api-server';
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" suppressHydrationWarning>
       <head>
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: draftHistoryGuardScript }} />
       </head>
       <body>
         <a href="#main-content" className="skip-link">

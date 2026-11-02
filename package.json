@@ -19,6 +19,7 @@
     "test:seo": "playwright test --config playwright.seo.config.ts",
     "test:live": "playwright test --config playwright.live.config.ts",
     "test:identity": "playwright test --config playwright.identity.config.ts",
+    "test:editor": "playwright test --config playwright.editor.config.ts",
     "contract:generate": "node scripts/contract-types.mjs",
     "contract:check": "node scripts/contract-types.mjs --check",
     "verify": "node scripts/verify-foundation.mjs",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "firebase": "13.1.0",
+    "mdast-util-from-markdown": "2.1.0",
     "mdast-util-gfm-table": "2.0.0",
     "micromark-extension-gfm-table": "2.1.2",
     "next": "16.4.3",

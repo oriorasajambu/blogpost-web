@@ -7,8 +7,10 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 // This runner owns only the disposable resources recorded in its context file.
 const root = resolve(import.meta.dirname, '../..');
-const identitySuite = process.env.LIVE_TEST_SUITE === 'identity';
-const purpose = identitySuite ? 'identity' : 'public';
+const purpose = process.env.LIVE_TEST_SUITE ?? 'public';
+if (!['public', 'identity', 'editor'].includes(purpose))
+  throw new Error('Unsupported disposable integration suite');
+const identitySuite = purpose !== 'public';
 const fixtureFile = identitySuite ? 'live-identity-fixture.mjs' : 'live-backend-fixture.mjs';
 const directory = resolve(root, `.local/live-${purpose}`);
 const contextFile = resolve(directory, 'context.json');
@@ -50,7 +52,9 @@ if (action === 'start') {
   try {
     context = JSON.parse(await readFile(contextFile, 'utf8'));
     if (context.state !== 'stopped')
-      throw new Error('Existing live-public context must be stopped before starting another run');
+      throw new Error(
+        `Existing live-${purpose} context must be stopped before starting another run`,
+      );
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
   }

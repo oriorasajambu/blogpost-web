@@ -9,7 +9,7 @@ import { CodeBlock } from './code-block';
 import { MediaImage } from './media-image';
 
 /** CommonMark already includes fenced code. Tables are the only added syntax. */
-const remarkTables: Plugin = function () {
+export const remarkTables: Plugin = function () {
   const data = this.data() as {
     micromarkExtensions?: Array<ReturnType<typeof gfmTable>>;
     fromMarkdownExtensions?: Array<ReturnType<typeof gfmTableFromMarkdown>>;

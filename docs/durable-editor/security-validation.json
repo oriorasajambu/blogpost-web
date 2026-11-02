@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-02T07:47:29.564Z",
+  "tool": "gitleaks",
+  "version": "8.30.1",
+  "verifiedArchiveSHA256": "d29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e",
+  "executableSHA256": "17157e2ee8b76fc8b1d8bee607a250e34b8a8023c8bc81822d4b5ee4d78fcb7c",
+  "sourceScope": "Exact git tracked plus untracked nonignored regular working files, excluding this generated receipt; no Git history or ignored local configuration",
+  "generatedReceiptExcluded": "docs/durable-editor/security-validation.json",
+  "sourceFiles": 233,
+  "sourceBytes": 3667699,
+  "sourceManifestSHA256": "55a9c00cd6c8e3e927b202f854f332850b309abe53576459a9abafe7c391a6dc",
+  "sourceCopyVerified": true,
+  "sourceRawFindings": 23,
+  "sourceReviewedSyntheticExamples": 23,
+  "sourceUnreviewed": 0,
+  "ignoreCommentsDisabled": true,
+  "redactPercent": 100,
+  "defaultRulesExplicit": true,
+  "classification": [
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 2711,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 2948,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 3449,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 4464,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 4972,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 5394,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 5800,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 6202,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 6628,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 7168,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 8405,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 8877,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 9401,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 9937,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 10842,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 11284,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 11763,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 12205,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 12882,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 13136,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 13896,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 14357,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    },
+    {
+      "rule": "generic-api-key",
+      "file": "contracts/openapi-v1.0.0.json",
+      "line": 14615,
+      "classification": "Synthetic UUID retry-key example; not a credential"
+    }
+  ],
+  "browserScope": ".next/static only; no server output or runtime environment files",
+  "browserFiles": 28,
+  "browserBytes": 1096345,
+  "browserManifestSHA256": "6ce18a738e993bb9616361e0c09d2f472b58e0254fa892ac31ce278a72b8e4a6",
+  "browserRawFindings": 0,
+  "nextBuildId": "build-TfctsWXpff2fKS",
+  "sourceAndBrowserUnchangedDuringScan": true,
+  "browserCanaryCheck": {
+    "scope": "Synthetic runtime secret, configured local backend origin and server-only setting/header markers",
+    "filesChecked": 28,
+    "sourceMaps": 0,
+    "canaryMatches": 0
+  },
+  "limitations": [
+    "Current regular working files only; no Git history scan",
+    "Pattern scanning and known-marker absence do not prove absence of every secret",
+    "No deployed provider, cloud release, or CI/CD security gate is established"
+  ]
+}

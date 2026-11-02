@@ -8,4 +8,6 @@ package-lock.json
 test-results/
 playwright-report/
 docs/reading-interface/
+# Generated browser accessibility snapshot is retained verbatim.
+docs/durable-editor/accessibility-tree.yml
 *.tsbuildinfo

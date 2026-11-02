@@ -1,5 +1,6 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { ApiError } from '@/lib/api-server';
 import { BackendResponseError } from '@/lib/bff';
 import { getConfig } from '@/lib/config';
@@ -48,9 +49,9 @@ export function StaffAccessUnavailable({ reason }: { reason: 'role' | 'account' 
           : 'This account no longer has active staff access. Local work has been kept so you can review or export it before signing out.'}
       </p>
       {reason === 'role' && (
-        <a className="text-link" href="/studio/posts">
+        <Link className="text-link" href="/studio/posts" prefetch={false}>
           Return to your workspace
-        </a>
+        </Link>
       )}
       <SignOutButton
         namespace={staffNamespace()}
