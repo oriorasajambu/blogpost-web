@@ -8,7 +8,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 // This runner owns only the disposable resources recorded in its context file.
 const root = resolve(import.meta.dirname, '../..');
 const purpose = process.env.LIVE_TEST_SUITE ?? 'public';
-if (!['public', 'identity', 'editor'].includes(purpose))
+if (!['public', 'identity', 'editor', 'staff'].includes(purpose))
   throw new Error('Unsupported disposable integration suite');
 const identitySuite = purpose !== 'public';
 const fixtureFile = identitySuite ? 'live-identity-fixture.mjs' : 'live-backend-fixture.mjs';

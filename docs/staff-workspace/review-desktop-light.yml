@@ -1,0 +1,88 @@
+- main:
+  - paragraph:
+    - text: Signed in as
+    - strong: Identity EDITOR
+    - text: · editor
+  - button "Sign out"
+  - navigation "Staff navigation":
+    - link "Your workspace":
+      - /url: /studio/posts
+    - link "Trash":
+      - /url: /studio/trash
+    - link "Your profile":
+      - /url: /studio/profile
+    - link "Review":
+      - /url: /studio/review
+    - link "Taxonomy":
+      - /url: /studio/taxonomy
+  - region "Review submitted work":
+    - link "Back to review queue":
+      - /url: /studio/review
+    - paragraph: Review and publication
+    - heading "Review submitted work" [level=1]
+    - button "Refresh review"
+    - paragraph:
+      - text: "Working revision:"
+      - code: f0c26c60-8f97-4c71-9d9a-bb3d3c98cd96
+      - text: ". Published revision:"
+      - code: eefad529-2cb5-4960-aa38-9c6dbe633080
+      - text: .
+    - paragraph: The published snapshot is currently public.
+    - paragraph:
+      - text: Submitted
+      - time: Nov 3, 2026, 2:26:46 AM (Asia/Jakarta)
+      - text: .
+    - region "Submitted for review":
+      - paragraph: Submitted for review · revision 2
+      - heading "A calmer review starts with a clear comparison" [level=2]
+      - paragraph: Working changes stay private until an editor makes one explicit publication decision.
+      - term: Revision ID
+      - definition:
+        - code: f0c26c60-8f97-4c71-9d9a-bb3d3c98cd96
+      - term: Created
+      - definition:
+        - time: Nov 3, 2026, 2:26:46 AM (Asia/Jakarta)
+        - text: by Identity AUTHOR
+      - term: Credited author
+      - definition: Identity AUTHOR
+      - term: Category
+      - definition: Ideas & practice
+      - term: Tags
+      - definition: Editorial craft
+      - term: Cover alternative text
+      - definition: No cover image
+      - group: Read private formatted preview
+      - heading "Markdown source, including image alternatives" [level=3]
+      - code: "## A small, explicit decision A clear comparison lets an editor focus on the story. This proposed revision adds a practical checklist and keeps the earlier published snapshot beside it. ### Before publication | Check | What to review | | --- | --- | | Meaning | Is the argument clear? | | Details | Are the names and dates accurate? | | Access | Do images have useful alternatives? | > Publish the revision you have actually reviewed. The next writer can follow the immutable revision and review history."
+    - region "Published snapshot":
+      - paragraph: Published snapshot · revision 1
+      - heading "A clearer editorial rhythm" [level=2]
+      - paragraph: A small team, a considered review, and a record of what changed.
+      - term: Revision ID
+      - definition:
+        - code: eefad529-2cb5-4960-aa38-9c6dbe633080
+      - term: Created
+      - definition:
+        - time: Nov 3, 2026, 2:26:44 AM (Asia/Jakarta)
+        - text: by Identity AUTHOR
+      - term: Credited author
+      - definition: Identity AUTHOR
+      - term: Category
+      - definition: Ideas & practice
+      - term: Tags
+      - definition: Editorial craft
+      - term: Cover alternative text
+      - definition: No cover image
+      - group: Read private formatted preview
+      - heading "Markdown source, including image alternatives" [level=3]
+      - code: "## Make the next decision clear A good editorial workspace gives every draft a clear next step. The published story stays available while a writer prepares a correction. ### A useful review - Read the exact submitted revision. - Keep the published snapshot in view. - Leave feedback that helps the next draft."
+    - heading "Decision on revision 2" [level=2]
+    - paragraph:
+      - code: f0c26c60-8f97-4c71-9d9a-bb3d3c98cd96
+    - text: Feedback for changes requested
+    - textbox "Feedback for changes requested"
+    - paragraph: 0 / 2000 characters. Add clear, nonblank feedback before requesting changes.
+    - button "Review and publish"
+    - button "Request changes" [disabled]
+    - link "Open working draft":
+      - /url: /studio/posts/7570e6f9-5527-40e2-a004-b5f4a3c8ae14

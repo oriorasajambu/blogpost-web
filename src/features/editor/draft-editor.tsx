@@ -12,6 +12,7 @@ import { syncDraft, workflowDraft, resolveDraftConflict, EditorSyncError } from 
 import { PrivatePreview } from './private-preview';
 import { scalarLength, validateEditorContent } from './editor-validation';
 import { notifyEditorAccess, recoveryItem, useDurableDraft } from './use-durable-draft';
+import { PostActions } from '@/features/review/post-actions';
 import './editor.css';
 
 function dateLabel(value: string) {
@@ -33,6 +34,7 @@ export function DraftEditor(props: {
   const [configuration, setConfiguration] = useState<EditorConfiguration | null>(null);
   const [configurationError, setConfigurationError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [staffBusy, setStaffBusy] = useState(false);
   const [progress, setProgress] = useState('');
   const [notice, setNotice] = useState('');
   const [tab, setTab] = useState<'write' | 'preview'>('write');
@@ -103,6 +105,7 @@ export function DraftEditor(props: {
   const inReview = draft?.base?.workflowState === 'IN_REVIEW';
   const pendingWorkflow = draft?.pending && draft.pending.kind !== 'sync' ? draft.pending : null;
   const canEdit =
+    !staffBusy &&
     !editor.paused &&
     !inReview &&
     !pendingWorkflow &&
@@ -769,6 +772,7 @@ export function DraftEditor(props: {
           className="button-primary"
           disabled={
             busy ||
+            staffBusy ||
             editor.paused ||
             !!pendingWorkflow ||
             !!draft.conflict ||
@@ -783,7 +787,7 @@ export function DraftEditor(props: {
           <button
             type="button"
             className="button-primary"
-            disabled={busy || editor.paused || !!compatibility}
+            disabled={busy || staffBusy || editor.paused || !!compatibility}
             onClick={() => void run(pendingWorkflow.kind)}
           >
             Retry review action
@@ -804,7 +808,12 @@ export function DraftEditor(props: {
             type="button"
             className="button-secondary"
             disabled={
-              busy || editor.paused || isDraftDirty(draft) || !!draft.pending || !!draft.conflict
+              busy ||
+              staffBusy ||
+              editor.paused ||
+              isDraftDirty(draft) ||
+              !!draft.pending ||
+              !!draft.conflict
             }
             onClick={() => void run('submit')}
           >
@@ -815,7 +824,7 @@ export function DraftEditor(props: {
           <button
             type="button"
             className="button-secondary"
-            disabled={busy || editor.paused}
+            disabled={busy || staffBusy || editor.paused}
             onClick={() => void run('withdraw-review')}
           >
             Withdraw from review
@@ -826,6 +835,26 @@ export function DraftEditor(props: {
         <p className="editor-notice" role="status">
           {editor.saving ? 'Saving on this device…' : notice}
         </p>
+      )}
+      {draft.base && (
+        <PostActions
+          post={draft.base}
+          member={props.member}
+          dirty={
+            busy ||
+            editor.paused ||
+            isDraftDirty(draft) ||
+            pendingDevice ||
+            !!draft.pending ||
+            !!draft.conflict ||
+            !!editor.error
+          }
+          onBusyChange={setStaffBusy}
+          onChanged={async () => {
+            await editor.flush();
+            window.location.reload();
+          }}
+        />
       )}
       <dialog
         ref={imageDialog}

@@ -4,7 +4,13 @@ import {
   StaffAccessUnavailable,
 } from '@/features/auth/staff-access';
 import { DraftList } from '@/features/editor/draft-list';
-export default async function StaffPostsPage() {
+import { StaffPostList } from '@/features/staff/post-list';
+import { postFilters } from '@/features/staff/post-list-policy';
+export default async function StaffPostsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const access = await readStaffAccess('/studio/posts');
   if (access.denied) return <StaffAccessUnavailable reason={access.denied} />;
   return (
@@ -16,6 +22,9 @@ export default async function StaffPostsPage() {
         access.
       </p>
       <DraftList member={access.member} namespace={staffNamespace()} />
+      {access.member.role !== 'AUTHOR' && (
+        <StaffPostList memberId={access.member.id} filters={postFilters(await searchParams)} />
+      )}
     </section>
   );
 }

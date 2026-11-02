@@ -1,0 +1,85 @@
+{
+  "status": "PASSED",
+  "testedAt": "2026-11-02T19:25:02.807Z",
+  "scope": "All 10 taxonomy cases after the phone table presentation follow-up",
+  "change": "Readable minimum table width, a labelled focusable horizontal-scroll region and a visible scrolling hint; mutation logic unchanged",
+  "productionFilesChangedSinceFullRun": [
+    "src/features/staff/staff.css",
+    "src/features/taxonomy/taxonomy-workspace.tsx"
+  ],
+  "fullFunctionalAcceptance": {
+    "receipt": "docs/staff-workspace/local-validation.json",
+    "sourceSHA256": "e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062",
+    "buildSHA256": "0ba6f77de45fc155ec3e8f5fb889c36bca80a6075ec8e3c367fc7f964bfc1a42"
+  },
+  "sourceAndBuildUnchanged": true,
+  "testInputsUnchanged": true,
+  "compiledFromTestedSource": true,
+  "sourceSHA256": "c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4",
+  "buildSHA256": "0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233",
+  "testInputSHA256": "5cf1933fe8381d704a82fe52bdcdbe9b9ab497228af4930385fe17aa831138d9",
+  "backendSourceSha": "d8ec408ac6ed34250b92b2f1211afaf128b7d925",
+  "backendImage": "sha256:88e44128bc18344d192057749944e4193f1e54d82db46a3fbfe0f684fd59393d",
+  "browser": {
+    "engine": "chromium",
+    "version": "156.0.8078.4",
+    "channel": "chromium"
+  },
+  "tests": [
+    {
+      "title": "taxonomy requires editor/admin page and data permission, including write attempts",
+      "status": "passed",
+      "durationMs": 7478
+    },
+    {
+      "title": "editor creates, renames, archives and reactivates a category while its slug remains immutable",
+      "status": "passed",
+      "durationMs": 4552
+    },
+    {
+      "title": "tag creation reports normalized-name and immutable-slug duplicates while retaining the proposal",
+      "status": "passed",
+      "durationMs": 4256
+    },
+    {
+      "title": "archiving used vocabulary preserves published and historical references and requires active replacement before resubmission",
+      "status": "passed",
+      "durationMs": 68869
+    },
+    {
+      "title": "stale taxonomy version keeps the proposal and requires explicit comparison and a newly confirmed version",
+      "status": "passed",
+      "durationMs": 4883
+    },
+    {
+      "title": "lost taxonomy create response retries identical captured input and key without duplicate creation",
+      "status": "passed",
+      "durationMs": 45973
+    },
+    {
+      "title": "uncertain taxonomy action stops after the replay window and resolves by authorized current-state review",
+      "status": "passed",
+      "durationMs": 15446
+    },
+    {
+      "title": "a late taxonomy selection cannot replace an entry with an in-flight or uncertain saved change",
+      "status": "passed",
+      "durationMs": 46603
+    },
+    {
+      "title": "managed taxonomy traverses every server page and keeps active and archived filters distinct",
+      "status": "passed",
+      "durationMs": 76016
+    },
+    {
+      "title": "taxonomy keyboard confirmation, focus restoration, phone reflow and both themes pass axe",
+      "status": "passed",
+      "durationMs": 64221
+    }
+  ],
+  "verification": "Includes real lifecycle, conflict, retry, pagination and archive-reference cases, axe in both themes at 1440/390/320px, no document overflow, and native ArrowRight scrolling on focused phone table regions",
+  "limitations": [
+    "The full 315-test regression run precedes this presentation-only follow-up; its actual build provenance is retained separately",
+    "Native Android, real Google-provider and release gates remain pending"
+  ]
+}

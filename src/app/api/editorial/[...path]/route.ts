@@ -17,6 +17,9 @@ import { validateApiDiagnostics } from '@/lib/api-response';
 import { uuidPattern } from '@/lib/request-policy';
 import { validateApiResponse } from '@/lib/api-response';
 import { staffRequestHeaders } from '@/lib/staff-request-policy';
+import { backendRequest } from '@/lib/api-server';
+import { validateApiMeta, editorCompatibility } from '@/features/editor/editor-contract';
+import packageInfo from '../../../../../package.json';
 
 type Context = { params: Promise<{ path: string[] }> };
 async function handler(request: Request, context: Context) {
@@ -101,6 +104,25 @@ async function handler(request: Request, context: Context) {
           400,
           'INVALID_REQUEST',
           'This operation does not accept a request body.',
+        );
+    }
+    if (mutation) {
+      const meta = await backendRequest<{ data: unknown }>('/v1/meta');
+      let restriction: string | null;
+      try {
+        restriction = editorCompatibility(validateApiMeta(meta.data), packageInfo.version);
+      } catch {
+        throw new BffError(
+          502,
+          'INVALID_API_RESPONSE',
+          'Staff compatibility could not be checked. Your local work is kept.',
+        );
+      }
+      if (restriction)
+        throw new BffError(
+          426,
+          'CLIENT_UPDATE_REQUIRED',
+          'Update the application before changing staff work. Your local drafts can still be exported.',
         );
     }
     if (descriptor.binary) {

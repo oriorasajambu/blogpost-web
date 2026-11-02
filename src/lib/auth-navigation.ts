@@ -24,6 +24,7 @@ export function staffNavigation(role: string) {
   if (!staffRoles.some((known) => known === role)) return [];
   return [
     { href: '/studio/posts', label: 'Your workspace' },
+    { href: '/studio/trash', label: 'Trash' },
     { href: '/studio/profile', label: 'Your profile' },
     ...(role === 'EDITOR' || role === 'ADMIN'
       ? [

@@ -1,0 +1,62 @@
+- main:
+  - paragraph:
+    - text: Signed in as
+    - strong: Identity EDITOR
+    - text: · editor
+  - button "Sign out"
+  - navigation "Staff navigation":
+    - link "Your workspace":
+      - /url: /studio/posts
+    - link "Trash":
+      - /url: /studio/trash
+    - link "Your profile":
+      - /url: /studio/profile
+    - link "Review":
+      - /url: /studio/review
+    - link "Taxonomy":
+      - /url: /studio/taxonomy
+  - region "Taxonomy workspace":
+    - paragraph: Editorial vocabulary
+    - heading "Taxonomy workspace" [level=1]
+    - paragraph: Manage the categories and tags readers use to find articles. Archived entries retain their existing references.
+    - group "Vocabulary type":
+      - button "Categories" [pressed]
+      - button "Tags"
+    - text: Show categories
+    - combobox "Show categories":
+      - option "Active and archived" [selected]
+      - option "Active only"
+      - option "Archived only"
+    - button "Create category"
+    - button "Refresh categories"
+    - region "Categories table":
+      - paragraph: Scroll horizontally to read all columns.
+      - table "Categories · page 1":
+        - caption: Categories · page 1
+        - rowgroup:
+          - row "Name and slug State Current use Updated Manage":
+            - columnheader "Name and slug"
+            - columnheader "State"
+            - columnheader "Current use"
+            - columnheader "Updated"
+            - columnheader "Manage"
+        - rowgroup:
+          - row "Editor integration editor-6cbbe50a-7ff1-411e-bf38-897297e7d15c Active Version 1 0 published · 0 working revisions Nov 3, 2026, 2:26:39 AM (Asia/Jakarta) Manage Editor integration":
+            - rowheader "Editor integration editor-6cbbe50a-7ff1-411e-bf38-897297e7d15c"
+            - cell "Active Version 1"
+            - cell "0 published · 0 working revisions"
+            - cell "Nov 3, 2026, 2:26:39 AM (Asia/Jakarta)":
+              - time: Nov 3, 2026, 2:26:39 AM (Asia/Jakarta)
+            - cell "Manage Editor integration":
+              - button "Manage Editor integration"
+          - row "Ideas & practice ideas-and-practice Active Version 1 1 published · 1 working revisions Nov 3, 2026, 2:26:42 AM (Asia/Jakarta) Manage Ideas & practice":
+            - rowheader "Ideas & practice ideas-and-practice"
+            - cell "Active Version 1"
+            - cell "1 published · 1 working revisions"
+            - cell "Nov 3, 2026, 2:26:42 AM (Asia/Jakarta)":
+              - time: Nov 3, 2026, 2:26:42 AM (Asia/Jakarta)
+            - cell "Manage Ideas & practice":
+              - button "Manage Ideas & practice"
+    - button "Previous page" [disabled]
+    - paragraph: 2 categories · page 1 of 1
+    - button "Next page" [disabled]

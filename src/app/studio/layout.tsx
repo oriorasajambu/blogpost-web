@@ -9,6 +9,7 @@ import { staffNavigation } from '@/lib/auth-navigation';
 import { StaffSessionBoundary } from '@/features/auth/staff-session-boundary';
 import { SignOutButton } from '@/features/auth/sign-out-button';
 import '@/features/auth/auth.css';
+import '@/features/staff/staff.css';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Staff workspace',
@@ -19,7 +20,11 @@ export default async function StudioLayout({ children }: { children: ReactNode }
   if (access.denied) return <StaffAccessUnavailable reason={access.denied} />;
   const namespace = staffNamespace();
   return (
-    <StaffSessionBoundary namespace={namespace} member={access.member}>
+    <StaffSessionBoundary
+      key={`${access.member.id}:${access.member.role}`}
+      namespace={namespace}
+      member={access.member}
+    >
       <div className="staff-shell">
         <div className="staff-shell-header">
           <p>

@@ -1,6 +1,6 @@
 # Web development status
 
-Development started on 29 October 2026 from `BLOGPOST_FRONTEND_WEB_PLAN.md`. This checkout is an initial reading foundation, application version `0.0.0`, with publication disabled. It is not a completed implementation of the full plan.
+Development started on 29 October 2026 from `BLOGPOST_FRONTEND_WEB_PLAN.md`. Public reading, identity/session, the durable editor and the local staff workspace are implemented. Application version remains `0.0.0`, with publication disabled. The complete staff web suite passed; external provider, native-client and release gates remain open. The full plan is not complete.
 
 ## Recorded verification
 
@@ -21,7 +21,11 @@ On 1 November 2026, all 16 identity integration cases passed against a clean bac
 
 The durable editor is accepted for stage 4; the [acceptance record](DURABLE_EDITOR_ACCEPTANCE.md) maps its requirements to evidence. On 2 November, all 37 editor integration cases, 136 unit tests, 43 public-reading regressions, five SEO checks and 16 identity integration cases passed against the same frozen production source/build. Device transactions, response loss, image staging/retry, conflicting tabs, session loss, cleanup, keyboard/reflow and both themes were verified. Scoped cleanup preserved all seven saved volumes, unrelated services and the backend worktree.
 
-Web Docker image builds have not been verified. Spoken screen-reader/native browser zoom review, real identity/provider checks, later staff workflows, cloud environments and release/rollback rehearsals remain open. Automated axe and viewport checks do not establish WCAG conformance.
+The staff workspace implements review/publish, history/restore, trash, taxonomy, profiles, membership/invitations, attribution and audit workflows. Its [requirement matrix](STAFF_WORKSPACE_ACCEPTANCE.md) maps section 9 to source and passing browser coverage. All 46 staff cases passed against unchanged functional acceptance source/build/test inputs. The later phone-table presentation build passed all 10 taxonomy cases and 168 unit cases; its separate [follow-up receipt](staff-workspace/taxonomy-layout-validation.json) preserves the current artifact provenance. Final interface/security and cleanup records accompany the acceptance evidence.
+
+All 315 tests passed on functional acceptance source `e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062`: 168 unit, 43 public reading, five SEO, 16 identity/session, 37 editor and 46 staff cases. The [aggregate validation record](staff-workspace/regression-validation.json) links the source/build provenance and individual receipts.
+
+Web Docker image builds have not been verified. Spoken screen-reader/native browser zoom review, real identity/provider checks, the native Android publishing journey, cloud environments and release/rollback rehearsals remain open. Android development has not started, as confirmed by the user. Automated axe and viewport checks do not establish WCAG conformance.
 
 ## Contract boundary
 
@@ -37,7 +41,7 @@ Before replacing this snapshot with a released pin, complete the backend's state
 | 2. Public API and SEO           | Accepted for stage 2: generated/runtime-validated adapter, public routes/search, metadata/discovery, no-store/error/redirect behavior, normalized public media and real PostgreSQL publication/privacy/correction/rename/withdrawal journey passed. See the [requirement matrix and provenance](PUBLIC_API_SEO_ACCEPTANCE.md).                                                     |
 | 3. Identity and sessions        | Implemented: lazy in-memory Google SDK, popup/validated redirect, encrypted invitation receipt, secure session exchange, signed session-bound CSRF, role-aware page/data authorization, bounded editorial proxy and recovery-aware logout. Local verification is tracked in the [stage-3 record](IDENTITY_SESSIONS_ACCEPTANCE.md); real configured-provider smoke remains pending. |
 | 4. Durable editor               | Accepted: account-scoped IndexedDB saves, source editor/private preview, uploads, explicit synchronization, durable retries, conflict recovery and author submit/withdraw. Full acceptance is tracked in the [stage-4 record](DURABLE_EDITOR_ACCEPTANCE.md).                                                                                                                       |
-| 5. Staff workspace              | Review/publish, history/restore, trash, taxonomy, profile and membership/invitation administration remain to implement against authoritative backend permissions.                                                                                                                                                                                                                  |
+| 5. Staff workspace              | Implemented locally: exact-revision review/publish, history/restore, trash, taxonomy, profiles, membership/invitations, attribution and audit. Web acceptance is verified by all 46 cases; see the [requirement matrix](STAFF_WORKSPACE_ACCEPTANCE.md). The required native Android shared-client publishing journey remains an external gate.                                     |
 | 6. Release and operation        | Cloud image provenance/digest verification, isolated Staging and Production builds, trusted staging receipts/manual evidence, real-provider smoke checks, pinned secret scanning, cross-client journeys, rollback rehearsal and automatic GCP release remain gated.                                                                                                                |
 
 ## Local backend options
@@ -58,6 +62,8 @@ The validation workflow runs without secrets or deployment access and pins check
 
 The local `verify-foundation` script is a filename and release-metadata guard. It is not a replacement for the guideline's pinned, redacted secret scanner. Current-tree checks inspect tracked files once this directory is a repository. Before repository bootstrap, the script inspects source files while excluding generated/cache directories. Keep local configuration in ignored locations, and commit only a sanitized exact-basename `.env.example` template.
 
-## Next implementation slice
+## Next validation and implementation slice
 
-The real Google provider smoke still requires the staging website to be deployed. The correct Firebase web app ID and staging API URL have been supplied. The next implementation stage is review/publish, history/trash/taxonomy and administration workflows. Backend permissions and workflow rules remain authoritative.
+Prepare stage-6 release readiness after the verified staff web scope. Backend permissions and workflow rules remain authoritative. The shared native Android publishing check stays pending until an Android client exists; direct bearer transport tests do not substitute for it.
+
+The real Google-provider smoke requires a deployed staging website. The public Firebase web configuration and staging API URL have been supplied, but the website is not deployed and no deployment was performed. Contract freeze, cloud image provenance, deliberate release and rollback gates remain separate work.

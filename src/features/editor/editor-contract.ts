@@ -146,7 +146,10 @@ export function validateMediaAsset(value: unknown, expectedPostId?: string): Med
     unattachedExpiresAt: nullableDate(v.unattachedExpiresAt),
   };
 }
-function revision(value: unknown, postId: string): components['schemas']['Revision'] {
+export function validateRevision(
+  value: unknown,
+  postId: string,
+): components['schemas']['Revision'] {
   const v = record(value);
   assert(v.postId === postId);
   return {
@@ -189,9 +192,9 @@ export function validateWorkspacePost(value: unknown): WorkspacePost {
     summary = validateWorkspaceSummary(v),
     review = record(v.review);
   const workingRevision =
-    v.workingRevision === null ? null : revision(v.workingRevision, summary.id);
+    v.workingRevision === null ? null : validateRevision(v.workingRevision, summary.id);
   const publishedRevision =
-    v.publishedRevision === null ? null : revision(v.publishedRevision, summary.id);
+    v.publishedRevision === null ? null : validateRevision(v.publishedRevision, summary.id);
   assert((workingRevision?.id ?? null) === summary.workingRevisionId);
   assert((publishedRevision?.id ?? null) === summary.publishedRevisionId);
   const feedback = review.lastFeedback === null ? null : record(review.lastFeedback);

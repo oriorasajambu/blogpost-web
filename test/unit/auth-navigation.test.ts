@@ -21,9 +21,10 @@ test('sign-in return paths permit normalized staff locations and reject foreign 
 });
 test('staff navigation follows the fixed role boundary and unknown roles expose no privileged links', () => {
   const paths = (role: string) => staffNavigation(role).map((entry) => entry.href);
-  assert.deepEqual(paths('AUTHOR'), ['/studio/posts', '/studio/profile']);
+  assert.deepEqual(paths('AUTHOR'), ['/studio/posts', '/studio/trash', '/studio/profile']);
   assert.deepEqual(paths('EDITOR'), [
     '/studio/posts',
+    '/studio/trash',
     '/studio/profile',
     '/studio/review',
     '/studio/taxonomy',

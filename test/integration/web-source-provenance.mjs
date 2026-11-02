@@ -19,21 +19,24 @@ function manifest(paths) {
     inputs,
   };
 }
+export function captureWebSource() {
+  return manifest([
+    ...files('src'),
+    ...files('public'),
+    ...files('contracts'),
+    'package.json',
+    'package-lock.json',
+    'next.config.ts',
+    'tsconfig.json',
+    'scripts/build.mjs',
+    'scripts/start.mjs',
+  ]);
+}
 export function captureWebProvenance() {
   return {
     capturedAt: new Date().toISOString(),
     buildId: readFileSync('.next/BUILD_ID', 'utf8').trim(),
-    source: manifest([
-      ...files('src'),
-      ...files('public'),
-      ...files('contracts'),
-      'package.json',
-      'package-lock.json',
-      'next.config.ts',
-      'tsconfig.json',
-      'scripts/build.mjs',
-      'scripts/start.mjs',
-    ]),
+    source: captureWebSource(),
     build: manifest([
       '.next/standalone/server.js',
       ...files('.next/standalone/.next/server'),

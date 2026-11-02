@@ -1,0 +1,365 @@
+- main:
+  - paragraph:
+    - text: Signed in as
+    - strong: Identity ADMIN
+    - text: · admin
+  - button "Sign out"
+  - navigation "Staff navigation":
+    - link "Your workspace":
+      - /url: /studio/posts
+    - link "Trash":
+      - /url: /studio/trash
+    - link "Your profile":
+      - /url: /studio/profile
+    - link "Review":
+      - /url: /studio/review
+    - link "Taxonomy":
+      - /url: /studio/taxonomy
+    - link "Staff access":
+      - /url: /studio/admin
+  - region "Staff access administration":
+    - paragraph: Administrator access
+    - heading "Staff access administration" [level=1]
+    - paragraph: Manage invitations, staff permissions and article attribution. The server verifies every change against current permissions and versions.
+    - region "Staff members":
+      - heading "Staff members" [level=2]
+      - text: Role
+      - combobox "Role":
+        - option "All roles" [selected]
+        - option "Author"
+        - option "Editor"
+        - option "Admin"
+      - text: Access
+      - combobox "Access":
+        - option "All accounts" [selected]
+        - option "Active"
+        - option "Disabled"
+      - button "Apply member filters"
+      - list:
+        - listitem:
+          - strong: Identity ADMIN
+          - text: admin · Active
+          - paragraph: web-admin-2f8fe477-9742-4840-a6fc-3f99784c5b62@example.test
+          - button "Manage Identity ADMIN"
+        - listitem:
+          - strong: Identity EDITOR
+          - text: editor · Active
+          - paragraph: web-editor-16d55b96-e68e-4b4b-9acf-e5d2f37ff884@example.test
+          - button "Manage Identity EDITOR"
+        - listitem:
+          - strong: Identity AUTHOR
+          - text: author · Active
+          - paragraph: web-other-70a98224-308f-4753-93ba-ec5e52e6bca2@example.test
+          - button "Manage Identity AUTHOR"
+        - listitem:
+          - strong: Identity AUTHOR
+          - text: author · Active
+          - paragraph: web-author-19b3cd0f-2b99-4847-8d4d-d7a1942fca50@example.test
+          - button "Manage Identity AUTHOR"
+      - button "Refresh members"
+    - region "Invitations":
+      - heading "Invitations" [level=2]
+      - paragraph: Only the invited, verified Google account can accept a single-use invitation. Copy and share a link yourself; issuing an invitation does not send an email.
+      - group "Invite staff":
+        - text: Invite staff Invited email
+        - textbox "Invited email"
+        - text: Invited role
+        - combobox "Invited role":
+          - option "Author" [selected]
+          - option "Editor"
+          - option "Admin"
+        - button "Review invitation"
+      - status
+      - text: Invitation status
+      - combobox "Invitation status":
+        - option "All statuses" [selected]
+        - option "Pending"
+        - option "Accepted"
+        - option "Revoked"
+        - option "Expired"
+      - button "Apply invitation filter"
+      - list:
+        - listitem:
+          - heading "web-expired-9f808690-c602-4767-bff2-b5f8eaa86d88@example.test" [level=3]
+          - paragraph: author · expired · version 1
+          - paragraph:
+            - text: Issued by Identity ADMIN on
+            - time: Nov 3, 2026, 2:25:34 AM (Asia/Jakarta)
+            - text: . Expires
+            - time: Nov 3, 2026, 2:25:33 AM (Asia/Jakarta)
+            - text: .
+          - button "Reissue for web-expired-9f808690-c602-4767-bff2-b5f8eaa86d88@example.test"
+          - button "Revoke for web-expired-9f808690-c602-4767-bff2-b5f8eaa86d88@example.test"
+        - listitem:
+          - heading "web-target-ba81d5fc-3825-4f95-b1d5-e45e7506e726@example.test" [level=3]
+          - paragraph: author · pending · version 1
+          - paragraph:
+            - text: Issued by Identity ADMIN on
+            - time: Nov 3, 2026, 2:25:34 AM (Asia/Jakarta)
+            - text: . Expires
+            - time: Nov 10, 2026, 2:25:34 AM (Asia/Jakarta)
+            - text: .
+          - button "Reissue for web-target-ba81d5fc-3825-4f95-b1d5-e45e7506e726@example.test"
+          - button "Revoke for web-target-ba81d5fc-3825-4f95-b1d5-e45e7506e726@example.test"
+        - listitem:
+          - heading "web-invitee-572b7373-abc1-4e19-9227-a9a4b777f5c5@example.test" [level=3]
+          - paragraph: author · pending · version 1
+          - paragraph:
+            - text: Issued by Identity ADMIN on
+            - time: Nov 3, 2026, 2:25:33 AM (Asia/Jakarta)
+            - text: . Expires
+            - time: Nov 10, 2026, 2:25:33 AM (Asia/Jakarta)
+            - text: .
+          - button "Reissue for web-invitee-572b7373-abc1-4e19-9227-a9a4b777f5c5@example.test"
+          - button "Revoke for web-invitee-572b7373-abc1-4e19-9227-a9a4b777f5c5@example.test"
+      - button "Refresh invitations"
+    - region "Author reassignment":
+      - heading "Author reassignment" [level=2]
+      - paragraph: Transfer working ownership to an active staff member. This is an audited administrator action. The previous owner may lose access to the draft.
+      - heading "Choose an article" [level=3]
+      - list:
+        - listitem:
+          - strong: a-clearer-editorial-rhythm
+          - paragraph: Identity AUTHOR · published · in review
+          - paragraph: "Article ID: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14"
+          - button "Choose article a-clearer-editorial-rhythm"
+        - listitem:
+          - strong: Untitled address
+          - paragraph: Identity AUTHOR · never_published · draft
+          - paragraph: "Article ID: 8652060e-a359-4ebd-865b-3c9523f9db5e"
+          - button "Choose article 8652060e-a359-4ebd-865b-3c9523f9db5e"
+      - button "Refresh article choices"
+      - heading "Choose a new author" [level=3]
+      - list:
+        - listitem:
+          - strong: Identity ADMIN
+          - paragraph: web-admin-2f8fe477-9742-4840-a6fc-3f99784c5b62@example.test · admin
+          - button "Choose author Identity ADMIN"
+        - listitem:
+          - strong: Identity EDITOR
+          - paragraph: web-editor-16d55b96-e68e-4b4b-9acf-e5d2f37ff884@example.test · editor
+          - button "Choose author Identity EDITOR"
+        - listitem:
+          - strong: Identity AUTHOR
+          - paragraph: web-other-70a98224-308f-4753-93ba-ec5e52e6bca2@example.test · author
+          - button "Choose author Identity AUTHOR"
+        - listitem:
+          - strong: Identity AUTHOR
+          - paragraph: web-author-19b3cd0f-2b99-4847-8d4d-d7a1942fca50@example.test · author
+          - button "Choose author Identity AUTHOR"
+      - button "Refresh author choices"
+      - status
+    - region "Staff audit log":
+      - heading "Staff audit log" [level=2]
+      - paragraph: Server-recorded actions identify the acting staff member, affected resource and time. Audit entries are read-only.
+      - text: Resource type
+      - textbox "Resource type":
+        - /placeholder: For example, MEMBER
+      - text: Resource ID
+      - textbox "Resource ID"
+      - text: Action
+      - textbox "Action":
+        - /placeholder: For example, MEMBER_UPDATED
+      - button "Apply audit filters"
+      - list:
+        - listitem:
+          - article:
+            - heading "web session created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:50 AM (Asia/Jakarta)
+            - paragraph:
+              - text: MEMBER ·
+              - code: 977a9330-3bad-49d4-b650-61bde8773652
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "submitpostforreview" [level=3]
+            - paragraph:
+              - text: Identity EDITOR (identity-editor) ·
+              - time: Nov 3, 2026, 2:26:46 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "savepostdraft" [level=3]
+            - paragraph:
+              - text: Identity AUTHOR (identity-author) ·
+              - time: Nov 3, 2026, 2:26:46 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "publishpostrevision" [level=3]
+            - paragraph:
+              - text: Identity EDITOR (identity-editor) ·
+              - time: Nov 3, 2026, 2:26:44 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "submitpostforreview" [level=3]
+            - paragraph:
+              - text: Identity AUTHOR (identity-author) ·
+              - time: Nov 3, 2026, 2:26:44 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "createpost" [level=3]
+            - paragraph:
+              - text: Identity AUTHOR (identity-author) ·
+              - time: Nov 3, 2026, 2:26:44 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 7570e6f9-5527-40e2-a004-b5f4a3c8ae14
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity EDITOR (identity-editor) ·
+              - time: Nov 3, 2026, 2:26:42 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: ea14bf23-8daa-4b17-b663-a9e99304049c
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity EDITOR (identity-editor) ·
+              - time: Nov 3, 2026, 2:26:42 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: 466bf219-5459-44da-ae4d-d8d50a2d2d56
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "web session created" [level=3]
+            - paragraph:
+              - text: Identity EDITOR (identity-editor) ·
+              - time: Nov 3, 2026, 2:26:41 AM (Asia/Jakarta)
+            - paragraph:
+              - text: MEMBER ·
+              - code: 960d5ad2-06d6-45d4-8496-7a8f107059c0
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: c139503b-d14f-4c14-bec8-ba5f5c3c326f
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: d0e8cc8e-ef97-4f7e-a475-669e39394e9a
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: e86c4eb6-b050-4d7c-953f-e1a3d6f6b982
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: bf48f05d-3669-467e-b9ba-ef38e5f1895b
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: 4971184b-2d8a-4727-b9d0-932a037903cd
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: 831de384-c61f-4f7e-b146-2c80fb5ff337
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "taxon created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:26:40 AM (Asia/Jakarta)
+            - paragraph:
+              - text: TAXON ·
+              - code: 9fe95f6d-7da3-4a23-b154-e9f770fcb13d
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "createpost" [level=3]
+            - paragraph:
+              - text: Identity AUTHOR (identity-author) ·
+              - time: Nov 3, 2026, 2:25:34 AM (Asia/Jakarta)
+            - paragraph:
+              - text: POST ·
+              - code: 8652060e-a359-4ebd-865b-3c9523f9db5e
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "invitation created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:25:34 AM (Asia/Jakarta)
+            - paragraph:
+              - text: INVITATION ·
+              - code: 5e37607c-24c9-4e90-8436-8f0e24b4b268
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "invitation created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:25:34 AM (Asia/Jakarta)
+            - paragraph:
+              - text: INVITATION ·
+              - code: 7b56b117-2322-4d9a-9e73-b70177a9d740
+            - group: Recorded changes
+        - listitem:
+          - article:
+            - heading "invitation created" [level=3]
+            - paragraph:
+              - text: Identity ADMIN (identity-admin) ·
+              - time: Nov 3, 2026, 2:25:33 AM (Asia/Jakarta)
+            - paragraph:
+              - text: INVITATION ·
+              - code: 5554a1e8-705e-499d-b415-b800c8d6fbb4
+            - group: Recorded changes
+      - button "Refresh audit log"
