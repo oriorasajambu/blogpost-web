@@ -43,9 +43,24 @@ The owner added the web host to Identity Platform authorized domains. In the Goo
 - After login was enabled, `/api/public-config` returned only the login/redirect flags and the four public SDK identifiers. The same-origin Firebase helper paths returned `200`. The installation and CSRF cookies used `__Host-` names with Secure, HttpOnly, SameSite=Lax, Path `/` and no Domain.
 - The owner completed a real Google sign-in on the deployed site and reached the staff profile as an existing administrator.
 
+## Rollback rehearsal
+
+On 3 November 2026 at 11:58 UTC, traffic was sent to `blogpost-web-00002-zxj` with **Manage traffic** (`gcloud run services update-traffic`). The stable URL served `/health/live` and `/` with `200`, and `/api/public-config` reported login disabled. Traffic then went back to `blogpost-web-00003-25d`, which reported login enabled. The round trip took about 35 seconds. Traffic is now pinned to `blogpost-web-00003-25d` rather than following the latest revision, so a new revision receives traffic only through a deliberate traffic change.
+
+## Monitoring
+
+| Resource             | Value                                                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Notification channel | Email `Blogpost Staging owner` (`notificationChannels/2750680771059266394`)                                                   |
+| Uptime check         | `blogpost-web-staging-health-live-wbmKIZE0gm8`: HTTPS `GET /health/live` every 5 minutes from Asia Pacific, Oregon and Europe |
+| Alert                | `blogpost-web Staging uptime failing`: the check fails from more than one region for 10 minutes                               |
+| Alert                | `blogpost-web Staging sustained 5xx`: more than five `5xx` responses within 10 minutes                                        |
+
+The uptime check proves only that the process is alive; backend dependency health is covered by the 5xx alert and the API's own monitoring.
+
 ## Open items
 
 - Session cookie flags and browser storage inspection after real sign-in (guide section 6, step 6).
 - The guide's section 7 publication journey on the deployed site.
-- The header still shows "Staff sign in" while the studio shows a signed-in user.
-- Monitoring alerts, rollback rehearsal and the CI/CD release path remain release gates.
+- The header fix for signed-in staff is in review and still has to be built and deployed to Staging.
+- Budget alerts and the CI/CD release path remain release gates.
