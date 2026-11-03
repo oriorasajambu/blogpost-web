@@ -11,7 +11,8 @@
   margin-block: var(--space-6);
 }
 .editor-heading h1 {
-  font: var(--text-heading) / var(--leading-heading) var(--font-display);
+  font: var(--weight-medium) var(--text-heading) / var(--leading-heading) var(--font-display);
+  letter-spacing: -0.02em;
   margin-block: var(--space-2) var(--space-3);
 }
 .editor-heading p:not(.eyebrow),
@@ -30,8 +31,8 @@
 .editor-error,
 .editor-pending-images {
   margin-block: var(--space-5);
-  padding: var(--space-5);
-  border: var(--border-width) solid var(--color-border);
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-width) solid var(--color-divider);
   border-radius: var(--radius-medium);
   background: var(--color-surface);
   overflow-wrap: anywhere;
@@ -47,22 +48,41 @@
 .editor-error p {
   margin-block: var(--space-2);
 }
+/* Blocking states are inline banners in the semantic tones, never toasts. */
 .editor-warning {
-  border-inline-start: var(--focus-width) solid var(--color-accent);
-  background: var(--color-accent-surface);
+  border-color: color-mix(in srgb, var(--color-warning) 45%, transparent);
+  background: color-mix(in srgb, var(--color-warning) 9%, var(--color-bg));
 }
 .editor-error {
-  border-color: var(--color-error);
-  color: var(--color-error);
+  border-color: color-mix(in srgb, var(--color-danger) 45%, transparent);
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg));
 }
+.editor-warning::before,
+.editor-error > p:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: var(--space-3);
+  vertical-align: 0.1em;
+  border-radius: var(--radius-round);
+  background: var(--color-warning);
+}
+.editor-error > p:first-child::before {
+  background: var(--color-danger);
+}
+/* Routine save and sync states read as chips; revision facts sit beside them. */
 .editor-status {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2) var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  background: var(--color-soft);
-  border-radius: var(--radius-small);
-  font-size: var(--text-label);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-muted);
+}
+.editor-status .status-chip {
+  color: var(--color-text);
 }
 .editor-fields {
   border: 0;
@@ -88,9 +108,9 @@
   width: 100%;
   min-width: 0;
   min-height: var(--control-height);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-4);
   border: var(--border-width) solid var(--color-control-border);
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-medium);
   background: var(--color-surface);
   color: var(--color-ink);
 }
@@ -142,22 +162,31 @@
 .editor-field small {
   font-size: var(--text-label);
 }
+/* Nocturne segmented control: the selected option is outlined in the accent, not filled. */
 .editor-tabs {
-  display: flex;
-  gap: var(--space-2);
+  display: inline-flex;
   margin-bottom: var(--space-4);
+  border: var(--border-width) solid var(--color-divider);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
 }
 .editor-tabs button {
-  border: var(--border-width) solid var(--color-control-border);
-  border-radius: var(--radius-small);
+  border: 0;
   min-height: var(--control-height);
   min-width: 6rem;
   padding: var(--space-2) var(--space-4);
-  background: var(--color-surface);
+  background: transparent;
+  font-size: var(--text-label);
+}
+.editor-tabs button + button {
+  border-left: var(--border-width) solid var(--color-divider);
+}
+.editor-tabs button:hover {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
 }
 .editor-tabs button[aria-selected='true'] {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  color: var(--color-accent-strong);
+  box-shadow: inset 0 0 0 1px var(--color-accent-strong);
 }
 .editor-canvas {
   display: grid;
@@ -167,16 +196,19 @@
 .editor-write,
 .editor-preview-panel {
   min-width: 0;
-  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-medium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+.editor-preview-panel {
+  background: color-mix(in srgb, var(--color-surface) 55%, var(--color-bg));
 }
 .editor-toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
   padding: var(--space-2);
-  border-bottom: var(--border-width) solid var(--color-border);
+  border-bottom: var(--border-width) solid var(--color-hairline);
 }
 .editor-toolbar button {
   background: transparent;
@@ -221,7 +253,8 @@
 }
 .editor-preview > h2 {
   margin-block: var(--space-4);
-  font: var(--text-heading) / var(--leading-title) var(--font-display);
+  font: var(--weight-medium) var(--text-heading) / var(--leading-title) var(--font-display);
+  letter-spacing: -0.02em;
 }
 .editor-preview-summary {
   color: var(--color-muted);
@@ -255,7 +288,7 @@
 }
 .editor-notice {
   padding: var(--space-3) 0;
-  color: var(--color-accent);
+  color: var(--color-link);
 }
 .editor-conflict {
   width: min(78rem, calc(100% - var(--space-6)));
@@ -268,8 +301,9 @@
 }
 .editor-comparison section {
   min-width: 0;
-  padding: var(--space-3);
-  border: var(--border-width) solid var(--color-border);
+  padding: var(--space-4);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-sm);
 }
 .editor-comparison h3 {
   font-size: var(--text-body);
@@ -292,9 +326,9 @@
 }
 .draft-list li {
   padding: var(--space-5);
-  border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-medium);
   background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 .draft-list li p {
   color: var(--color-muted);
@@ -302,7 +336,6 @@
   margin-top: var(--space-2);
 }
 @media (max-width: 50rem) {
-  .editor-status,
   .editor-metadata,
   .editor-comparison,
   .editor-canvas {

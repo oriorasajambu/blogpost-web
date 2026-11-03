@@ -2,8 +2,9 @@ import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { formatDate, type ReadingPost } from './article-card';
 import { ShareButton } from './share-button';
 import { MediaImage } from './media-image';
+import { Icon } from '@/components/ui/icon';
 
-export function ArticleHeader({ post }: { post: ReadingPost }) {
+export function ArticleHeader({ post, minutes }: { post: ReadingPost; minutes?: number }) {
   return (
     <header className="article-header">
       {post.category && (
@@ -31,6 +32,13 @@ export function ArticleHeader({ post }: { post: ReadingPost }) {
                 <span>
                   {' '}
                   · Updated <time dateTime={post.updatedAt}>{formatDate(post.updatedAt)}</time>
+                </span>
+              )}
+              {minutes !== undefined && (
+                <span className="reading-time">
+                  <span aria-hidden="true">·</span>
+                  <Icon name="clock" size={14} />
+                  {minutes} min read
                 </span>
               )}
             </p>

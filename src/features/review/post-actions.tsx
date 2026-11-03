@@ -162,6 +162,7 @@ export function PostActions({
                   ? 'Confirm unpublish'
                   : 'Confirm restore as draft'
           }
+          danger={action === 'trash' || action === 'unpublish'}
           busy={command.busy}
           disabled={
             blocked || (action === 'slug' && (!validRequestedSlug(slug) || slug === post.slug))

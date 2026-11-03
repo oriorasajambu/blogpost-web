@@ -21,7 +21,7 @@ export function ShareButton({ title }: { title: string }) {
         onClick={share}
         aria-label={`Copy link to ${title}`}
       >
-        <Icon name={message === 'Link copied' ? 'check' : 'copy'} size={16} />
+        <Icon name={message === 'Link copied' ? 'check' : 'share'} size={16} />
         Share story
       </button>
       <span className="share-message" role="status">

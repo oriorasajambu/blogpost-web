@@ -8,6 +8,7 @@ import {
 import { staffNavigation } from '@/lib/auth-navigation';
 import { StaffSessionBoundary } from '@/features/auth/staff-session-boundary';
 import { SignOutButton } from '@/features/auth/sign-out-button';
+import { StaffRail } from '@/features/staff/staff-rail';
 import '@/features/auth/auth.css';
 import '@/features/staff/staff.css';
 export const dynamic = 'force-dynamic';
@@ -26,21 +27,14 @@ export default async function StudioLayout({ children }: { children: ReactNode }
       member={access.member}
     >
       <div className="staff-shell">
-        <div className="staff-shell-header">
-          <p>
+        <StaffRail items={staffNavigation(access.member.role)}>
+          <p className="staff-shell-header">
             Signed in as <strong>{access.member.displayName}</strong> ·{' '}
             {access.member.role.toLowerCase()}
           </p>
           <SignOutButton namespace={namespace} accountId={access.member.id} />
-        </div>
-        <nav className="staff-navigation" aria-label="Staff navigation">
-          {staffNavigation(access.member.role).map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-        {children}
+        </StaffRail>
+        <div className="staff-main">{children}</div>
       </div>
     </StaffSessionBoundary>
   );

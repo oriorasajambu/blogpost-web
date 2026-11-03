@@ -17,9 +17,7 @@ export function EmptyState({
   const Heading = headingLevel === 1 ? 'h1' : 'h2';
   return (
     <section className="empty-state">
-      <span className="empty-mark" aria-hidden="true">
-        ✳
-      </span>
+      <span className="empty-mark" aria-hidden="true" />
       <Heading>{title}</Heading>
       <p>{description}</p>
       {actionHref && actionLabel && (
