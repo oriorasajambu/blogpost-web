@@ -11,9 +11,11 @@ export type CategoryLink = { name: string; slug: string };
 export function SiteHeader({
   categories = [],
   loginEnabled = false,
+  staffSession = false,
 }: {
   categories?: CategoryLink[];
   loginEnabled?: boolean;
+  staffSession?: boolean;
 }) {
   const pathname = usePathname();
   const [openPath, setOpenPath] = useState<string | null>(null);
@@ -44,7 +46,12 @@ export function SiteHeader({
             <Icon name="search" />
           </Link>
           <ThemeToggle />
-          {loginEnabled && (
+          {loginEnabled && staffSession && (
+            <Link href="/studio" className="staff-link">
+              Studio <Icon name="arrow" size={15} />
+            </Link>
+          )}
+          {loginEnabled && !staffSession && (
             <Link href="/sign-in" className="staff-link">
               Staff sign in <Icon name="arrow" size={15} />
             </Link>

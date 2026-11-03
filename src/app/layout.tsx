@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter, EnvironmentBanner } from '@/components/layout/site-footer';
 import { themeScript } from '@/lib/theme';
@@ -17,6 +17,9 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const config = getConfig();
   const nonce = (await headers()).get('x-nonce') ?? undefined;
+  // Presence only, for the header link; /studio still verifies membership with the backend.
+  // Sign-in and sign-out reload the document, so the layout re-renders with the new state.
+  const staffSession = config.loginEnabled && (await cookies()).has(config.sessionCookie);
   const categories = await getCategories({ pageSize: 10 })
     .then((result) => result.data)
     .catch(() => []);
@@ -32,7 +35,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </a>
         <ReadingNavigation>
           <EnvironmentBanner environment={config.environment} />
-          <SiteHeader categories={categories} loginEnabled={config.loginEnabled} />
+          <SiteHeader
+            categories={categories}
+            loginEnabled={config.loginEnabled}
+            staffSession={staffSession}
+          />
           <ReadingContent>{children}</ReadingContent>
           <SiteFooter />
         </ReadingNavigation>
