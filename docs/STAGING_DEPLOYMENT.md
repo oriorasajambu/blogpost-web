@@ -47,6 +47,15 @@ The owner added the web host to Identity Platform authorized domains. In the Goo
 
 On 3 November 2026 at 11:58 UTC, traffic was sent to `blogpost-web-00002-zxj` with **Manage traffic** (`gcloud run services update-traffic`). The stable URL served `/health/live` and `/` with `200`, and `/api/public-config` reported login disabled. Traffic then went back to `blogpost-web-00003-25d`, which reported login enabled. The round trip took about 35 seconds. Traffic is now pinned to `blogpost-web-00003-25d` rather than following the latest revision, so a new revision receives traffic only through a deliberate traffic change.
 
+## Releases
+
+| Date            | Source            | Build                                  | Image digest                                                              | Revision                 | Change                                 |
+| --------------- | ----------------- | -------------------------------------- | ------------------------------------------------------------------------- | ------------------------ | -------------------------------------- |
+| 3 November 2026 | `rc` at `c8f311a` | `8ac85e0c-d13d-4aea-b3b1-364d8bbf51b3` | `sha256:2ccf9627…f8f43`                                                   | `00001`–`00003`          | First deployment                       |
+| 3 November 2026 | `rc` at `9f508d5` | `6cc37b2c-d06b-413a-9581-ceb95a8fee03` | `sha256:e6d291cfdd04da05426b107c52eea14ee9f30493578264cf8b1bd9376bec3da4` | `blogpost-web-00006-yon` | Header links signed-in staff to Studio |
+
+The header release followed guide section 8. It was deployed with no traffic under a temporary `candidate` tag. Settings, probes and secret version carried over from `00003-25d`. On the tagged URL, `/health/live`, `/` and `/sign-in` returned `200`, and the header showed **Staff sign in** without a session cookie and **Studio** with one. Traffic then moved to `00006-yon` and the tag was removed; the stable URL passed the same checks. `00006-yon` is the current revision, and `00003-25d` is the previous known-good revision.
+
 ## Monitoring
 
 | Resource             | Value                                                                                                                         |
@@ -62,5 +71,4 @@ The uptime check proves only that the process is alive; backend dependency healt
 
 - Session cookie flags and browser storage inspection after real sign-in (guide section 6, step 6).
 - The guide's section 7 publication journey on the deployed site.
-- The header fix for signed-in staff is in review and still has to be built and deployed to Staging.
 - Budget alerts and the CI/CD release path remain release gates.
