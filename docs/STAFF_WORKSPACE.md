@@ -62,3 +62,5 @@ The staff suite owns disposable PostgreSQL, Auth Emulator, API and media resourc
 The validation reporter requires the complete checked-in case inventory and an unchanged production source/build manifest. The coordinated validation also records which source was compiled in the ignored build-provenance receipt; a passing filtered run cannot become an acceptance receipt.
 
 The Android client has not started, as confirmed by the user. Direct bearer-transport tests are complementary compatibility evidence and do not establish a native Android journey. That shared-client gate, configured Google-provider verification on deployed Staging, and release/operation gates remain separate pending work.
+
+The complete 46-case staff suite also passed on the current presentation build. Native zoom and Narrator validation remain pending with Computer Use stopped at the user's request; the [manual operator guide](staff-workspace/MANUAL_ACCESSIBILITY.md) and [pending record](staff-workspace/manual-accessibility-validation.json) retain the exact scope.

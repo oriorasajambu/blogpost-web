@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-11-03T02:16:49.792Z",
+  "baselineAt": "2026-11-03T01:58:05.535Z",
+  "unchanged": {
+    "volumes": true,
+    "unrelatedContainers": true,
+    "unrelatedNetworks": true,
+    "backend": true
+  },
+  "before": {
+    "capturedAt": "2026-11-03T01:58:05.535Z",
+    "volumes": {
+      "count": 7,
+      "sha256": "d41d5ac916784568a16d5a51a73a0e1b5f67447cab0320e279c25e29b31199aa"
+    },
+    "unrelatedContainers": {
+      "count": 3,
+      "sha256": "155edbc4ac6b17281024d386cc47d46bb0a2abed79e307e0d26fb540165dcf2f"
+    },
+    "unrelatedNetworks": {
+      "count": 4,
+      "sha256": "0f38e860317cecd44b75e77a97926757d991d4fb159a4f729bd968901ec4609b"
+    },
+    "backend": {
+      "files": 632,
+      "manifestSHA256": "3bc3942bf48b0facb8214f932a71e84d884e7dd1d5242ecf93d2a1ff59232dc2",
+      "statusSHA256": "1490a4b85abfdc67d701dcfd0d7edb11946436e15827c1fe6b505e9adbf0ac57"
+    },
+    "baselineNote": "Earlier baseline retained separately. Across the paused/interrupted goal turn the unrelated network inventory SHA changed, while its count, saved volumes, unrelated container identities, and all backend file/status hashes remained unchanged. This baseline records the inspected live runtime before resumed staff browser tests."
+  },
+  "after": {
+    "capturedAt": "2026-11-03T02:16:49.792Z",
+    "volumes": {
+      "count": 7,
+      "sha256": "d41d5ac916784568a16d5a51a73a0e1b5f67447cab0320e279c25e29b31199aa"
+    },
+    "unrelatedContainers": {
+      "count": 3,
+      "sha256": "155edbc4ac6b17281024d386cc47d46bb0a2abed79e307e0d26fb540165dcf2f"
+    },
+    "unrelatedNetworks": {
+      "count": 4,
+      "sha256": "0f38e860317cecd44b75e77a97926757d991d4fb159a4f729bd968901ec4609b"
+    },
+    "backend": {
+      "files": 632,
+      "manifestSHA256": "3bc3942bf48b0facb8214f932a71e84d884e7dd1d5242ecf93d2a1ff59232dc2",
+      "statusSHA256": "1490a4b85abfdc67d701dcfd0d7edb11946436e15827c1fe6b505e9adbf0ac57"
+    }
+  }
+}

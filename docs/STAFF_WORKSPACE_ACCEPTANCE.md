@@ -3,12 +3,17 @@
 The web staff workspace is implemented and locally verified for delivery stage 5
 and section 9 of `BLOGPOST_FRONTEND_WEB_PLAN.md`. The complete 46-case staff
 inventory passed against unchanged production source, compiled output and test
-inputs. The required native Android journey remains a separate pending gate;
-this accepts the web scope and does not complete the full delivery stage or release.
+inputs. Native browser zoom and screen-reader checks remain pending with Computer
+Use stopped at the user's request. The required native Android journey is also
+pending. Full staff-stage acceptance and release remain incomplete.
 
 The [workspace guide](STAFF_WORKSPACE.md) describes the user-visible behavior and
 local validation commands. Backend permissions, version checks and workflow rules
 remain authoritative.
+
+The [completion audit](staff-workspace/completion-audit.json) maps requirements to
+current source and exact passing cases, and keeps the missing native-client and
+manual accessibility evidence explicit. The complete staff objective is not yet achieved.
 
 ## Requirement evidence
 
@@ -45,13 +50,15 @@ validates responses and reports access loss.
 
 ## Validation state
 
-- The complete [46-case staff inventory](../test/integration/staff-case-inventory.json) passed with unchanged source/build/test inputs and matching build provenance. The [staff receipt](staff-workspace/local-validation.json) records every result and the real backend/auth image digests.
+- The complete [46-case staff inventory](../test/integration/staff-case-inventory.json) passed on the current presentation build with unchanged source/build/test inputs and matching build provenance. The [current-build receipt](staff-workspace/current-build-validation.json) records every result, source `c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4`, build `0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233`, and the real backend/auth image digests. The [earlier functional staff receipt](staff-workspace/local-validation.json) remains part of the preserved 315-test regression record.
 - All **315 tests passed**: 168 unit, 43 public reading, five SEO, 16 identity/session, 37 durable editor and 46 staff cases. The full regression run used functional acceptance source `e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062` and compiled output `0ba6f77de45fc155ec3e8f5fb889c36bca80a6075ec8e3c367fc7f964bfc1a42`. The [aggregate record](staff-workspace/regression-validation.json), [identity receipt](identity-sessions/local-validation.json) and [editor receipt](durable-editor/local-validation.json) retain the actual evidence.
 - Visual inspection prompted a presentation follow-up: taxonomy columns retain readable widths inside a labelled, focusable horizontal-scroll region. Only the staff stylesheet and taxonomy presentation changed. All **10 taxonomy cases passed again**, including native keyboard scrolling, both themes and 1440/390/320px axe checks. The [follow-up receipt](staff-workspace/taxonomy-layout-validation.json) records current source `c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4` and build `0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233`, separately from the earlier full regression. Production compilation, lint, TypeScript and all 168 unit cases also passed after this follow-up.
 - Eight [desktop/phone captures and four native accessibility trees](staff-workspace/interface-validation.json) were captured and visually inspected on the presentation build. [Review](staff-workspace/review-desktop-light.png), [phone taxonomy](staff-workspace/taxonomy-phone-dark.png), [administration](staff-workspace/admin-desktop-light.png) and [profile](staff-workspace/profile-phone-dark.png) show representative final routes.
+- Native keyboard/zoom and Narrator checks are **PENDING**. The [manual-check record](staff-workspace/manual-accessibility-validation.json) records the user stop, actual fixture bootstrap and verified browser/web closure without inferring a pass. A [single-tab local runner](../test/manual/native-accessibility.mjs) and [operator guide](staff-workspace/MANUAL_ACCESSIBILITY.md) are ready for future validation. The user explicitly chose to keep Computer Use stopped.
 - The checksum-verified, pinned [Gitleaks record](staff-workspace/security-validation.json) covers nonignored working source and the final browser bundle, with redacted raw output kept locally. Its 23 source findings are reviewed synthetic UUID retry-key examples; there are no unreviewed source findings, browser findings, source maps or known runtime canary matches. Git history is outside this scan's scope.
 - The [dependency audit](staff-workspace/dependency-validation.json) reports zero known runtime vulnerabilities and 18 moderate development-tool findings rooted in minimatch. Compatible tooling remediation remains open.
 - [Cleanup and preservation](staff-workspace/preservation-validation.json) verified seven saved volumes, three unrelated containers, four unrelated networks and all 632 backend files/status unchanged. Owned temporary containers, networks and application listeners are absent; scoped cleanup is recorded with the staff, identity and editor receipts. The retained baseline explains the earlier paused-session network inventory change.
+- The [current cleanup/preservation record](staff-workspace/current-preservation-validation.json) verifies the same saved resources and backend hashes after the current-build run and stopped native session. Docker had stopped across an interruption; its changed built-in network IDs are documented in the retained baseline, while saved-volume, unrelated-container and backend hashes stayed unchanged. Scoped cleanup in the current-build receipt confirms the owned fixtures and checked listeners are absent.
 
 The staff suite uses a real local API, PostgreSQL, media processing and emulator-backed
 web-session exchange. Fault tests may hold or discard actual responses after real

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "status": "PENDING",
+  "recordedAt": "2026-11-03T02:18:23.242Z",
+  "sourceSHA256": "c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4",
+  "buildSHA256": "0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233",
+  "browser": {
+    "engine": "Chromium",
+    "version": "156.0.8078.4"
+  },
+  "userDirection": "Keep computer use stopped",
+  "interruption": "The Computer Use tool reported a physical Escape stop. The user subsequently explicitly kept computer control stopped.",
+  "checks": {
+    "nativeKeyboardWorkflow": "NOT_COMPLETED",
+    "nativeBrowserZoom200And400Percent": "NOT_VERIFIED",
+    "narratorNavigationAndSpeechRecap": "NOT_PERFORMED",
+    "auditoryQualityAndBlindUserUsability": "NOT_ASSESSED"
+  },
+  "completedSupportingEvidence": {
+    "currentBuildStaffSuite": "docs/staff-workspace/current-build-validation.json",
+    "automatedKeyboardReflowAndAxe": "Covered by the 46-case current-build suite; this does not establish native zoom or screen-reader results",
+    "nativeRunner": "test/manual/native-accessibility.mjs",
+    "operatorGuide": "docs/staff-workspace/MANUAL_ACCESSIBILITY.md",
+    "fixtureBootstrap": "Actual Auth Emulator to BFF session exchange reached ready on the production standalone build; credentials remained in process memory",
+    "originalTabClosure": "The runner invalidated observations and closed its owned browser, local web server and proxy"
+  },
+  "runnerScope": {
+    "originalTabOnly": true,
+    "proxyBodyLimitBytes": 1048576,
+    "uploadMaximumValidation": "Use the direct editor suite; the manual proxy accepts small fixtures only",
+    "recording": "No native screenshots, traces, video or audio were committed by this pending check"
+  },
+  "lifecycle": {
+    "startedAt": "2026-11-03T02:05:55.765Z",
+    "closedAt": "2026-11-03T02:08:57.993Z",
+    "stopReason": "validation-page-closed",
+    "sourceAndBuildUnchanged": true,
+    "localWebAndBrowserCleanupCompleted": true,
+    "backendCleanupReceipt": "docs/staff-workspace/current-preservation-validation.json"
+  },
+  "revalidatedCurrentBuildAndTestInputs": true,
+  "remainingGate": "Native checks require an operator or renewed authorization for Computer Use; no passing result is inferred from setup or automated accessibility trees"
+}
