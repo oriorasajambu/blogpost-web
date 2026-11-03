@@ -33,8 +33,11 @@ export function ArticleCard({
   featured?: boolean;
   index?: number;
 }) {
+  const typographic = featured && !post.coverImage;
   return (
-    <article className={`article-card${featured ? ' article-card-featured' : ''}`}>
+    <article
+      className={`article-card${featured ? ' article-card-featured' : ''}${typographic ? ' article-card-typographic' : ''}`}
+    >
       <div className="card-content">
         <div className="card-kicker">
           {post.category ? (
@@ -50,6 +53,7 @@ export function ArticleCard({
           <Link href={`/posts/${encodeURIComponent(post.slug)}`}>{post.title}</Link>
         </h2>
         <p className="card-summary">{post.summary}</p>
+        {typographic && <span className="glow-line" aria-hidden="true" />}
         <div className="card-bottom">
           <div className="article-byline">
             <Link
@@ -86,19 +90,6 @@ export function ArticleCard({
             }
             loading={featured ? 'eager' : 'lazy'}
           />
-        </div>
-      ) : featured ? (
-        <div className="feature-art" aria-hidden="true">
-          <div className="art-orbit orbit-one" />
-          <div className="art-orbit orbit-two" />
-          <div className="art-orbit orbit-three" />
-          <div className="art-sun" />
-          <span className="art-word">
-            A moment
-            <br />
-            to reflect.
-          </span>
-          <span className="art-caption">A BLOGPOST PERSPECTIVE</span>
         </div>
       ) : null}
       {!featured && index !== undefined && (

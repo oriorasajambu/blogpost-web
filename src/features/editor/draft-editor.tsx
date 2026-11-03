@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '@/components/ui/icon';
 import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -437,14 +438,19 @@ export function DraftEditor(props: {
         </div>
       )}
       <div className="editor-status" aria-label="Draft save status" role="status">
-        <span>
+        <span
+          className="status-chip"
+          data-tone={pendingDevice ? 'info' : draft.savedAt ? 'success' : 'warning'}
+        >
+          <Icon name={pendingDevice ? 'sync' : draft.savedAt ? 'check' : 'warning'} size={14} />
           {pendingDevice
             ? 'Changes waiting for device save'
             : draft.savedAt
               ? `Saved on this device at ${dateLabel(draft.savedAt)}`
               : 'Not saved on this device'}
         </span>
-        <span>
+        <span className="status-chip" data-tone={isDraftDirty(draft) ? 'warning' : 'success'}>
+          <Icon name={isDraftDirty(draft) ? 'sync' : 'cloud-check'} size={14} />
           {isDraftDirty(draft) ? 'Unsynced changes' : 'All captured changes synced'}
           {draft.lastSyncedAt
             ? ` · Last synced to server at ${dateLabel(draft.lastSyncedAt)}`

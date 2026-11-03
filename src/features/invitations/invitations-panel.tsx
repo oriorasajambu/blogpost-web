@@ -231,6 +231,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                 ? 'Issue replacement link'
                 : 'Revoke invitation'
           }
+          danger={proposal.kind === 'revoke'}
           busy={command.busy}
           disabled={blocked}
           onCancel={command.pending ? undefined : () => setProposal(null)}

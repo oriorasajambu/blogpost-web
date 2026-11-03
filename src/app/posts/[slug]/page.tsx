@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { ApiError, getArticle } from '@/lib/api-server';
+import { ApiError, getArticle, getFeed } from '@/lib/api-server';
 import { getConfig } from '@/lib/config';
 import { assertSlug, readingPost } from '@/lib/reading';
 import { ArticleHeader, ArticleTags } from '@/components/article/article-header';
 import { Markdown } from '@/components/article/markdown';
+import { formatDate, type ReadingPost } from '@/components/article/article-card';
+import { ReadingLink as Link } from '@/components/layout/reading-link';
+import { ArticleOutline, ReadingProgress } from '@/features/reading/article-outline';
+import { articleOutline, readingMinutes } from '@/lib/article-reading';
 import { AvailabilityRefresh } from '@/features/reading/availability-refresh';
 import { articleStructuredData, publicationMetadata, scriptJson } from '@/lib/metadata-policy';
 type Props = { params: Promise<{ slug: string }> };
@@ -16,6 +20,18 @@ async function article(slug: string) {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
+  }
+}
+/** Up to three other stories from the same category; reading never fails because of them. */
+async function relatedStories(categoryId: string, postId: string): Promise<ReadingPost[]> {
+  try {
+    const feed = await getFeed({ categoryId, pageSize: 4 });
+    return feed.data
+      .filter((story) => story.id !== postId)
+      .slice(0, 3)
+      .map(readingPost);
+  } catch {
+    return [];
   }
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -48,12 +64,50 @@ export default async function ArticlePage({ params }: Props) {
   const origin = getConfig().webOrigin;
   const structured = articleStructuredData(post, origin);
   const nonce = (await headers()).get('x-nonce') ?? undefined;
+  const outline = articleOutline(post.markdown);
+  const related = await relatedStories(post.category.id, post.id);
   return (
     <article className="article-page">
+      <ReadingProgress />
       <AvailabilityRefresh />
-      <ArticleHeader post={readingPost(post)} />
-      <Markdown source={post.markdown} postId={post.id} media={post.media} />
-      <ArticleTags tags={post.tags} />
+      <ArticleHeader post={readingPost(post)} minutes={readingMinutes(post.markdown)} />
+      <div className="article-layout">
+        {outline.length > 1 && <ArticleOutline items={outline} />}
+        <div>
+          <Markdown source={post.markdown} postId={post.id} media={post.media} />
+          <ArticleTags tags={post.tags} />
+        </div>
+      </div>
+      {related.length > 0 && (
+        <section className="related-stories" aria-labelledby="related-heading">
+          <div className="section-heading">
+            <h2 id="related-heading">Keep reading in {post.category.name}</h2>
+            <Link
+              className="text-link"
+              href={`/categories/${encodeURIComponent(post.category.slug)}`}
+            >
+              All {post.category.name} stories
+            </Link>
+          </div>
+          <div className="related-grid">
+            {related.map((story) => (
+              <article key={story.id} className="related-card">
+                <h3>
+                  <Link href={`/posts/${encodeURIComponent(story.slug)}`}>{story.title}</Link>
+                </h3>
+                <p>{story.summary}</p>
+                <p className="article-byline">
+                  <span>{story.author.displayName}</span>
+                  <span aria-hidden="true">·</span>
+                  <time dateTime={story.firstPublishedAt}>
+                    {formatDate(story.firstPublishedAt)}
+                  </time>
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
       <script
         nonce={nonce}
         type="application/ld+json"

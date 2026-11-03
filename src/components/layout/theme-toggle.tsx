@@ -6,10 +6,10 @@ import { themeStorageKey, type Theme } from '@/lib/theme';
 
 const themeChanged = 'blogpost:theme-changed';
 function subscribe(onChange: () => void) {
-  const media = matchMedia('(prefers-color-scheme: dark)');
+  const media = matchMedia('(prefers-color-scheme: light)');
   const systemChanged = () => {
     if (document.documentElement.dataset.themePreference !== 'system') return;
-    document.documentElement.dataset.theme = media.matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = media.matches ? 'light' : 'dark';
     onChange();
   };
   const storageChanged = (event: StorageEvent) => {
@@ -18,7 +18,7 @@ function subscribe(onChange: () => void) {
       event.newValue === 'light' || event.newValue === 'dark' ? event.newValue : 'system';
     document.documentElement.dataset.themePreference = preference;
     document.documentElement.dataset.theme =
-      preference === 'system' ? (media.matches ? 'dark' : 'light') : preference;
+      preference === 'system' ? (media.matches ? 'light' : 'dark') : preference;
     onChange();
   };
   media.addEventListener('change', systemChanged);

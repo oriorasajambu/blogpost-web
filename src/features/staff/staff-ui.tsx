@@ -101,6 +101,7 @@ export function ConfirmAction({
   disabled = false,
   onCancel,
   returnFocusRef,
+  danger = false,
 }: {
   title: string;
   children: ReactNode;
@@ -110,6 +111,8 @@ export function ConfirmAction({
   disabled?: boolean;
   onCancel?: () => void;
   returnFocusRef?: RefObject<HTMLElement | null>;
+  /** Outlines the confirm control in the danger tone for removals and withdrawals. */
+  danger?: boolean;
 }) {
   const id = useId();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -141,7 +144,7 @@ export function ConfirmAction({
       <div className="staff-actions">
         <button
           type="button"
-          className="button-primary"
+          className={danger ? 'button-danger' : 'button-primary'}
           disabled={busy || disabled}
           onClick={() => void onConfirm()}
         >

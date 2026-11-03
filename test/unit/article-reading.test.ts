@@ -147,3 +147,28 @@ test('the pending-page skeleton can remain silent under the shared loading annou
   assert.ok(silent.includes('aria-hidden="true"'));
   assert.doesNotMatch(silent, /role="status"|Loading articles/);
 });
+
+test('outline links use the same section identifiers the article body renders', async () => {
+  const { articleOutline } = await import('../../src/lib/article-reading');
+  const source =
+    '# Start *here*\n\n## A `code` detail\n\n#### Deep\n\n# Start here\n\n> ## Quoted\n\nText';
+  const items = articleOutline(source);
+  const html = render(source);
+  assert.deepEqual(
+    items.map((item) => [item.level, item.text]),
+    [
+      [2, 'Start here'],
+      [3, 'A code detail'],
+      [2, 'Start here'],
+      [3, 'Quoted'],
+    ],
+  );
+  for (const item of items) assert.ok(html.includes(`id="${item.id}"`), item.id);
+  assert.equal(new Set(items.map((item) => item.id)).size, items.length);
+});
+
+test('reading time rounds whole minutes and never shows zero', async () => {
+  const { readingMinutes } = await import('../../src/lib/article-reading');
+  assert.equal(readingMinutes(''), 1);
+  assert.equal(readingMinutes(Array(690).fill('word').join(' ')), 3);
+});

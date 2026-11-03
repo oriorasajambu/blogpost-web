@@ -3,8 +3,8 @@
   margin: var(--space-7) auto;
   padding: var(--space-6);
   background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-large);
   overflow-wrap: anywhere;
 }
 .auth-panel h1 {
@@ -23,7 +23,11 @@
 }
 .auth-panel [role='alert'],
 .staff-exit [role='alert'] {
-  color: var(--color-error);
+  color: var(--color-text);
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-width) solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+  border-radius: var(--radius-medium);
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-bg));
 }
 .auth-dialog {
   color: var(--color-ink);
@@ -31,44 +35,93 @@
   width: min(var(--article-width), calc(100% - var(--space-6)));
   max-height: calc(100dvh - var(--space-6));
   overflow: auto;
-  border: var(--border-width) solid var(--color-control-border);
-  border-radius: var(--radius-medium);
-  padding: var(--space-6);
+  border: 0;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-large);
+  padding: var(--space-7);
 }
 .auth-dialog::backdrop {
-  background: var(--color-ink);
-  opacity: 0.65;
+  background: color-mix(in srgb, #292b31 60%, transparent);
 }
 .auth-dialog h2 {
   font-size: var(--text-heading-small);
 }
+/* Studio shell: a compact left rail beside the workspace, stacking above it on phones. */
 .staff-shell {
-  margin-block: var(--space-6);
-}
-.staff-shell-header {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-8);
+  margin-block: var(--space-6);
 }
-.staff-shell-header p {
-  margin: 0;
-  color: var(--color-muted);
+.staff-rail {
+  position: sticky;
+  top: var(--space-6);
+  flex: 1 1 13rem;
+  max-width: 15rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-medium);
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+.staff-main {
+  flex: 999 1 34rem;
+  min-width: 0;
 }
 .staff-navigation {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-5);
-  margin-block: var(--space-5);
-  padding-block: var(--space-4);
-  border-block: var(--border-width) solid var(--color-border);
+  flex-direction: column;
+  gap: 2px;
 }
 .staff-navigation a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  gap: var(--space-4);
   min-height: var(--control-height);
-  font-weight: var(--weight-semibold);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-medium);
+  color: var(--color-muted);
+  font-size: var(--text-label);
+  text-decoration: none;
+  transition:
+    background var(--motion),
+    color var(--motion);
+}
+.staff-navigation a:hover {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
+}
+.staff-navigation a[aria-current='page'] {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+}
+.staff-rail-foot {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-2);
+  position: relative;
+  font-size: var(--text-small);
+}
+.staff-rail-foot::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--color-hairline);
+}
+.staff-shell-header {
+  margin: 0;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+.staff-shell-header strong {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
 }
 .staff-profile {
   display: grid;
@@ -81,6 +134,17 @@
 .staff-profile dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+@media (max-width: 48rem) {
+  .staff-rail {
+    position: static;
+    max-width: none;
+    flex-basis: 100%;
+  }
+  .staff-navigation {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 @media (max-width: 35rem) {
   .auth-panel {
