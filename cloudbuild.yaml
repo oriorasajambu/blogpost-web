@@ -1,0 +1,92 @@
+# Manual Staging bootstrap/recovery image build (FRONTEND_WEB_DEPLOYMENT_GUIDE section 4).
+# Checks, packages, smoke-tests and pushes one environment-specific image. It has
+# no deploy step; Cloud Run revisions are created deliberately from the digest.
+steps:
+  - id: select-environment
+    name: node:24.22.1-bookworm-slim@sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -c
+      - |
+        case "${_APP_ENV}" in staging|production) ;; *) echo "Select _APP_ENV=staging or production." >&2; exit 1 ;; esac
+        test -n "$COMMIT_SHA" || { echo "A resolved source SHA is required." >&2; exit 1; }
+  - id: checks
+    name: node:24.22.1-bookworm-slim@sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205
+    entrypoint: bash
+    timeout: 1500s
+    waitFor: [select-environment]
+    env:
+      - NEXT_TELEMETRY_DISABLED=1
+      - APP_ENV=development
+      - WEB_LOGIN_ENABLED=false
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        npm ci --no-audit
+        node scripts/verify-foundation.mjs
+        npm run contract:check
+        npm run lint
+        npm run format:check
+        npm run typecheck
+        npm test
+  - id: image
+    name: gcr.io/cloud-builders/docker@sha256:0aca0f95e1ba8f9107263d3e9782d5ce99a5b60d35b3f8985e4534b65552636f
+    timeout: 1500s
+    waitFor: [checks]
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --platform
+      - linux/amd64
+      - --target
+      - runtime
+      - --build-arg
+      - APP_ENV=${_APP_ENV}
+      - --build-arg
+      - SOURCE_SHA=$COMMIT_SHA
+      - --label
+      - org.opencontainers.image.source=https://github.com/oriorasajambu/blogpost-web
+      - --label
+      - blogpost.environment=${_APP_ENV}
+      - --tag
+      - asia-southeast2-docker.pkg.dev/$PROJECT_ID/blogpost/web:build-$BUILD_ID
+      - .
+  # Startup and liveness only: the placeholder origin is never contacted.
+  - id: smoke
+    name: gcr.io/cloud-builders/docker@sha256:0aca0f95e1ba8f9107263d3e9782d5ce99a5b60d35b3f8985e4534b65552636f
+    entrypoint: bash
+    timeout: 300s
+    waitFor: [image]
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        docker run -d --rm --network cloudbuild --name web-smoke \
+          -e APP_ENV=${_APP_ENV} -e WEB_LOGIN_ENABLED=false \
+          -e BACKEND_ORIGIN=https://backend.invalid \
+          asia-southeast2-docker.pkg.dev/$PROJECT_ID/blogpost/web:build-$BUILD_ID
+        for attempt in $$(seq 1 30); do
+          if docker run --rm --network cloudbuild curlimages/curl:8.17.0@sha256:935d9100e9ba842cdb060de42472c7ca90cfe9a7c96e4dacb55e79e560b3ff40 -fsS http://web-smoke:8080/health/live; then
+            docker run --rm --network cloudbuild curlimages/curl:8.17.0@sha256:935d9100e9ba842cdb060de42472c7ca90cfe9a7c96e4dacb55e79e560b3ff40 -fsS http://web-smoke:8080/api/public-config
+            docker stop web-smoke
+            exit 0
+          fi
+          sleep 2
+        done
+        docker logs web-smoke
+        exit 1
+images:
+  - asia-southeast2-docker.pkg.dev/$PROJECT_ID/blogpost/web:build-$BUILD_ID
+serviceAccount: projects/$PROJECT_ID/serviceAccounts/blogpost-build@$PROJECT_ID.iam.gserviceaccount.com
+timeout: 3600s
+queueTtl: 900s
+options:
+  logging: CLOUD_LOGGING_ONLY
+  automapSubstitutions: false
+  sourceProvenanceHash: [SHA256]
+  requestedVerifyOption: VERIFIED
+substitutions:
+  _APP_ENV: UNSELECTED
