@@ -25,7 +25,7 @@ The staff workspace implements review/publish, history/restore, trash, taxonomy,
 
 All 315 tests passed on functional acceptance source `e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062`: 168 unit, 43 public reading, five SEO, 16 identity/session, 37 editor and 46 staff cases. The [aggregate validation record](staff-workspace/regression-validation.json) links the source/build provenance and individual receipts.
 
-Web Docker image builds have not been verified. Spoken screen-reader/native browser zoom review, real identity/provider checks, the native Android publishing journey, cloud environments and release/rollback rehearsals remain open. Android development has not started, as confirmed by the user. Automated axe and viewport checks do not establish WCAG conformance.
+On 3 November 2026 the Staging image was built by Cloud Build from `rc` and deployed, and a real Google sign-in passed; see the [Staging deployment record](STAGING_DEPLOYMENT.md). Spoken screen-reader/native browser zoom review, the deployed section 7 publication journey, the native Android publishing journey, cloud environments and release/rollback rehearsals remain open. Android development has not started, as confirmed by the user. Automated axe and viewport checks do not establish WCAG conformance.
 
 ## Contract boundary
 
@@ -66,4 +66,4 @@ The local `verify-foundation` script is a filename and release-metadata guard. I
 
 The next required staff gates are native keyboard/zoom/screen-reader validation and the shared Android publishing journey. Computer Use stays stopped at the user's request; the [manual guide](staff-workspace/MANUAL_ACCESSIBILITY.md) supports a future deliberate operator session. Stage-6 release readiness remains separate work. Backend permissions and workflow rules remain authoritative. The shared native Android publishing check stays pending until an Android client exists; direct bearer transport tests do not substitute for it.
 
-The real Google-provider smoke requires a deployed staging website. The public Firebase web configuration and staging API URL have been supplied, but the website is not deployed and no deployment was performed. Contract freeze, cloud image provenance, deliberate release and rollback gates remain separate work.
+The Staging website is deployed with staff login enabled and the real Google-provider sign-in smoke passed. The deployed publication journey and session-cookie inspection remain. Contract freeze, cloud image provenance, deliberate release and rollback gates remain separate work.
