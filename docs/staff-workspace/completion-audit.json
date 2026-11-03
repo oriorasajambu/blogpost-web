@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "auditedAt": "2026-11-03T02:20:12Z",
+  "objective": "Continue the web development: Staff workspace",
+  "goalComplete": false,
+  "plan": {
+    "path": "../BLOGPOST_FRONTEND_WEB_PLAN.md",
+    "sections": [
+      "3. Routes, navigation, and permissions",
+      "4. Reading design and accessibility",
+      "9. Staff workflows and edge cases",
+      "10. Delivery, validation, and completion: stage 5 and manual accessibility checks"
+    ],
+    "pathBasis": "All source, test and receipt paths below are relative to the web checkout."
+  },
+  "currentWebEvidence": {
+    "receipt": "docs/staff-workspace/current-build-validation.json",
+    "status": "PASSED",
+    "testedAt": "2026-11-02T19:49:58.512Z",
+    "sourceSHA256": "c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4",
+    "buildSHA256": "0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233",
+    "passedCases": 46,
+    "sourceAndBuildUnchanged": true,
+    "testInputsUnchanged": true,
+    "completeCaseInventory": true,
+    "compiledFromTestedSource": true,
+    "scope": "Complete local web staff inventory using real API, PostgreSQL, media processing and emulator-backed web sessions.",
+    "caseInventory": "test/integration/staff-case-inventory.json"
+  },
+  "historicalRegressionEvidence": {
+    "receipt": "docs/staff-workspace/regression-validation.json",
+    "totalPassed": 315,
+    "sourceSHA256": "e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062",
+    "buildSHA256": "0ba6f77de45fc155ec3e8f5fb889c36bca80a6075ec8e3c367fc7f964bfc1a42",
+    "scope": "Earlier functional build: 168 unit, 43 reading, five SEO, 16 identity, 37 editor and 46 staff cases. The current-build receipt separately proves all 46 staff cases on the presentation build."
+  },
+  "requirements": [
+    {
+      "id": "staff_routes_permissions_and_filters",
+      "planRefs": ["3"],
+      "requirement": "Own/broader staff work, URL filters, server page/data authorization and generic unavailable views without private serialization.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/app/studio/layout.tsx",
+        "src/features/auth/staff-access.tsx",
+        "src/lib/auth-navigation.ts",
+        "src/features/staff/post-list.tsx",
+        "src/app/api/editorial/[...path]/route.ts"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-core.spec.ts",
+          "passedTitles": [
+            "staff pages and data enforce anonymous and author role boundaries without draft serialization",
+            "editor all-article filters use durable URLs while author pages stay scoped to own work",
+            "confirmed denial during review or history configuration hides already loaded private snapshots"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "author and editor cannot enter staff administration or call administrative data operations"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-taxonomy.spec.ts",
+          "passedTitles": [
+            "taxonomy requires editor/admin page and data permission, including write attempts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exact_review_publication_and_feedback",
+      "planRefs": ["3", "9"],
+      "requirement": "Exact submitted/published comparison with metadata and image alternatives; confirmed publication including an editor's own work; feedback, revision privacy and withdrawal before editing.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/editor/draft-editor.tsx",
+        "src/features/review/review-detail.tsx",
+        "src/features/review/revision-snapshot.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-review.spec.ts",
+          "passedTitles": [
+            "author edits, uploads and submits; editor publishes exact content, then publishes a correction without exposing working changes",
+            "rejection requires feedback and preserves the published revision; the author can revise, resubmit and withdraw review",
+            "an editor can publish their own exact submitted revision while all decision controls remain disabled during the held response"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "publication_operation_identity_and_fresh_readback",
+      "planRefs": ["9"],
+      "requirement": "Pending decisions retain exact input/version/key, require explicit conflict recovery and refresh authoritative state; expired replay windows require inspection.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/review/use-post-command.ts",
+        "src/features/review/review-detail.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-review.spec.ts",
+          "passedTitles": [
+            "a lost publication response retries identical input/version/key and records one publication event",
+            "a competing reviewer gets an explicit version conflict and must refresh before a new decision",
+            "an uncertain publication older than the replay window requires inspection and never sends another mutation"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-state-reconciliation.spec.ts",
+          "passedTitles": [
+            "publication readback displays a newly resubmitted exact revision instead of claiming the queue is empty"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "history_withdrawal_trash_and_slug_consequences",
+      "planRefs": ["3", "9"],
+      "requirement": "Immutable revision/history reads, confirmed restore to working draft, public withdrawal, recoverable trash/purge information, and previewed collision-safe historical redirects.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/review/revision-history.tsx",
+        "src/features/review/post-actions.tsx",
+        "src/features/review/trash-workspace.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-review.spec.ts",
+          "passedTitles": [
+            "immutable history restores a new working revision; unpublish, trash and restore never republish retained content",
+            "immutable history retains exact snapshots and locks independent cursors throughout restore readback",
+            "slug confirmation previews the redirect and historical names remain reserved to their owning article",
+            "author role cannot review or list other staff work and can recover its own never-published trash"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "complete_staff_pagination",
+      "planRefs": ["3", "9"],
+      "requirement": "Traverse complete authorized review, member, invitation, audit and taxonomy result pages.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/review/review-queue.tsx",
+        "src/features/members/members-panel.tsx",
+        "src/features/invitations/invitations-panel.tsx",
+        "src/features/members/audit-panel.tsx",
+        "src/features/taxonomy/taxonomy-workspace.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-review.spec.ts",
+          "passedTitles": [
+            "the review queue traverses every authorized cursor page without losing or duplicating submitted revisions"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-invitations.spec.ts",
+          "passedTitles": [
+            "staff members, invitations and filtered audit logs traverse every real cursor page without duplicates"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-taxonomy.spec.ts",
+          "passedTitles": [
+            "managed taxonomy traverses every server page and keeps active and archived filters distinct"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taxonomy_lifecycle_references_and_versions",
+      "planRefs": ["3", "9"],
+      "requirement": "Usage counts, immutable slugs, active/archive/reactivation, retained references and active replacements, normalized duplicates, expected versions and safe interrupted-operation recovery.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/taxonomy/taxonomy-workspace.tsx",
+        "src/features/taxonomy/taxonomy-contract.ts",
+        "src/features/taxonomy/taxonomy-api.ts"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-taxonomy.spec.ts",
+          "passedTitles": [
+            "editor creates, renames, archives and reactivates a category while its slug remains immutable",
+            "tag creation reports normalized-name and immutable-slug duplicates while retaining the proposal",
+            "archiving used vocabulary preserves published and historical references and requires active replacement before resubmission",
+            "stale taxonomy version keeps the proposal and requires explicit comparison and a newly confirmed version",
+            "lost taxonomy create response retries identical captured input and key without duplicate creation",
+            "uncertain taxonomy action stops after the replay window and resolves by authorized current-state review",
+            "a late taxonomy selection cannot replace an entry with an in-flight or uncertain saved change"
+          ]
+        }
+      ],
+      "contractBoundary": "The pinned API exposes archive/reactivation and replacement requirements, with no bulk-reassignment/deletion operation."
+    },
+    {
+      "id": "membership_confirmation_last_admin_and_audit",
+      "planRefs": ["3", "9"],
+      "requirement": "Confirm role/active changes with consequences, explain last-admin denial, preserve current selection through uncertain changes/readback and refresh self-role navigation; inspect actor/time audit metadata.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/members/members-panel.tsx",
+        "src/features/members/audit-panel.tsx",
+        "src/features/members/use-admin-command.tsx",
+        "src/features/staff/staff-ui.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "administrator confirms role and disablement, authoritative denial takes effect, and audit filters show the actor and time",
+            "last active administrator is protected and stale membership proposals require an explicit refresh"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-membership-recovery.spec.ts",
+          "passedTitles": [
+            "an in-flight or uncertain staff access change keeps its member and exact retry when another member is selected"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-reassignment-recovery.spec.ts",
+          "passedTitles": [
+            "a successful staff access change keeps member selection locked until its fresh member readback completes"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-state-reconciliation.spec.ts",
+          "passedTitles": [
+            "an administrator changing their own role receives a fresh authorized workspace and navigation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "author_reassignment",
+      "planRefs": ["3", "9"],
+      "requirement": "Confirmed attribution transfer creates a draft, retains the published snapshot, applies current author permissions and requires exact readback before further changes.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/members/reassignment-panel.tsx",
+        "src/features/members/use-admin-command.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "admin attribution transfer creates a new draft, preserves the published snapshot, and removes former-owner access"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-reassignment-recovery.spec.ts",
+          "passedTitles": [
+            "successful author reassignment keeps its article locked until the exact authorized readback completes",
+            "a failed author reassignment readback requires explicit ownership refresh before another mutation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invitation_states_copy_and_secret_recovery",
+      "planRefs": ["3", "9"],
+      "requirement": "Expiry/accepted/revoked states, issue/revoke/reissue, actual copy success/fallback, no email promise and explicit secret replacement after a link-free replay receipt.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/invitations/invitations-panel.tsx",
+        "src/features/members/admin-contract.ts",
+        "src/features/members/use-admin-command.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "invitation issue and revocation display a private one-time link and current audit metadata",
+            "a committed invitation response loss reuses the exact operation and offers explicit secret replacement"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-invitations.spec.ts",
+          "passedTitles": [
+            "invitation copy uses the actual clipboard and safely supports denied or absent clipboard access",
+            "invitation status filters show accepted, expired, revoked and pending audit details with appropriate actions"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "public_profile_privacy_and_conflicts",
+      "planRefs": ["3", "9"],
+      "requirement": "Approved display name/bio, fixed handle and private email separation; retain proposals and compare fresh state after conflicts.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": [
+        "src/features/profile/profile-form.tsx",
+        "src/features/profile/profile-contract.ts"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "public profile edits keep private identity separate and preserve entered text on a real version conflict"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-state-reconciliation.spec.ts",
+          "passedTitles": [
+            "successful profile readback locks manual refresh and preserves a single current comparison"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proxy_and_compatibility_boundaries",
+      "planRefs": ["3", "9", "10"],
+      "requirement": "Enforce CSRF and expected versions, preserve backend diagnostics, and block writes under current required-update/retirement/incompatible/outage metadata while preserving proposals.",
+      "verdict": "IMPLEMENTED_AND_AUTOMATED_VERIFIED",
+      "sources": ["src/app/api/editorial/[...path]/route.ts", "src/features/staff/staff-api.ts"],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-core.spec.ts",
+          "passedTitles": [
+            "staff proxy rejects missing CSRF and stale versions while preserving backend error diagnostics"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-meta.spec.ts",
+          "passedTitles": [
+            "fresh server metadata blocks staff mutations for required updates, retirement, incompatibility and outage without losing the proposal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "keyboard_reflow_and_accessibility",
+      "planRefs": ["4", "10: manual keyboard/zoom/screen-reader checks"],
+      "requirement": "Semantic controls, useful keyboard/focus behavior, both themes, accessible overflow, native zoom and actual screen-reader navigation.",
+      "verdict": "PARTIALLY_VERIFIED",
+      "sources": [
+        "src/features/staff/staff-ui.tsx",
+        "src/features/staff/staff.css",
+        "src/features/review/revision-snapshot.tsx",
+        "src/features/taxonomy/taxonomy-workspace.tsx"
+      ],
+      "evidence": [
+        {
+          "testFile": "test/integration/staff-admin.spec.ts",
+          "passedTitles": [
+            "admin and profile controls reflow in both themes and return keyboard focus after confirmation"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-review.spec.ts",
+          "passedTitles": [
+            "review decisions and history support keyboard confirmation, phone reflow and both themes"
+          ]
+        },
+        {
+          "testFile": "test/integration/staff-taxonomy.spec.ts",
+          "passedTitles": [
+            "taxonomy keyboard confirmation, focus restoration, phone reflow and both themes pass axe"
+          ]
+        }
+      ],
+      "supportingReceipts": [
+        "docs/staff-workspace/taxonomy-layout-validation.json",
+        "docs/staff-workspace/interface-validation.json"
+      ],
+      "remaining": "Automated axe, focus, viewport and keyboard scrolling are verified. Native manual zoom and Narrator/Speech Recap checks were not completed; the user directed computer use to remain stopped."
+    }
+  ],
+  "remainingStaffRequirements": [
+    {
+      "id": "shared_native_android_publishing_journey",
+      "planRefs": ["3: both-platform review/publish", "10: stage 5"],
+      "verdict": "INCOMPLETE_EXTERNAL_DEPENDENCY",
+      "requiredEvidence": "A real Android client publishing/reviewing shared exact revisions with the web against the same authoritative backend.",
+      "currentEvidence": "The user confirmed Android development has not started and there is no Android checkout. No native client/device journey evidence is available.",
+      "supportingEvidence": {
+        "testFile": "test/integration/staff-core.spec.ts",
+        "passedTitles": [
+          "direct bearer transport and the web share exact revisions without claiming a native Android journey"
+        ],
+        "sources": ["test/integration/staff-core.spec.ts"],
+        "scope": "Bearer/web transport compatibility only."
+      },
+      "missing": "Native Android implementation and executed cross-client journey."
+    },
+    {
+      "id": "manual_native_accessibility",
+      "planRefs": ["4", "10: manual keyboard/zoom/screen-reader checks"],
+      "verdict": "PENDING_USER_STOPPED_COMPUTER_USE",
+      "userDirective": "Keep computer use stopped",
+      "authorization": "No further native UI checks are authorized until the user resumes computer use.",
+      "completedNativeChecks": [],
+      "requiredEvidence": [
+        "Native browser 200% and 400% zoom/reflow review",
+        "Actual screen-reader navigation and inspected announcements",
+        "Manual keyboard/focus review across the staff routes"
+      ],
+      "preparation": [
+        "test/manual/native-accessibility.mjs",
+        "docs/staff-workspace/MANUAL_ACCESSIBILITY.md"
+      ],
+      "localSessionMetadata": {
+        "path": ".local/live-staff/native-session.json",
+        "availability": "Ignored local runtime metadata inspected for this audit.",
+        "state": "closed",
+        "verification": "PENDING_MANUAL_REVIEW",
+        "closedAt": "2026-11-03T02:08:57.993Z",
+        "sourceAndBuildUnchanged": true,
+        "browserAndWebCleanupReported": true
+      },
+      "limitations": [
+        "No native zoom or Narrator check is asserted from runner readiness or closure.",
+        "Auditory intelligibility, blind-user usability and full WCAG conformance remain unverified."
+      ]
+    }
+  ],
+  "separatePlanGates": [
+    {
+      "id": "configured_google_provider",
+      "stage": "3/release",
+      "verdict": "PENDING",
+      "evidence": "User reported staging website not deployed; local emulator receipts do not establish a real configured-provider smoke.",
+      "receipt": "docs/identity-sessions/local-validation.json"
+    },
+    {
+      "id": "release_and_operation",
+      "stage": "6",
+      "verdict": "PENDING",
+      "missing": [
+        "Frozen released API contract",
+        "Cloud image provenance and deployment controls",
+        "Staging/manual release evidence",
+        "Deliberate deployment and rollback rehearsal"
+      ],
+      "releaseMarker": ".release/release.json",
+      "applicationVersion": "0.0.0",
+      "publish": false,
+      "apiContractVersion": "1.0.0",
+      "contractStatus": "DRAFT",
+      "contractManifest": "contracts/manifest.json"
+    }
+  ],
+  "auditScope": {
+    "backendCleanup": "Not assessed or claimed by this audit; the parent task is handling current backend cleanup.",
+    "conclusion": "Staff web implementation and the complete current automated staff run are verified. Native cross-client and manual native accessibility requirements remain incomplete, so the full objective is not achieved."
+  }
+}

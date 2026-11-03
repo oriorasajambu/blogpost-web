@@ -1,0 +1,46 @@
+- main:
+  - paragraph:
+    - text: Signed in as
+    - strong: Identity ADMIN
+    - text: · admin
+  - button "Sign out"
+  - navigation "Staff navigation":
+    - link "Your workspace":
+      - /url: /studio/posts
+    - link "Trash":
+      - /url: /studio/trash
+    - link "Your profile":
+      - /url: /studio/profile
+    - link "Review":
+      - /url: /studio/review
+    - link "Taxonomy":
+      - /url: /studio/taxonomy
+    - link "Staff access":
+      - /url: /studio/admin
+  - region "Your staff profile":
+    - paragraph: Your account
+    - heading "Your staff profile" [level=1]
+    - paragraph: Your display name and biography appear on your public author profile.
+    - group "Public profile":
+      - text: Public profile Display name
+      - textbox "Display name": Identity ADMIN
+      - text: Biography
+      - textbox "Biography": Synthetic identity integration profile.
+      - paragraph:
+        - text: "Public handle:"
+        - strong: identity-admin
+        - text: . Your handle is fixed for this account.
+      - button "Save public profile"
+    - paragraph: Loaded profile version 1. A conflict keeps your entered text; load the latest version, review your changes, and save explicitly.
+    - group: Current server profile for comparison
+    - button "Load latest profile"
+    - status
+    - region "Private staff account":
+      - heading "Private staff account" [level=2]
+      - term: Private sign-in email
+      - definition: web-admin-2f8fe477-9742-4840-a6fc-3f99784c5b62@example.test
+      - term: Staff role
+      - definition: admin
+      - term: Account access
+      - definition: Active
+      - paragraph: Your sign-in email is private staff information. It is separate from your public author profile.

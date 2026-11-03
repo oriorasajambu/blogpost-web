@@ -1,0 +1,121 @@
+{
+  "capturedAt": "2026-11-02T19:26:54.532Z",
+  "scope": "Actual product routes with synthetic editorial content, emulator-backed web sessions and a transparent local metadata harness in normal mode",
+  "browser": {
+    "engine": "chromium",
+    "version": "156.0.8078.4",
+    "channel": "chromium"
+  },
+  "sourceAndBuildUnchanged": true,
+  "sourceSHA256": "c10346d681d34169a0f4fc29978fabc5499326162649709a1cc70fc4de0cb0c4",
+  "buildSHA256": "0e22b79942b3e79534e50d83a4db89b9969fba5ac7de2ffdea46e47dfe289233",
+  "backendSourceSha": "d8ec408ac6ed34250b92b2f1211afaf128b7d925",
+  "backendImage": "sha256:7efa9f2a1e3bb2291aeb71445b828dc849b07b377da4f54c1ef5c4eda85bd14b",
+  "captures": [
+    {
+      "file": "review-desktop-light.png",
+      "route": "/studio/review/[synthetic-post-id]",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "theme": "light",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "review-phone-dark.png",
+      "route": "/studio/review/[synthetic-post-id]",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "taxonomy-desktop-light.png",
+      "route": "/studio/taxonomy",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "light",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "taxonomy-phone-dark.png",
+      "route": "/studio/taxonomy",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "admin-desktop-light.png",
+      "route": "/studio/admin",
+      "viewport": {
+        "width": 1440,
+        "height": 1100
+      },
+      "theme": "light",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "admin-phone-dark.png",
+      "route": "/studio/admin",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "profile-desktop-light.png",
+      "route": "/studio/profile",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "theme": "light",
+      "horizontalOverflow": false
+    },
+    {
+      "file": "profile-phone-dark.png",
+      "route": "/studio/profile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "dark",
+      "horizontalOverflow": false
+    }
+  ],
+  "temporaryWebPort": 57969,
+  "limitations": [
+    "Visual and native accessibility-tree evidence; not a spoken screen-reader or native browser-zoom certification",
+    "No native Android or configured real Google provider verification"
+  ],
+  "visualReview": {
+    "inspectedAt": "2026-11-02T19:27:53.345Z",
+    "filesInspected": [
+      "review-desktop-light.png",
+      "review-phone-dark.png",
+      "taxonomy-desktop-light.png",
+      "taxonomy-phone-dark.png",
+      "admin-desktop-light.png",
+      "admin-phone-dark.png",
+      "profile-desktop-light.png",
+      "profile-phone-dark.png"
+    ],
+    "observations": [
+      "Desktop light and phone dark views inspected for review, taxonomy, administration and profile",
+      "Submitted/published comparisons remain distinct and stack on phone",
+      "Forms, private/public identity fields and administrative controls remain readable",
+      "Taxonomy uses a contained horizontal scroll region with a visible hint; no document overflow"
+    ],
+    "limitations": ["No spoken screen-reader or native browser-zoom verification"]
+  }
+}

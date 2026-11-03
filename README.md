@@ -1,21 +1,21 @@
 # Blogpost web
 
-Initial development of the reading-first Next.js application in the [web plan](../BLOGPOST_FRONTEND_WEB_PLAN.md). This is a separate web checkout; the sibling backend owns domain rules, identity, persistence, media storage, and shared local infrastructure.
+Initial development of the reading-first Next.js application in the [web plan](https://github.com/oriorasajambu/blogpost-backend/blob/rc/docs/plans/BLOGPOST_FRONTEND_WEB_PLAN.md). This is a separate web checkout; the sibling backend owns domain rules, identity, persistence, media storage, and shared local infrastructure. In the original multi-checkout workspace, the local planning source is `../BLOGPOST_FRONTEND_WEB_PLAN.md`; parent-directory paths are local workspace references, not files supplied by a standalone web clone.
 
-The foundation is public-reading only. Login stays disabled and configuration rejects `WEB_LOGIN_ENABLED=true` until the invitation/session/CSRF stage is implemented. Version `0.0.0` has `publish: false`; the API `1.0.0` snapshot remains an unreleased **draft**, not an approved frozen contract. No cloud resources or deployment pipeline are configured by this checkout. License: **UNLICENSED**, pending the owner's license decision.
+Public reading, the identity/session foundation and the durable Markdown editor are implemented. The editor's [writing and recovery guide](docs/DURABLE_EDITOR.md) and [acceptance record](docs/DURABLE_EDITOR_ACCEPTANCE.md) describe device saves, explicit Sync, images and conflict recovery. The [staff workspace guide](docs/STAFF_WORKSPACE.md) covers review/publication, immutable history, trash, taxonomy, profiles, invitations and staff administration. Login defaults to disabled; enabling it requires paired identity, origin and secret settings. Local SQL/emulator verification is separate from the still-pending real Google provider check; see the [identity configuration](docs/IDENTITY_CONFIGURATION.md) and [identity acceptance record](docs/IDENTITY_SESSIONS_ACCEPTANCE.md). Version `0.0.0` has `publish: false`; the API `1.0.0` snapshot remains an unreleased **draft**, not an approved frozen contract. No cloud resources or deployment pipeline are configured by this checkout. License: **UNLICENSED**, pending the owner's license decision.
 
 ## Toolchain
 
-| Input | Pinned version |
-|---|---|
-| Host Node.js / `.node-version` | `24.16.0` |
-| npm / `packageManager` | `11.13.0` |
-| Next.js | `16.4.3` |
-| React / React DOM | `19.3.1` |
-| TypeScript | `5.9.3` |
-| Docker Node.js | `24.22.1-bookworm-slim`, with the same fixed digest as the backend |
+| Input                          | Pinned version                                                     |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Host Node.js / `.node-version` | `24.16.0`                                                          |
+| npm / `packageManager`         | `11.13.0`                                                          |
+| Next.js                        | `16.4.3`                                                           |
+| React / React DOM              | `19.3.1`                                                           |
+| TypeScript                     | `5.9.3`                                                            |
+| Docker Node.js                 | `24.22.1-bookworm-slim`, with the same fixed digest as the backend |
 
-The backend and its mock toolchain independently pin Node `24.22.1`; use that version or the backend's Docker recipe when running backend tasks. The available web host is `24.16.0`, within this package's Node 24 engine range. Align and revalidate these runtime pins before release rather than assuming host and container checks are equivalent. Exact dependency versions and `package-lock.json` are committed; use `npm ci` for repeatable installation.
+The backend and its mock toolchain independently pin Node `24.22.1`; use that version or the backend's Docker recipe when running backend tasks. The available web host is `24.16.0`, within this package's Node 24 engine range. Align and revalidate these runtime pins before release rather than assuming host and container checks are equivalent. Dependencies have exact manifest versions and a `package-lock.json`; use `npm ci` for repeatable installation.
 
 ## Run locally
 
@@ -27,7 +27,7 @@ Copy-Item .env.example .env.local
 npm run dev
 ```
 
-The default browser URL is `http://localhost:3000`. The exact-basename [.env.example](.env.example) is a sanitized template. Edit only the ignored local copy; never commit `.env`, `.env.local`, or another environment-specific file. Keep `WEB_LOGIN_ENABLED=false`.
+The default browser URL is `http://localhost:3000`. The exact-basename [.env.example](.env.example) is a sanitized template. Edit only the ignored local copy; never commit `.env`, `.env.local`, or another environment-specific file. The public-reading setup keeps `WEB_LOGIN_ENABLED=false`. For invited staff access, follow the [identity configuration](docs/IDENTITY_CONFIGURATION.md).
 
 The example uses the shared contract mock at `BACKEND_ORIGIN=http://localhost:4010`. In the sibling backend checkout, install its locked dependencies with its pinned runtime, then start it:
 
@@ -36,19 +36,25 @@ npm ci
 npm run mock
 ```
 
-The mock starts a scenario server at loopback `4020` and the schema-validating Prism proxy at client-facing `4010`. It installs its isolated locked proxy toolchain when necessary. Stop it with Ctrl+C; its synthetic state resets on restart. `MOCK_PORT` and `MOCK_SCENARIO_PORT` support separate instances. See the [backend mock instructions](../blogpost-backend/mock/README.md) for the backend-owned Docker alternative and limitations.
+The mock starts a scenario server at loopback `4020` and the schema-validating Prism proxy at client-facing `4010`. It installs its isolated locked proxy toolchain when necessary. Stop it with Ctrl+C; its synthetic state resets on restart. `MOCK_PORT` and `MOCK_SCENARIO_PORT` support separate instances. See the [backend mock instructions](https://github.com/oriorasajambu/blogpost-backend/blob/rc/mock/README.md) for the backend-owned Docker alternative and limitations. In the original workspace, the same local instructions are at `../blogpost-backend/mock/README.md`.
 
 Open `/posts/a-reviewed-article`, `/categories/engineering`, `/tags/learning`, `/authors/synthetic-author`, or search for `reviewed article`. The seeded cover is a single test pixel. Public reading sends no fixture identity. The web app fetches the configured backend directly on the server and never replaces an outage with invented articles or a successful empty result.
 
-For the real API, follow the [backend local setup](../blogpost-backend/README.md), then set the local web copy's `BACKEND_ORIGIN` to that stack's printed API origin and `WEB_ORIGIN` to its reserved browser origin. A successful mock journey does not establish real PostgreSQL/auth/provider behavior. Backend-owned Compose currently provides API/auth/database/mock services; attaching this web development target to the shared stack remains integration work.
+For the real API, follow the [backend local setup](https://github.com/oriorasajambu/blogpost-backend/blob/rc/README.md), then set the local web copy's `BACKEND_ORIGIN` to that stack's printed API origin and `WEB_ORIGIN` to its reserved browser origin. A successful mock journey does not establish real PostgreSQL/auth/provider behavior. Backend-owned Compose currently provides API/auth/database/mock services; attaching this web development target to the shared stack remains integration work.
 
 ## Public foundation
 
-The initial slice covers the public feed, article, category/tag collections, author profile and filtered search, with explicit loading/empty/unavailable states. It uses server-rendered, request-time backend reads and shared metadata results rather than a persistent article cache. Public media passes through the same-origin route; the default Next image optimizer is not used for withdrawable assets. Canonical and absolute social URLs require a configured `WEB_ORIGIN`; incoming Host headers do not supply it.
+The initial slice covers the public feed, article, category/tag collections, author profile and filtered search, with explicit empty/unavailable/validation states and a client-navigation loading skeleton. It uses server-rendered, request-time backend reads and shared metadata results rather than a persistent article cache. Public media passes through the same-origin route; the default Next image optimizer is not used for withdrawable assets. Canonical and absolute social URLs require a configured `WEB_ORIGIN`; incoming Host headers do not supply it.
 
 Development and Staging show an environment banner. Staging is noindex. A light/dark override respects the initial system preference, while typography and navigation adapt to phone and desktop layouts. Markdown renders with raw HTML disabled and media references restricted to approved same-origin routes.
 
-These controls are an implementation foundation, not a completed accessibility or security audit. See [development status](docs/DEVELOPMENT_STATUS.md) for remaining plan stages and release gates.
+The tokens and reading-interface stage is verified with a representative article, phone/desktop light/dark screenshots, keyboard and accessibility-tree checks, reduced motion, scaling/reflow, copying, media failure, navigation loading and retry recovery. See the [acceptance record and visual evidence](docs/READING_INTERFACE_ACCEPTANCE.md). This does not establish full WCAG conformance or a completed security audit. See [development status](docs/DEVELOPMENT_STATUS.md) for remaining plan stages and release gates.
+
+The Public API and SEO stage is also verified. Public collection metadata, a static brand social image, sitemap discovery, complete bounded taxonomy filters and request/response tracing are implemented. A clean backend image and fresh PostgreSQL database passed published reading/search/media, draft privacy, correction, canonical rename and withdrawal through the web app. See the [requirement matrix and provenance](docs/PUBLIC_API_SEO_ACCEPTANCE.md).
+
+The identity stage adds Google popup/redirect handling, encrypted invitation capture, signed session-bound CSRF, HttpOnly session exchange, a bounded allowlisted editorial proxy and role-aware staff pages. Logout offers local-work recovery and requires storage clearance. The editor and staff management screens use these same protected session and backend permission boundaries. The [identity record](docs/IDENTITY_SESSIONS_ACCEPTANCE.md) distinguishes local verification from the required real-provider smoke.
+
+On 1 November 2026, all 16 identity integration cases passed against fresh PostgreSQL and the Auth Emulator in full Chromium, including browser HTTPS cookie flags, actual SDK popup/redirect, mismatch/account switching, CSRF recovery, revocation and logout/export/storage failure. The report binds the results to unchanged production source and compiled output. Disposable resources were removed while saved stacks and backend work were preserved. The staging website has not been deployed, so real Google provider verification remains pending.
 
 ## Contract and checks
 
@@ -62,11 +68,18 @@ npm run typecheck
 npm test
 npm run build
 npm run verify
+npx playwright install chromium
+npm run test:e2e
+npm run test:seo
 ```
 
-`contract:generate` checks the snapshot and regenerates TypeScript. `contract:check` checks checksums and reproducibility. `verify` checks foundation version metadata, repository policy and forbidden filenames; it does not replace a pinned secret scanner. `npm run build` compiles standalone output without contacting a running backend. Browser checks use `npm run test:e2e` when the Playwright test setup and required browser are installed; record the actual suites run rather than inferring coverage from that script's existence.
+`contract:generate` checks the snapshot and regenerates TypeScript. `contract:check` checks checksums and reproducibility. `verify` checks foundation version metadata, repository policy and forbidden filenames; it does not replace a pinned secret scanner. `npm run build` compiles standalone output without contacting a running backend. Playwright starts the production Next server on `3100` and a contract-fixture HTTP server on `4110`; it does not use the saved SQL database or authenticate real Google accounts.
 
-The secret-free workflow provides PR-only `ci-gate` and separate `push-gate`. Normal work targets `rc`; main promotion deliberately fails until frozen-contract, real-backend, staging/manual-evidence and release/deployment controls are ready. Owner review and merge remain manual under the [VCS guideline](../VCS_GUIDELINE.md).
+Verification recorded on 29 October 2026: production compilation, lint, type checking, contract/format/foundation checks and all **56 unit tests** passed. All **43 reading/public API browser tests** passed against the standalone production build, retaining the previous 30 public and reading-interface regressions. Five additional environment SEO checks cover production robots/sitemap/cursors/withdrawal/outage, Host safety, staging noindex and originless bootstrap. The environment harness requires OpenSSL and uses a generated local certificate with a test-only DNS mapping; it does not contact deployed services. Screenshots and the reviewed accessibility tree remain under [docs/reading-interface](docs/reading-interface/).
+
+A separate **real PostgreSQL browser journey passed** against a clean committed backend image, fresh migrated database, auth emulator and local normalized media. It verifies published HTML/RSC, body search and filters, private draft exclusion, corrections, one-hop slug history and withdrawal of article/media/feed/search including an open tab on focus return. See the [repeatable integration instructions](test/integration/README.md) and [sanitized evidence](docs/public-api-seo/live-backend.json). Its disposable resources were removed; saved stacks and unrelated backend work were preserved. Identity/session verification is recorded separately in the [stage-3 record](docs/IDENTITY_SESSIONS_ACCEPTANCE.md), and durable writing in the [stage-4 record](docs/DURABLE_EDITOR_ACCEPTANCE.md). The [staff guide](docs/STAFF_WORKSPACE.md) includes the isolated real-backend browser commands; the [staff acceptance record](docs/STAFF_WORKSPACE_ACCEPTANCE.md) links the full regression and phone-table follow-up evidence. Web Docker image builds, spoken screen-reader/native zoom review, real-provider login, the native Android shared journey and cloud release gates remain open.
+
+The secret-free workflow installs Chromium and runs the reading/public API and environment SEO suites after contract/lint/types/unit/build checks. The Docker-backed PostgreSQL journey is a separate explicit local check. The workflow provides PR-only `ci-gate` and separate `push-gate`. Normal work targets `rc`; main promotion deliberately fails until frozen-contract, staging/manual-evidence and release/deployment controls are ready. Owner review and merge remain manual under the [VCS guideline](https://github.com/oriorasajambu/blogpost-backend/blob/rc/docs/plans/VCS_GUIDELINE.md). The `origin` remote points to [oriorasajambu/blogpost-web](https://github.com/oriorasajambu/blogpost-web). Local `main` and `rc` share the minimal bootstrap commit, and development is on `chore/repository-foundation`. GitHub rulesets and cloud deployment require separate setup; publishing the Git branches does not establish those controls.
 
 ## Docker targets
 

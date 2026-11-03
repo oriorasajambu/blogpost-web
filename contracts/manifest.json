@@ -1,0 +1,56 @@
+{
+  "status": "DRAFT",
+  "files": [
+    {
+      "path": "contracts/fixtures/errors/dependency-unavailable.json",
+      "sha256": "735a92ad1b01b51e1adb061299f112c68d36bc59ed319d93ca9881002bda4ad1"
+    },
+    {
+      "path": "contracts/fixtures/errors/resource-not-found.json",
+      "sha256": "9a50b7ac73b3e609541420d7b87a7587723325c39435a4e8528001c06e10d191"
+    },
+    {
+      "path": "contracts/fixtures/operations/getPublicAuthor.response.json",
+      "sha256": "d641d980608d642f614669620478b559690e927208540b2bd324adf4b348b1c7"
+    },
+    {
+      "path": "contracts/fixtures/operations/getPublicPost.response.json",
+      "sha256": "8763bdbb2b21d95bcfc3addcd536907d861e57b9ccc725994c2a853b9e0947c2"
+    },
+    {
+      "path": "contracts/fixtures/operations/listPublicCategories.response.json",
+      "sha256": "16b454e3c052aa7db319da347f849883ac5d5aadd233d0982e9fccae2a31fc10"
+    },
+    {
+      "path": "contracts/fixtures/operations/listPublicPosts.response.json",
+      "sha256": "0c169cd0b98f6bfeca8333efd99680007900fb200a2d33b171f9fdd50ca436ce"
+    },
+    {
+      "path": "contracts/fixtures/operations/listPublicTags.response.json",
+      "sha256": "75bfa2d10c4bbe9a1cb504ec7ba307aa841d864007b5ae1d3816825f0b4ede05"
+    },
+    {
+      "path": "contracts/fixtures/operations/resolvePublicPostSlug.response.json",
+      "sha256": "28c5b96bae9ad8c3bebb3af1dacc17bf6e698ce41baeef53ebbcf2c405745efb"
+    },
+    {
+      "path": "contracts/fixtures/operations/searchPublicPosts.response.json",
+      "sha256": "2c9f048bc1410c0700d6828081a5090c7fe995b00b225ca077a9fed268c1aa41"
+    },
+    {
+      "path": "contracts/markdown-fixtures/cases.json",
+      "sha256": "b894c99e88126ff839ce61718dbb96839292f79164bbdcddf4cb2db475e14148"
+    },
+    {
+      "path": "contracts/markdown-fixtures/unicode-counting.json",
+      "sha256": "27ddf40963d3377a88ffbe3c2036171783052e433bac2a328f6f18d6365b8f05"
+    },
+    {
+      "path": "contracts/openapi-v1.0.0.json",
+      "sha256": "24c9e216afdd6335d4a242af55a6388d44a9d8d6624a22868ff02db71dd3d753"
+    }
+  ],
+  "source": "../blogpost-backend/contracts",
+  "contractVersion": "1.0.0",
+  "usage": "Development-only snapshot. Not a released contract; replace with a verified immutable release before shipping."
+}

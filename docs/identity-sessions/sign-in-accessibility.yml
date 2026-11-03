@@ -1,0 +1,37 @@
+- link "Skip to content":
+    - /url: '#main-content'
+- status: Development · Local workspace
+- banner:
+    - link "Blogpost home":
+        - /url: /
+        - text: blogpost.
+    - text: Ideas worth your time.
+    - navigation "Utility navigation":
+        - link "Search articles":
+            - /url: /search
+        - button "Switch to dark theme"
+        - link "Staff sign in":
+            - /url: /sign-in
+    - navigation "Main navigation":
+        - link "Latest":
+            - /url: /
+        - link "Explore":
+            - /url: /search
+- main:
+    - region "Sign in to your workspace":
+        - paragraph: Staff access
+        - heading "Sign in to your workspace" [level=1]
+        - paragraph: The journal is open to everyone. Invited authors, editors and administrators can sign in with their Google account.
+        - button "Continue with Google"
+        - paragraph: Google credentials stay in memory during sign-in. Your staff session lasts up to five days.
+- contentinfo:
+    - link "blogpost.":
+        - /url: /
+    - paragraph: A little perspective. A lot to discover.
+    - link "Latest stories":
+        - /url: /
+    - link "Explore the archive":
+        - /url: /search
+    - text: Made for a good read.
+- status
+- alert

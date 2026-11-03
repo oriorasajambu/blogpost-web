@@ -1,0 +1,46 @@
+{
+  "checkedAt": "2026-11-02T18:39:23.672Z",
+  "packageLockSHA256": "de1239e9970dc6cbd8c56ad7b680c2e1dc374690e113b0889708da3ed9c6141a",
+  "runtime": {
+    "command": "npm audit --omit=dev --json",
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "allDependencies": {
+    "command": "npm audit --json",
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 18,
+      "high": 0,
+      "critical": 0,
+      "total": 18
+    }
+  },
+  "outstanding": [
+    {
+      "package": "minimatch",
+      "direct": false,
+      "production": false,
+      "advisories": [
+        {
+          "title": "minimatch has potential denial of service via globparts amplification",
+          "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+          "severity": "moderate",
+          "affectedRange": "<11.0.1"
+        }
+      ]
+    }
+  ],
+  "interpretation": "Runtime audit reports zero known vulnerabilities. The all-dependency audit reports 18 moderate findings in the development lint/schema dependency chain rooted in minimatch. Dependencies were not changed by this feature. No automatic major-version fix was applied; compatible tooling remediation remains open.",
+  "limitations": [
+    "Registry advisory snapshot only; not proof that all code or dependencies are secure",
+    "No deployed or release security gate established"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-30T06:44:36.779Z",
+  "status": "PENDING_WEBSITE_DEPLOYMENT",
+  "publicWebAppIdSupplied": true,
+  "websiteDeployed": false,
+  "backend": {
+    "origin": "https://blogpost-api-393487571647.asia-southeast2.run.app",
+    "healthStatus": 200,
+    "metaStatus": 200,
+    "environment": "staging",
+    "contractVersion": "1.0.0",
+    "buildSha": "e0d9f8cc0adf3cf9355f8c7515c9c9365845605a",
+    "revision": "blogpost-api-00004-hrj",
+    "runtimeInputDigest": "535f42edef61e16fbd7d20b1258a35d48a8157713e9e815b73e3acc824713d77",
+    "configurationDigest": "e4a544789836fb355b14e24ed66df1d50feed6a771f635e3c80efe48c5769ad4"
+  },
+  "providerSmoke": "NOT_RUN",
+  "limitations": [
+    "Health and API metadata do not verify Google provider configuration or identity project pairing.",
+    "No authorized staging website origin is available yet.",
+    "No interactive Google authentication, invitation acceptance or hosted helper request was performed against staging."
+  ]
+}

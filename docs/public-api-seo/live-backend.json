@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "status": "PASSED",
+  "testedAt": "2026-10-29T13:30:11.130Z",
+  "scope": "Next standalone public reading against a clean local backend development artifact, actual PostgreSQL, synthetic identity emulator and local media adapter",
+  "backend": {
+    "sourceSha": "d8ec408ac6ed34250b92b2f1211afaf128b7d925",
+    "image": "sha256:2ee67525bc6325dc5bf361611a7fb293e6fc7d7c4be50727ffa7a6e4befb864f",
+    "authImage": "sha256:ec35c3e770647f9d687b5dbe219cb8e94da3076f68b87068c4bfa3d5f6db9e89",
+    "runtimeInputDigest": "49ac71560095c59a63d2f6a131bd5a75dd56464ef3da181b4aea533cc0d76236",
+    "sourceInputDigest": "dcc51b07a1995bc30f9e5393a31e990056a0538e391f602f15758752db8165d0",
+    "contractStatus": "DRAFT",
+    "bakedProvenance": {
+      "application": "backend",
+      "applicationVersion": "0.0.0",
+      "contractSha256": "24c9e216afdd6335d4a242af55a6388d44a9d8d6624a22868ff02db71dd3d753",
+      "contractVersion": "1.0.0",
+      "dirty": false,
+      "environment": "development",
+      "inputManifestVersion": 1,
+      "kind": "ARTIFACT",
+      "runtimeInputDigest": "49ac71560095c59a63d2f6a131bd5a75dd56464ef3da181b4aea533cc0d76236",
+      "schemaVersion": 1,
+      "sourceInputDigest": "dcc51b07a1995bc30f9e5393a31e990056a0538e391f602f15758752db8165d0",
+      "sourceRef": "refs/heads/chore/contract-handoff",
+      "sourceSha": "d8ec408ac6ed34250b92b2f1211afaf128b7d925",
+      "targetPlatform": "linux/amd64",
+      "nodeVersion": "v24.22.1"
+    }
+  },
+  "database": {
+    "schemaVersion": 1,
+    "event": "database_verification",
+    "application": "backend",
+    "environment": "development",
+    "kind": "RUNTIME",
+    "builtFromSha": "d8ec408ac6ed34250b92b2f1211afaf128b7d925",
+    "runtimeInputDigest": "49ac71560095c59a63d2f6a131bd5a75dd56464ef3da181b4aea533cc0d76236",
+    "sourceInputDigest": "dcc51b07a1995bc30f9e5393a31e990056a0538e391f602f15758752db8165d0",
+    "configurationDigest": "832302b264f02b17bedf3b135ebca16b34ae5e250898d93242abc1e843dd22f2",
+    "applicationVersion": "0.0.0",
+    "contractVersion": "1.0.0",
+    "contractSha256": "24c9e216afdd6335d4a242af55a6388d44a9d8d6624a22868ff02db71dd3d753",
+    "execution": null,
+    "verifiedAt": "2026-10-29T13:30:44.899Z",
+    "result": "PASSED",
+    "evidence": {
+      "schemaVersion": 1,
+      "migrationDigest": "7c90cb3d3b05c26e6d7acf03dda94cf3ac6b24c6ee20f1a55508ea08df98c1e8",
+      "schemaDigest": "f7c08d12cd9ffd1ad500e6b65ab0384becabed69caf76a6f673378d8e4731d54",
+      "permissionDigest": "6848e1f4d00f6bf94a173a5f99f9abd40d5255c18067bc627160444576a8b8cd",
+      "deniedProbes": 4,
+      "connectionBudget": {
+        "maximum": 100,
+        "reserved": 3,
+        "database_limit": -1,
+        "database_connections": 1,
+        "total_connections": 6
+      }
+    }
+  },
+  "evidence": [
+    "Clean-artifact published article: initial HTML, navigation, canonical, structured dates and streamed media passed.",
+    "SQL-backed category, tag, public author, ranked body search with all filters, and real empty search passed.",
+    "A newer working revision and never-published draft stay out of anonymous HTML, RSC, feed and search.",
+    "Publishing a correction exposes the new body on the next request and advances dateModified while retaining datePublished.",
+    "Real slug-history descriptor emits one 308 to the current published canonical article.",
+    "Withdrawal removes direct/current/old-slug/media access on the next request, clears feed/search, and removes body on focus return."
+  ],
+  "isolation": {
+    "postgresImage": "postgres:17.11-bookworm@sha256:858bb5e98eed02eb8cafbcdc007f9a65d1b613972028944a8ec2133ccaf80d27",
+    "mounts": {
+      "api": [],
+      "db": [],
+      "auth": []
+    },
+    "loopbackOnlyPublishedApi": true,
+    "sourceOverlay": false
+  },
+  "newlineResolution": {
+    "initialAttempt": "Fresh SQL verification rejected CRLF-converted clean-clone migration bytes with STALE_SCHEMA_BASELINE.",
+    "resolution": "The runner disables checkout newline conversion explicitly with core.autocrlf=false. A rebuilt byte-exact clean source passed all five migrations and schema/permission verification.",
+    "backendSourceEdited": false
+  },
+  "cleanup": {
+    "stoppedAt": "2026-10-29T13:30:53.605Z",
+    "ownedContainersAbsent": true,
+    "ownedNetworkAbsent": true,
+    "stopRepeatedSuccessfully": true,
+    "unrelatedContainerInventoryUnchanged": true,
+    "persistentVolumeInventoryUnchanged": true,
+    "backendGitStateUnchanged": true
+  },
+  "limits": [
+    "Development artifact, not a released backend or web Docker runtime image.",
+    "Contract remains a checksum-pinned DRAFT.",
+    "Synthetic Google emulator and local media do not prove configured Google or GCS behavior.",
+    "Existing unrelated backend README/sign-in edits were preserved."
+  ]
+}

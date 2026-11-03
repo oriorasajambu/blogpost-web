@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.local/
+contracts/
+src/lib/api-types.ts
+next-env.d.ts
+package-lock.json
+test-results/
+playwright-report/
+docs/reading-interface/
+# Generated browser accessibility snapshot is retained verbatim.
+docs/durable-editor/accessibility-tree.yml
+docs/staff-workspace/review-desktop-light.yml
+docs/staff-workspace/taxonomy-desktop-light.yml
+docs/staff-workspace/admin-desktop-light.yml
+docs/staff-workspace/profile-desktop-light.yml
+*.tsbuildinfo

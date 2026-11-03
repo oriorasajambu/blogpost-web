@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-02T19:14:03.457Z",
+  "status": "PASSED",
+  "sourceSHA256": "e4d3570092f87e83f73c6b2f1704105d605de14c33598d7aeaa40fb727eb5062",
+  "buildSHA256": "0ba6f77de45fc155ec3e8f5fb889c36bca80a6075ec8e3c367fc7f964bfc1a42",
+  "totalPassed": 315,
+  "suites": [
+    {
+      "name": "staff",
+      "passed": 46,
+      "testedAt": "2026-11-02T19:13:31.427Z",
+      "receipt": "docs/staff-workspace/local-validation.json"
+    },
+    {
+      "name": "identity",
+      "passed": 16,
+      "testedAt": "2026-11-02T18:41:20.745Z",
+      "receipt": "docs/identity-sessions/local-validation.json"
+    },
+    {
+      "name": "editor",
+      "passed": 37,
+      "testedAt": "2026-11-02T18:49:26.617Z",
+      "receipt": "docs/durable-editor/local-validation.json"
+    },
+    {
+      "name": "unit",
+      "passed": 168,
+      "logWrittenAt": "2026-11-02T18:43:04.009Z",
+      "localLogSHA256": "1e7d8ff264bd6ac5a97228c6e46100e9f60223bc0fad24a1584e8e2f0afaeda5"
+    },
+    {
+      "name": "reading",
+      "passed": 43,
+      "logWrittenAt": "2026-11-02T18:39:22.284Z",
+      "localLogSHA256": "9fb79ca3535e04a19d313ead53604d085c4bb9adadd8469711f4d2535444dc9a"
+    },
+    {
+      "name": "seo",
+      "passed": 5,
+      "logWrittenAt": "2026-11-02T18:39:38.645Z",
+      "localLogSHA256": "68d1a19f5dbfb283db80d0ef7f16efa4e739bf4f39dfc6776329e8d35e63f8ae"
+    }
+  ],
+  "repositoryChecks": [
+    "Production standalone compilation",
+    "ESLint",
+    "TypeScript",
+    "Prettier",
+    "12 pinned DRAFT contract checksums and generated types",
+    "Foundation metadata and forbidden-file checks"
+  ],
+  "limits": [
+    "Local Chromium and local service evidence only",
+    "Native Android and real configured Google provider smoke remain pending",
+    "Release and deployment gates remain open"
+  ]
+}
