@@ -1,6 +1,6 @@
 # Identity and sessions: implementation and verification
 
-Stage 3 implements Google sign-in, invitation acceptance, web sessions/CSRF and role-aware staff access from `BLOGPOST_FRONTEND_WEB_PLAN.md`. The stage remains **pending acceptance** until one real configured Google-provider browser smoke passes. Emulator results and local HTTPS policy checks cannot satisfy that requirement.
+Stage 3 implements Google sign-in, invitation acceptance, web sessions/CSRF and role-aware staff access from `BLOGPOST_FRONTEND_WEB_PLAN.md`. The required real configured Google-provider browser smoke passed on 3 November 2026 on the deployed Staging website: the owner signed in with Google and reached the staff workspace as an existing administrator. The [Staging deployment record](STAGING_DEPLOYMENT.md) lists the artifact, configuration and remaining session-cookie inspection. Emulator results and local HTTPS policy checks remain separate evidence.
 
 ## Requirement matrix
 
@@ -18,7 +18,7 @@ Stage 3 implements Google sign-in, invitation acceptance, web sessions/CSRF and 
 | Recovery-aware logout and account change                                                         | Inspect/export/cancel/remove dialog, namespace-scoped storage/provider cleanup, visible failures, CSRF POST, SDK cleanup and cross-tab notification                                     | Passed local SQL/emulator checks                     |
 | Revocation and permission changes remain authoritative                                           | Membership reads on protected requests and focus/visibility/restoration rechecks; confirmed denial hides staff content while recovery remains available                                 | Passed local PostgreSQL checks                       |
 | CSP, privacy and credential exposure                                                             | Nonced CSP; exact auth endpoints only on auth screens; no production unsafe-eval; noindex/no-store/no-referrer on auth/private paths; explicit public-config whitelist                  | Passed local SQL/emulator checks                     |
-| Real configured Google provider smoke                                                            | Correct public Firebase web app configuration, authorized web origin, paired staging API and interactive invited account required                                                       | **Pending staging website deployment**               |
+| Real configured Google provider smoke                                                            | Staging web app configuration, authorized web origin and OAuth redirect, paired Staging API and the owner's administrator account; see [deployment record](STAGING_DEPLOYMENT.md)       | **Passed on Staging, 3 November 2026**               |
 
 ## Reproduce local checks
 
