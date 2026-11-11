@@ -33,7 +33,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: draftHistoryGuardScript }} />
       </head>
       <body>
-        <a href="#main-content" className="skip-link">
+        <a
+          href="#main-content"
+          className="fixed top-[-6rem] left-4 z-[100] max-w-[calc(100%-2rem)] rounded-lg bg-surface px-4 py-2.5 text-text shadow-md focus:top-4"
+        >
           Skip to content
         </a>
         <ReadingNavigation>

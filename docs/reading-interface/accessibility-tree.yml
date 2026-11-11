@@ -27,10 +27,36 @@
       - /url: /authors/synthetic-author
     - paragraph:
       - time: Oct 25, 2026
+      - text: 2 min read
     - 'button "Copy link to The art of noticing: a field guide to everyday curiosity"': Share story
     - status
     - figure:
       - img "A synthetic landscape of green hills and a warm sun"
+    - group:
+      - text: On this page 7 sections
+      - navigation "On this page":
+        - list:
+          - listitem:
+            - link "A slower look":
+              - /url: "#section-a-slower-look"
+          - listitem:
+            - link "Notice the details":
+              - /url: "#section-notice-the-details"
+          - listitem:
+            - link "A landscape to pause with":
+              - /url: "#section-a-landscape-to-pause-with"
+          - listitem:
+            - link "Working with a long example":
+              - /url: "#section-working-with-a-long-example"
+          - listitem:
+            - link "Comparing what we noticed":
+              - /url: "#section-comparing-what-we-noticed"
+          - listitem:
+            - link "When an image is unavailable":
+              - /url: "#section-when-an-image-is-unavailable"
+          - listitem:
+            - link "Leave a little room":
+              - /url: "#section-leave-a-little-room"
     - heading "A slower look" [level=2]
     - paragraph: Curiosity does not need a grand expedition. Sometimes it starts with an ordinary walk, a familiar street, and a little time to notice what has changed. This synthetic story is written for reading-interface verification, with enough content to inspect measure, rhythm, and responsive reflow.
     - heading "Notice the details" [level=3]

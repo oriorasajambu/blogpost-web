@@ -13,6 +13,7 @@ import { ArticleList } from '@/components/article/article-card';
 import { PageIntro } from '@/components/ui/page-intro';
 import { SearchForm } from '@/components/ui/search-form';
 import { Pagination } from '@/components/ui/pagination';
+import { Icon } from '@/components/ui/icon';
 import { EmptyState } from '@/components/ui/empty-state';
 import { searchQuery } from '@/lib/reading-input';
 export const metadata: Metadata = {
@@ -105,16 +106,27 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
         tags={tags.map((item) => ({ value: item.id, label: item.name }))}
       />
       {feedback ? (
-        <section className="error-panel" role="alert" aria-labelledby="search-feedback">
-          <h2 id="search-feedback">Adjust your search</h2>
-          <p>{feedback}</p>
+        <section
+          className="mb-10 flex gap-3 rounded-xl bg-danger-bg p-5 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-danger)_40%,transparent)] sm:p-6"
+          role="alert"
+          aria-labelledby="search-feedback"
+        >
+          <Icon name="warning-circle" className="mt-0.5 shrink-0 text-danger" />
+          <div className="flex flex-col gap-1.5">
+            <h2 id="search-feedback" className="text-lg">
+              Adjust your search
+            </h2>
+            <p className="text-sm text-text">{feedback}</p>
+          </div>
         </section>
       ) : result ? (
         <section aria-labelledby="search-results">
-          <div className="section-heading">
-            <h2 id="search-results">Results for “{q}”</h2>
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-hairline pb-4">
+            <h2 id="search-results" className="text-xl tracking-[-0.01em]">
+              Results for “{q}”
+            </h2>
             {pagination?.kind === 'PAGE' && (
-              <span>
+              <span className="text-sm text-faint">
                 {pagination.totalItems} {pagination.totalItems === 1 ? 'story' : 'stories'}
               </span>
             )}
