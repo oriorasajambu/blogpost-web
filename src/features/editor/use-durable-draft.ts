@@ -36,9 +36,11 @@ export function notifyEditorAccess(error: unknown) {
     !(typeof error === 'object' && error !== null && 'status' in error)
   )
     return;
-  const status = (error as { status: number }).status;
+  const { status, code } = error as { status: number; code?: unknown };
   if (status === 401) window.dispatchEvent(new Event('blogpost:staff-session-expired'));
-  if (status === 403) window.dispatchEvent(new Event('blogpost:staff-access-lost'));
+  // A failed CSRF check is recoverable (a fresh token is fetched on retry); membership is intact.
+  if (status === 403 && code !== 'CSRF_VALIDATION_FAILED')
+    window.dispatchEvent(new Event('blogpost:staff-access-lost'));
 }
 type DraftSession = {
   key: string;

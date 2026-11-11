@@ -165,6 +165,7 @@ export function DraftEditor(props: {
         appVersion: props.appVersion,
         api,
         beforeAdoptServer: editor.flush,
+        onConfiguration: setConfiguration,
         onProgress: (value: {
           phase: string;
           draft: NonNullable<typeof draft>;
