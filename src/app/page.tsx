@@ -1,4 +1,3 @@
-import { ReadingLink as Link } from '@/components/layout/reading-link';
 import type { Metadata } from 'next';
 import { publicMetadata } from '@/lib/metadata';
 import { getReadingFeed, queryValue, readingPost, type SearchParams } from '@/lib/reading';
@@ -6,6 +5,8 @@ import { ArticleCard, ArticleList } from '@/components/article/article-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageIntro } from '@/components/ui/page-intro';
 import { ExpiredPage } from '@/components/ui/expired-page';
+import { CursorPagination } from '@/components/ui/pagination';
+import { fadingRule } from '@/components/ui/styles';
 export async function generateMetadata({
   searchParams,
 }: {
@@ -40,10 +41,15 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
             <ArticleCard post={posts[0]} featured />
           </section>
           {posts.length > 1 && (
-            <section className="latest-section" aria-labelledby="latest-heading">
-              <div className="section-heading">
-                <h2 id="latest-heading">More to discover</h2>
-                <span>Fresh from the journal</span>
+            <section aria-labelledby="latest-heading" className="mt-16 flex flex-col gap-7">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <h2 id="latest-heading" className="text-2xl tracking-[-0.01em]">
+                    More to discover
+                  </h2>
+                  <span className="text-sm text-faint">Fresh from the journal</span>
+                </div>
+                <div className={fadingRule} aria-hidden="true" />
               </div>
               <ArticleList posts={posts.slice(1)} />
             </section>
@@ -56,19 +62,11 @@ export default async function Home({ searchParams }: { searchParams: SearchParam
         />
       )}
       {(cursor || (pagination?.kind === 'CURSOR' && pagination.hasMore)) && (
-        <nav className="pagination" aria-label="Article pagination">
-          <Link className="text-link" href="/">
-            Back to latest
-          </Link>
-          {pagination?.kind === 'CURSOR' && pagination.nextCursor && (
-            <Link
-              className="text-link"
-              href={`/?cursor=${encodeURIComponent(pagination.nextCursor)}`}
-            >
-              Older stories →
-            </Link>
-          )}
-        </nav>
+        <CursorPagination
+          basePath="/"
+          showBack
+          nextCursor={pagination?.kind === 'CURSOR' ? pagination.nextCursor : undefined}
+        />
       )}
     </>
   );

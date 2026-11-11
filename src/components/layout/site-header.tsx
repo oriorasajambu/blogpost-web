@@ -4,9 +4,13 @@ import { ReadingLink as Link } from './reading-link';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { Icon } from '@/components/ui/icon';
+import { buttonSecondary, container, iconButton } from '@/components/ui/styles';
 import { ThemeToggle } from './theme-toggle';
 
 export type CategoryLink = { name: string; slug: string };
+
+const navLink =
+  'relative inline-flex min-h-11 max-w-full items-center gap-1.5 truncate px-3 text-sm text-muted no-underline transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
 
 export function SiteHeader({
   categories = [],
@@ -30,36 +34,40 @@ export function SiteHeader({
   }
   return (
     <header
-      className="site-header"
+      className="sticky top-0 z-40 border-b border-hairline bg-bg/85 backdrop-blur-md"
       onKeyDown={onEscape}
       onBlur={(event) => {
         if (menuOpen && !event.currentTarget.contains(event.relatedTarget)) setOpenPath(null);
       }}
     >
-      <div className="container header-top">
-        <Link href="/" className="brand" aria-label="Blogpost home">
-          blogpost<span className="brand-dot">.</span>
+      <div className={`${container} flex min-h-16 items-center gap-3 sm:gap-6`}>
+        <Link
+          href="/"
+          className="text-[1.1875rem] font-semibold tracking-[-0.02em] text-text no-underline hover:text-text"
+          aria-label="Blogpost home"
+        >
+          blogpost<span className="text-accent">.</span>
         </Link>
-        <span className="brand-caption">Ideas worth your time.</span>
-        <nav className="header-actions" aria-label="Utility navigation">
-          <Link href="/search" className="icon-button" aria-label="Search articles">
+        <span className="hidden text-sm text-faint lg:inline">Ideas worth your time.</span>
+        <nav className="ml-auto flex items-center gap-1" aria-label="Utility navigation">
+          <Link href="/search" className={iconButton} aria-label="Search articles">
             <Icon name="search" />
           </Link>
           <ThemeToggle />
           {loginEnabled && staffSession && (
-            <Link href="/studio" className="staff-link">
+            <Link href="/studio" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-sm:hidden`}>
               Studio <Icon name="arrow" size={15} />
             </Link>
           )}
           {loginEnabled && !staffSession && (
-            <Link href="/sign-in" className="staff-link">
+            <Link href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-sm:hidden`}>
               Staff sign in <Icon name="arrow" size={15} />
             </Link>
           )}
           <button
             ref={menuButton}
             type="button"
-            className="icon-button menu-toggle"
+            className={`${iconButton} sm:hidden`}
             aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={menuOpen}
             aria-controls="main-navigation"
@@ -69,27 +77,40 @@ export function SiteHeader({
           </button>
         </nav>
       </div>
-      <div className={`header-navigation${menuOpen ? ' is-open' : ''}`} id="main-navigation">
+      <div
+        className={`border-hairline max-sm:bg-surface sm:block ${menuOpen ? 'block max-sm:border-t' : 'hidden'}`}
+        id="main-navigation"
+      >
         <nav
-          className="container primary-nav"
+          className="primary-nav mx-auto flex w-full max-w-[78rem] flex-wrap items-stretch max-sm:flex-col max-sm:py-2 sm:gap-x-1 sm:px-3 lg:px-5"
           aria-label="Main navigation"
           onClick={() => setOpenPath(null)}
         >
-          <Link href="/" aria-current={pathname === '/' ? 'page' : undefined}>
+          <Link href="/" className={navLink} aria-current={pathname === '/' ? 'page' : undefined}>
             Latest
           </Link>
           {categories.slice(0, 6).map((category) => (
             <Link
               key={category.slug}
               href={`/categories/${encodeURIComponent(category.slug)}`}
+              className={navLink}
               aria-current={pathname === `/categories/${category.slug}` ? 'page' : undefined}
             >
-              {category.name}
+              <span className="truncate">{category.name}</span>
             </Link>
           ))}
-          <Link href="/search" aria-current={pathname === '/search' ? 'page' : undefined}>
+          <Link
+            href="/search"
+            className={`${navLink} sm:ml-auto`}
+            aria-current={pathname === '/search' ? 'page' : undefined}
+          >
             Explore <Icon name="arrow" size={14} />
           </Link>
+          {loginEnabled && (
+            <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} sm:hidden`}>
+              {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
+            </Link>
+          )}
         </nav>
       </div>
     </header>

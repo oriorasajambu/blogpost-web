@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 import { ArticleSkeleton } from '@/components/article/article-skeleton';
+import { container } from '@/components/ui/styles';
 
 const NavigationContext = createContext<{
   pending: boolean;
@@ -86,15 +87,19 @@ export function ReadingContent({ children }: { children: ReactNode }) {
     <main
       ref={main}
       id="main-content"
-      className={`container reading-content${pending ? ' reading-content-pending' : ''}`}
+      className={`${container} relative min-h-[55vh]`}
       tabIndex={-1}
       aria-busy={pending || undefined}
     >
-      <div className="reading-current-content" inert={pending} aria-hidden={pending || undefined}>
+      <div className="inert:invisible" inert={pending} aria-hidden={pending || undefined}>
         {children}
       </div>
       {pending && (
-        <div className="reading-pending-overlay" aria-label="Loading page" role="status">
+        <div
+          className="absolute inset-0 z-[2] min-h-[55vh] bg-bg px-4 pt-14 sm:px-6 lg:px-8"
+          aria-label="Loading page"
+          role="status"
+        >
           <ArticleSkeleton announce={false} />
         </div>
       )}

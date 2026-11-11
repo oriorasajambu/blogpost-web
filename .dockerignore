@@ -4,6 +4,7 @@
 !package.json
 !package-lock.json
 !next.config.ts
+!postcss.config.mjs
 !next-env.d.ts
 !tsconfig.json
 !src/

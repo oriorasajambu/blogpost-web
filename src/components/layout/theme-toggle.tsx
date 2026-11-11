@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 import { Icon } from '@/components/ui/icon';
+import { iconButton } from '@/components/ui/styles';
 import { themeStorageKey, type Theme } from '@/lib/theme';
 
 const themeChanged = 'blogpost:theme-changed';
@@ -49,15 +50,16 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      className="icon-button theme-toggle"
+      className={`${iconButton} theme-toggle`}
       onClick={toggle}
       aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
       title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
     >
-      <span className="theme-sun">
+      {/* Before hydration the icon follows the resolved data-theme, so it never flashes wrong. */}
+      <span className="hidden in-data-[theme=dark]:block">
         <Icon name="sun" />
       </span>
-      <span className="theme-moon">
+      <span className="in-data-[theme=dark]:hidden">
         <Icon name="moon" />
       </span>
     </button>

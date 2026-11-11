@@ -11,6 +11,7 @@ import { ReadingLink as Link } from '@/components/layout/reading-link';
 import { ArticleOutline, ReadingProgress } from '@/features/reading/article-outline';
 import { articleOutline, readingMinutes } from '@/lib/article-reading';
 import { AvailabilityRefresh } from '@/features/reading/availability-refresh';
+import { fadingRule, textLink } from '@/components/ui/styles';
 import { articleStructuredData, publicationMetadata, scriptJson } from '@/lib/metadata-policy';
 type Props = { params: Promise<{ slug: string }> };
 async function article(slug: string) {
@@ -67,36 +68,46 @@ export default async function ArticlePage({ params }: Props) {
   const outline = articleOutline(post.markdown);
   const related = await relatedStories(post.category.id, post.id);
   return (
-    <article className="article-page">
+    <article className="pb-6">
       <ReadingProgress />
       <AvailabilityRefresh />
       <ArticleHeader post={readingPost(post)} minutes={readingMinutes(post.markdown)} />
-      <div className="article-layout">
+      <div
+        className={`mt-10 grid gap-6 sm:mt-12 ${outline.length > 1 ? 'min-[1081px]:grid-cols-[13.75rem_minmax(0,1fr)] min-[1081px]:gap-16' : ''}`}
+      >
         {outline.length > 1 && <ArticleOutline items={outline} />}
-        <div>
+        <div className="min-w-0">
           <Markdown source={post.markdown} postId={post.id} media={post.media} />
           <ArticleTags tags={post.tags} />
         </div>
       </div>
       {related.length > 0 && (
-        <section className="related-stories" aria-labelledby="related-heading">
-          <div className="section-heading">
-            <h2 id="related-heading">Keep reading in {post.category.name}</h2>
+        <section className="mt-20 flex flex-col gap-7" aria-labelledby="related-heading">
+          <div className={fadingRule} aria-hidden="true" />
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <h2 id="related-heading" className="text-2xl tracking-[-0.01em]">
+              Keep reading in {post.category.name}
+            </h2>
             <Link
-              className="text-link"
+              className={textLink}
               href={`/categories/${encodeURIComponent(post.category.slug)}`}
             >
               All {post.category.name} stories
             </Link>
           </div>
-          <div className="related-grid">
+          <div className="grid gap-8 md:grid-cols-3">
             {related.map((story) => (
-              <article key={story.id} className="related-card">
-                <h3>
-                  <Link href={`/posts/${encodeURIComponent(story.slug)}`}>{story.title}</Link>
+              <article key={story.id} className="flex min-w-0 flex-col gap-2.5">
+                <h3 className="line-clamp-3 text-lg leading-snug">
+                  <Link
+                    href={`/posts/${encodeURIComponent(story.slug)}`}
+                    className="text-text no-underline hover:text-accent-ink"
+                  >
+                    {story.title}
+                  </Link>
                 </h3>
-                <p>{story.summary}</p>
-                <p className="article-byline">
+                <p className="line-clamp-2 text-sm text-muted">{story.summary}</p>
+                <p className="flex flex-wrap items-center gap-x-2 text-[0.8125rem] text-faint">
                   <span>{story.author.displayName}</span>
                   <span aria-hidden="true">·</span>
                   <time dateTime={story.firstPublishedAt}>

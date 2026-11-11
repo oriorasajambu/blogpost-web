@@ -10,7 +10,7 @@ import {
 import { ArticleList } from '@/components/article/article-card';
 import { PageIntro } from '@/components/ui/page-intro';
 import { EmptyState } from '@/components/ui/empty-state';
-import { ReadingLink as Link } from '@/components/layout/reading-link';
+import { CursorPagination } from '@/components/ui/pagination';
 import { cache } from 'react';
 import type { Metadata } from 'next';
 import { publicMetadata } from '@/lib/metadata';
@@ -66,9 +66,7 @@ export default async function AuthorPage({ params, searchParams }: Props) {
         )}
       </section>
       {pagination?.kind === 'CURSOR' && pagination.nextCursor && (
-        <nav className="pagination" aria-label="Article pagination">
-          <Link href={`?cursor=${encodeURIComponent(pagination.nextCursor)}`}>Older stories →</Link>
-        </nav>
+        <CursorPagination basePath="" showBack={false} nextCursor={pagination.nextCursor} />
       )}
     </>
   );

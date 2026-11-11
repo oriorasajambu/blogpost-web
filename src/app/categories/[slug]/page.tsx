@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { ReadingLink as Link } from '@/components/layout/reading-link';
 import {
   getReadingFeed,
   getTaxon,
@@ -10,6 +9,7 @@ import {
 import { ArticleList } from '@/components/article/article-card';
 import { PageIntro } from '@/components/ui/page-intro';
 import { EmptyState } from '@/components/ui/empty-state';
+import { CursorPagination } from '@/components/ui/pagination';
 import { publicMetadata } from '@/lib/metadata';
 import { ExpiredPage } from '@/components/ui/expired-page';
 type Props = { params: Promise<{ slug: string }>; searchParams: SearchParams };
@@ -53,9 +53,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         />
       )}
       {pagination?.kind === 'CURSOR' && pagination.nextCursor && (
-        <nav className="pagination" aria-label="Article pagination">
-          <Link href={`?cursor=${encodeURIComponent(pagination.nextCursor)}`}>Older stories →</Link>
-        </nav>
+        <CursorPagination basePath="" showBack={false} nextCursor={pagination.nextCursor} />
       )}
     </>
   );
