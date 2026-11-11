@@ -1190,3 +1190,23 @@ test('typing while images sync receives committed mappings without discarding ne
   assert.equal(done.generation, 2);
   assert.equal(done.mediaMappings[localId], image.id);
 });
+test('media replacement finds images inside HTML-looking text, as the renderer does', () => {
+  const from = crypto.randomUUID(),
+    to = crypto.randomUUID();
+  const source = `<div>\n![Photo](media://${from})\n</div>`;
+  const rewritten = replaceMediaReferences(content(source), { [from]: to }).markdown;
+  assert.equal(rewritten, `<div>\n![Photo](media://${to})\n</div>`);
+});
+test('a successful configuration recheck during Sync is reported to the editor', async () => {
+  const local = existing(),
+    store = memoryStore(local);
+  await edit(store, local.clientDraftId, 'Changed');
+  const seen: unknown[] = [];
+  await syncDraft(store, local.clientDraftId, {
+    ...options,
+    api: api(),
+    onConfiguration: (value) => seen.push(value),
+  }).catch(() => undefined);
+  assert.equal(seen.length, 1);
+  assert.deepEqual(seen[0], config());
+});

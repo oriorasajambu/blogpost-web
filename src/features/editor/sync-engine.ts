@@ -1,5 +1,9 @@
 import { editorApi, EditorApiError, type EditorApi, type EditorResult } from './editor-api';
-import { editorCompatibility, validateDraftContent } from './editor-contract';
+import {
+  editorCompatibility,
+  validateDraftContent,
+  type EditorConfiguration,
+} from './editor-contract';
 import type {
   DraftContent,
   DraftStore,
@@ -11,6 +15,8 @@ import type {
   WorkflowOperation,
 } from './draft-types';
 import { fromMarkdown } from 'mdast-util-from-markdown';
+import { gfmTable } from 'micromark-extension-gfm-table';
+import { gfmTableFromMarkdown } from 'mdast-util-gfm-table';
 import { DraftStorageError } from './draft-store';
 import { refreshCleanDraft } from './draft-model';
 
@@ -41,6 +47,8 @@ export type SyncOptions = {
   appVersion: string;
   api?: EditorApi;
   onProgress?: (progress: SyncProgress) => void;
+  /** Receives the server configuration each time Sync re-reads and accepts it. */
+  onConfiguration?: (configuration: EditorConfiguration) => void;
   /** Commit edits still waiting in the UI before adopting a clean server read. */
   beforeAdoptServer?: () => Promise<void>;
   now?: () => number;
@@ -106,7 +114,14 @@ function imageDestinations(markdown: string): { id: string; start: number; end: 
     nodes.push(node);
     node.children?.forEach(walk);
   };
-  walk(fromMarkdown(markdown) as MarkdownNode);
+  // Parse exactly as the renderer does (HTML kept as text, tables enabled), so every image a
+  // reader would see is found here and its pending upload is synced and rewritten.
+  walk(
+    fromMarkdown(markdown, {
+      extensions: [{ disable: { null: ['htmlFlow', 'htmlText'] } }, gfmTable()],
+      mdastExtensions: [gfmTableFromMarkdown()],
+    }) as MarkdownNode,
+  );
   const referenced = new Set(
     nodes.filter((node) => node.type === 'imageReference').map((node) => node.identifier),
   );
@@ -225,6 +240,7 @@ async function checkConfiguration(store: DraftStore, api: EditorApi, options: Sy
     );
   const incompatible = editorCompatibility(config.meta, options.appVersion);
   if (incompatible) throw new EditorSyncError('UPDATE_REQUIRED', incompatible);
+  options.onConfiguration?.(config);
 }
 function emit(
   options: SyncOptions,

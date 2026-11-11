@@ -172,3 +172,12 @@ test('reading time rounds whole minutes and never shows zero', async () => {
   assert.equal(readingMinutes(''), 1);
   assert.equal(readingMinutes(Array(690).fill('word').join(' ')), 3);
 });
+
+test('outline identifiers keep the alternative text of reference-style images in headings', async () => {
+  const { articleOutline } = await import('../../src/lib/article-reading');
+  const source = `## Example ![Diagram][asset]\n\n[asset]: media://${mediaId}\n\nText`;
+  const [item] = articleOutline(source);
+  assert.equal(item.id, 'section-example-diagram');
+  assert.equal(item.text, 'Example Diagram');
+  assert.ok(render(source).includes(`id="${item.id}"`), item.id);
+});

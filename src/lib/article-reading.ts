@@ -25,7 +25,8 @@ function parse(source: string) {
 function toArticleNode(node: MarkdownNode): ArticleNode {
   if (node.type === 'text' || node.type === 'inlineCode')
     return { type: 'text', value: node.value };
-  if (node.type === 'image')
+  // A reference image renders as <img> with its alt text, exactly like an inline image.
+  if (node.type === 'image' || node.type === 'imageReference')
     return { type: 'element', tagName: 'img', properties: { alt: node.alt ?? '' } };
   return {
     type: 'element',
