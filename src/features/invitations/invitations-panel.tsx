@@ -167,7 +167,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
     }
   }
   return (
-    <section className={studio.card} aria-labelledby="invitations-heading">
+    <section className={studio.section} aria-labelledby="invitations-heading">
       <h2 id="invitations-heading">Invitations</h2>
       <p>
         Only the invited, verified Google account can accept a single-use invitation. Copy and share
@@ -178,296 +178,322 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
           Invitation-link creation is unavailable until the website origin is configured.
         </p>
       )}
-      <form
-        className={studio.form}
-        onSubmit={(event) => {
-          event.preventDefault();
-          const submitter = (event.nativeEvent as SubmitEvent).submitter;
-          confirmationTrigger.current =
-            submitter instanceof HTMLButtonElement ? submitter : createInvitationTrigger.current;
-          setProposal({ kind: 'create', email, role });
-        }}
-      >
-        <fieldset disabled={blocked || !!proposal || !webOrigin}>
-          <legend>Invite staff</legend>
-          <label htmlFor="invitation-email">Invited email</label>
-          <input
-            type="email"
-            id="invitation-email"
-            required
-            maxLength={320}
-            autoComplete="off"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label htmlFor="invitation-role">Invited role</label>
-          <select
-            id="invitation-role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as Invitation['role'])}
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <div className="flex min-w-0 flex-col gap-4 xl:col-start-2 xl:row-start-1 [&>form]:rounded-xl [&>form]:bg-surface [&>form]:p-5 [&>form]:shadow-[0_0_0_1px_var(--color-hairline)] [&_fieldset]:border-0 [&_fieldset]:p-0 [&_legend]:mb-2 [&_legend]:p-0 [&_legend]:text-lg">
+          <form
+            className={studio.form}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const submitter = (event.nativeEvent as SubmitEvent).submitter;
+              confirmationTrigger.current =
+                submitter instanceof HTMLButtonElement
+                  ? submitter
+                  : createInvitationTrigger.current;
+              setProposal({ kind: 'create', email, role });
+            }}
           >
-            <option value="AUTHOR">Author</option>
-            <option value="EDITOR">Editor</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-          <button ref={createInvitationTrigger} type="submit" className={buttonPrimary}>
-            Review invitation
-          </button>
-        </fieldset>
-      </form>
-      {proposal && (
-        <ConfirmAction
-          returnFocusRef={confirmationTrigger}
-          title={
-            proposal.kind === 'create'
-              ? 'Confirm staff invitation'
-              : proposal.kind === 'reissue'
-                ? 'Reissue this invitation?'
-                : 'Revoke this invitation?'
-          }
-          confirmLabel={
-            proposal.kind === 'create'
-              ? 'Issue invitation'
-              : proposal.kind === 'reissue'
-                ? 'Issue replacement link'
-                : 'Revoke invitation'
-          }
-          danger={proposal.kind === 'revoke'}
-          busy={command.busy}
-          disabled={blocked}
-          onCancel={command.pending ? undefined : () => setProposal(null)}
-          onConfirm={execute}
-        >
-          {proposal.kind === 'create' ? (
-            <p>
-              Invite <strong>{proposal.email}</strong> with the{' '}
-              <strong>{proposal.role.toLowerCase()}</strong> role. Acceptance grants that staff
-              access.
-            </p>
-          ) : (
-            <>
-              <p>
-                {proposal.invitation.email} · {proposal.invitation.role.toLowerCase()} · current
-                status {proposal.invitation.status.toLowerCase()} · version{' '}
-                {proposal.invitation.version}.
-              </p>
-              <p>
-                {proposal.kind === 'reissue'
-                  ? 'The prior invitation is revoked and a replacement is issued. Its link is shown once; anyone holding the prior link will need the replacement.'
-                  : 'The current link will stop granting access. This does not disable an account that has already accepted.'}
-              </p>
-            </>
-          )}
-        </ConfirmAction>
-      )}
-      {pendingInvitationExists && (
-        <div className={staffError} role="alert">
-          <p>
-            A pending invitation already exists. Cancel this request, then review, reissue or revoke
-            the existing invitation in the list.
-          </p>
-          {command.error instanceof StaffApiError && command.error.traceId && (
-            <p className={studio.muted}>
-              Support reference: <code>{command.error.traceId}</code>
-            </p>
-          )}
-        </div>
-      )}
-      <AdminCommandRecovery
-        command={pendingInvitationExists ? { ...command, error: null } : command}
-        onRetry={retry}
-        onCheck={refreshProposal}
-        onReviewed={() => setProposal(null)}
-      />
-      {!blocked && !!command.error && proposal?.kind !== 'create' && (
-        <button
-          className={buttonSecondary}
-          type="button"
-          onClick={() => {
-            void refreshProposal()
-              .then(() => {
-                command.clearError();
-                setNotice(
-                  'Latest invitation loaded. Review its status and version before confirming again.',
-                );
-              })
-              .catch(setError);
-          }}
-        >
-          Load latest invitation
-        </button>
-      )}
-      {issued && (
-        <section className={studio.card} aria-labelledby="issued-invitation-heading">
-          <h3 id="issued-invitation-heading">Invitation receipt</h3>
-          <p>
-            {issued.invitation.email} · {issued.invitation.role.toLowerCase()} · expires{' '}
-            <StaffTime value={issued.invitation.expiresAt} />
-          </p>
-          {issued.linkAvailable && issued.inviteUrl ? (
-            <>
-              <label htmlFor="issued-invitation-link">Private invitation link</label>
+            <fieldset disabled={blocked || !!proposal || !webOrigin}>
+              <legend>Invite staff</legend>
+              <label htmlFor="invitation-email">Invited email</label>
               <input
-                id="issued-invitation-link"
-                readOnly
-                value={issued.inviteUrl}
-                onFocus={(event) => event.currentTarget.select()}
+                type="email"
+                id="invitation-email"
+                required
+                maxLength={320}
                 autoComplete="off"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <div className={studio.actions}>
-                <button
-                  type="button"
-                  className={buttonSecondary}
-                  onClick={() => void copyInvitationLink()}
-                >
-                  Copy invitation link
-                </button>
-                <button type="button" className={buttonSecondary} onClick={() => setIssued(null)}>
-                  Hide private link
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <p>
-                The secret link cannot be recovered from this receipt. Issue a replacement to obtain
-                a new link.
-              </p>
-              {webOrigin && (
-                <button
-                  type="button"
-                  className={buttonSecondary}
-                  disabled={blocked}
-                  onClick={(event) => {
-                    confirmationTrigger.current = event.currentTarget;
-                    setProposal({ kind: 'reissue', invitation: issued.invitation });
-                  }}
-                >
-                  Review replacement invitation
-                </button>
-              )}
-            </>
-          )}
-        </section>
-      )}
-      <p role="status">{notice}</p>
-      <form
-        className={studio.actions}
-        onSubmit={(event) => {
-          event.preventDefault();
-          void load().catch(() => {});
-        }}
-      >
-        <label>
-          Invitation status{' '}
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">All statuses</option>
-            <option value="PENDING">Pending</option>
-            <option value="ACCEPTED">Accepted</option>
-            <option value="REVOKED">Revoked</option>
-            <option value="EXPIRED">Expired</option>
-          </select>
-        </label>
-        <button type="submit" className={buttonSecondary} disabled={loading}>
-          Apply invitation filter
-        </button>
-      </form>
-      <StaffError error={error} />
-      {loading ? (
-        <p role="status">Loading invitations…</p>
-      ) : !error && !invitations.length ? (
-        <p>No invitations match this filter.</p>
-      ) : null}
-      <div className={studio.table}>
-        <ListHead
-          columns={['Invitation', 'Role · status · version', '']}
-          template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
-        />
-        <ul className={`staff-list ${studio.rows}`}>
-          {invitations.map((invitation) => (
-            <li
-              key={invitation.id}
-              className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] md:[&>div:first-child]:contents md:[&_h3]:col-start-1 md:[&_h3]:row-start-1 md:[&>div:first-child>p:nth-of-type(1)]:col-start-2 md:[&>div:first-child>p:nth-of-type(1)]:row-start-1 md:[&>div:first-child>p:nth-of-type(n+2)]:col-start-1 md:[&>div:last-child:not(:first-child)]:col-start-3 md:[&>div:last-child:not(:first-child)]:row-span-3 md:[&>div:last-child:not(:first-child)]:row-start-1`}
+              <label htmlFor="invitation-role">Invited role</label>
+              <select
+                id="invitation-role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as Invitation['role'])}
+              >
+                <option value="AUTHOR">Author</option>
+                <option value="EDITOR">Editor</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+              <button ref={createInvitationTrigger} type="submit" className={buttonPrimary}>
+                Review invitation
+              </button>
+            </fieldset>
+          </form>
+          {proposal && (
+            <ConfirmAction
+              returnFocusRef={confirmationTrigger}
+              title={
+                proposal.kind === 'create'
+                  ? 'Confirm staff invitation'
+                  : proposal.kind === 'reissue'
+                    ? 'Reissue this invitation?'
+                    : 'Revoke this invitation?'
+              }
+              confirmLabel={
+                proposal.kind === 'create'
+                  ? 'Issue invitation'
+                  : proposal.kind === 'reissue'
+                    ? 'Issue replacement link'
+                    : 'Revoke invitation'
+              }
+              danger={proposal.kind === 'revoke'}
+              busy={command.busy}
+              disabled={blocked}
+              onCancel={command.pending ? undefined : () => setProposal(null)}
+              onConfirm={execute}
             >
-              <div>
-                <h3>{invitation.email}</h3>
+              {proposal.kind === 'create' ? (
                 <p>
-                  {invitation.role.toLowerCase()} · {invitation.status.toLowerCase()} · version{' '}
-                  {invitation.version}
+                  Invite <strong>{proposal.email}</strong> with the{' '}
+                  <strong>{proposal.role.toLowerCase()}</strong> role. Acceptance grants that staff
+                  access.
                 </p>
-                <p>
-                  Issued by {invitation.issuedBy.displayName} on{' '}
-                  <StaffTime value={invitation.createdAt} />. Expires{' '}
-                  <StaffTime value={invitation.expiresAt} />.
+              ) : (
+                <>
+                  <p>
+                    {proposal.invitation.email} · {proposal.invitation.role.toLowerCase()} · current
+                    status {proposal.invitation.status.toLowerCase()} · version{' '}
+                    {proposal.invitation.version}.
+                  </p>
+                  <p>
+                    {proposal.kind === 'reissue'
+                      ? 'The prior invitation is revoked and a replacement is issued. Its link is shown once; anyone holding the prior link will need the replacement.'
+                      : 'The current link will stop granting access. This does not disable an account that has already accepted.'}
+                  </p>
+                </>
+              )}
+            </ConfirmAction>
+          )}
+          {pendingInvitationExists && (
+            <div className={staffError} role="alert">
+              <p>
+                A pending invitation already exists. Cancel this request, then review, reissue or
+                revoke the existing invitation in the list.
+              </p>
+              {command.error instanceof StaffApiError && command.error.traceId && (
+                <p className={studio.muted}>
+                  Support reference: <code>{command.error.traceId}</code>
                 </p>
-                {invitation.acceptedAt && (
+              )}
+            </div>
+          )}
+          <AdminCommandRecovery
+            command={pendingInvitationExists ? { ...command, error: null } : command}
+            onRetry={retry}
+            onCheck={refreshProposal}
+            onReviewed={() => setProposal(null)}
+          />
+          {!blocked && !!command.error && proposal?.kind !== 'create' && (
+            <button
+              className={buttonSecondary}
+              type="button"
+              onClick={() => {
+                void refreshProposal()
+                  .then(() => {
+                    command.clearError();
+                    setNotice(
+                      'Latest invitation loaded. Review its status and version before confirming again.',
+                    );
+                  })
+                  .catch(setError);
+              }}
+            >
+              Load latest invitation
+            </button>
+          )}
+          {issued && (
+            <section className={studio.card} aria-labelledby="issued-invitation-heading">
+              <h3 id="issued-invitation-heading">Invitation receipt</h3>
+              <p>
+                {issued.invitation.email} · {issued.invitation.role.toLowerCase()} · expires{' '}
+                <StaffTime value={issued.invitation.expiresAt} />
+              </p>
+              {issued.linkAvailable && issued.inviteUrl ? (
+                <>
+                  <label htmlFor="issued-invitation-link">Private invitation link</label>
+                  <input
+                    id="issued-invitation-link"
+                    readOnly
+                    value={issued.inviteUrl}
+                    onFocus={(event) => event.currentTarget.select()}
+                    autoComplete="off"
+                  />
+                  <div className={studio.actions}>
+                    <button
+                      type="button"
+                      className={buttonSecondary}
+                      onClick={() => void copyInvitationLink()}
+                    >
+                      Copy invitation link
+                    </button>
+                    <button
+                      type="button"
+                      className={buttonSecondary}
+                      onClick={() => setIssued(null)}
+                    >
+                      Hide private link
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
                   <p>
-                    Accepted <StaffTime value={invitation.acceptedAt} />.
+                    The secret link cannot be recovered from this receipt. Issue a replacement to
+                    obtain a new link.
                   </p>
-                )}
-                {invitation.revokedAt && (
-                  <p>
-                    Revoked <StaffTime value={invitation.revokedAt} />.
-                  </p>
-                )}
-              </div>
-              {invitation.status !== 'ACCEPTED' && (
-                <div className={studio.actions}>
                   {webOrigin && (
                     <button
                       type="button"
                       className={buttonSecondary}
-                      disabled={blocked || !!proposal}
+                      disabled={blocked}
                       onClick={(event) => {
                         confirmationTrigger.current = event.currentTarget;
-                        setProposal({ kind: 'reissue', invitation });
+                        setProposal({ kind: 'reissue', invitation: issued.invitation });
                       }}
                     >
-                      Reissue for {invitation.email}
+                      Review replacement invitation
                     </button>
                   )}
-                  {invitation.status !== 'REVOKED' && (
-                    <button
-                      type="button"
-                      className={buttonSecondary}
-                      disabled={blocked || !!proposal}
-                      onClick={(event) => {
-                        confirmationTrigger.current = event.currentTarget;
-                        setProposal({ kind: 'revoke', invitation });
-                      }}
-                    >
-                      Revoke for {invitation.email}
-                    </button>
-                  )}
-                </div>
+                </>
               )}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className={studio.actions}>
-        <button
-          type="button"
-          className={buttonSecondary}
-          disabled={loading}
-          onClick={() => {
-            void load().catch(() => {});
-          }}
-        >
-          Refresh invitations
-        </button>
-        {page?.hasMore && page.nextCursor && (
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={loading}
-            onClick={() => {
-              void load(page.nextCursor!).catch(() => {});
+            </section>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-col gap-4 xl:col-start-1 xl:row-start-1">
+          <p role="status">{notice}</p>
+          <form
+            className={studio.filters}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void load().catch(() => {});
             }}
           >
-            Next invitations
-          </button>
-        )}
+            <label>
+              Invitation status{' '}
+              <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value="">All statuses</option>
+                <option value="PENDING">Pending</option>
+                <option value="ACCEPTED">Accepted</option>
+                <option value="REVOKED">Revoked</option>
+                <option value="EXPIRED">Expired</option>
+              </select>
+            </label>
+            <button type="submit" className={buttonSecondary} disabled={loading}>
+              Apply invitation filter
+            </button>
+          </form>
+          <StaffError error={error} />
+          {loading ? (
+            <p role="status">Loading invitations…</p>
+          ) : !error && !invitations.length ? (
+            <p>No invitations match this filter.</p>
+          ) : null}
+          <div className={studio.table}>
+            <ListHead
+              columns={['Invitation', 'Role · status · version', '']}
+              template="lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
+            />
+            <ul className={`staff-list ${studio.rows}`}>
+              {invitations.map((invitation) => (
+                <li
+                  key={invitation.id}
+                  className={`${studio.row} lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] lg:[&>div:first-child]:contents lg:[&_h3]:col-start-1 lg:[&_h3]:row-start-1 lg:[&>div:first-child>p:nth-of-type(1)]:col-start-2 lg:[&>div:first-child>p:nth-of-type(1)]:row-start-1 lg:[&>div:first-child>p:nth-of-type(n+2)]:col-start-1 lg:[&>div:last-child:not(:first-child)]:col-start-3 lg:[&>div:last-child:not(:first-child)]:row-span-3 lg:[&>div:last-child:not(:first-child)]:row-start-1`}
+                >
+                  <div>
+                    <h3>{invitation.email}</h3>
+                    <p className="flex flex-wrap items-center gap-2">
+                      <span>{invitation.role.toLowerCase()}</span>
+                      <span className="sr-only"> · </span>
+                      <span
+                        className={studio.statusChip}
+                        data-tone={
+                          invitation.status === 'PENDING'
+                            ? 'warning'
+                            : invitation.status === 'ACCEPTED'
+                              ? 'success'
+                              : undefined
+                        }
+                      >
+                        {invitation.status.toLowerCase()}
+                      </span>
+                      <span className="sr-only"> · </span>
+                      <span>version {invitation.version}</span>
+                    </p>
+                    <p>
+                      Issued by {invitation.issuedBy.displayName} on{' '}
+                      <StaffTime value={invitation.createdAt} />. Expires{' '}
+                      <StaffTime value={invitation.expiresAt} />.
+                    </p>
+                    {invitation.acceptedAt && (
+                      <p>
+                        Accepted <StaffTime value={invitation.acceptedAt} />.
+                      </p>
+                    )}
+                    {invitation.revokedAt && (
+                      <p>
+                        Revoked <StaffTime value={invitation.revokedAt} />.
+                      </p>
+                    )}
+                  </div>
+                  {invitation.status !== 'ACCEPTED' && (
+                    <div className={studio.actions}>
+                      {webOrigin && (
+                        <button
+                          type="button"
+                          className={buttonSecondary}
+                          disabled={blocked || !!proposal}
+                          onClick={(event) => {
+                            confirmationTrigger.current = event.currentTarget;
+                            setProposal({ kind: 'reissue', invitation });
+                          }}
+                        >
+                          Reissue for {invitation.email}
+                        </button>
+                      )}
+                      {invitation.status !== 'REVOKED' && (
+                        <button
+                          type="button"
+                          className={buttonSecondary}
+                          disabled={blocked || !!proposal}
+                          onClick={(event) => {
+                            confirmationTrigger.current = event.currentTarget;
+                            setProposal({ kind: 'revoke', invitation });
+                          }}
+                        >
+                          Revoke for {invitation.email}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className={studio.actions}>
+            <button
+              type="button"
+              className={buttonSecondary}
+              disabled={loading}
+              onClick={() => {
+                void load().catch(() => {});
+              }}
+            >
+              Refresh invitations
+            </button>
+            {page?.hasMore && page.nextCursor && (
+              <button
+                type="button"
+                className={buttonSecondary}
+                disabled={loading}
+                onClick={() => {
+                  void load(page.nextCursor!).catch(() => {});
+                }}
+              >
+                Next invitations
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

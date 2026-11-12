@@ -68,7 +68,7 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
   }, [load, memberId, invalidate]);
   return (
     <section className={studio.workspace} aria-labelledby="publication-workspace-heading">
-      <header>
+      <header className="mt-6 flex flex-col gap-2 [&>h2]:text-2xl [&>p:last-child]:text-sm [&>p:last-child]:text-muted">
         <p className={eyebrow}>Publication workspace</p>
         <h2 id="publication-workspace-heading">Browse staff articles</h2>
         <p>Working revisions stay private until an editor reviews and publishes them.</p>
@@ -113,29 +113,47 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
       <div className={studio.table}>
         <ListHead
           columns={['Article', 'Publication · workflow', 'Updated', '']}
-          template="md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto]"
+          template="lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto]"
         />
         <ul className={`staff-post-list ${studio.rows}`}>
           {posts.map((post) => (
             <li
               key={post.id}
-              className={`${studio.row} md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] md:[&>h3]:col-start-1 md:[&>h3]:row-start-1 md:[&>p:nth-of-type(1)]:col-start-2 md:[&>p:nth-of-type(1)]:row-start-1 md:[&>p:nth-of-type(2)]:col-start-1 md:[&>p:nth-of-type(2)]:row-start-2 md:[&>p:nth-of-type(3)]:col-start-3 md:[&>p:nth-of-type(3)]:row-start-1 md:[&>a]:col-start-4 md:[&>a]:row-start-1 [&>h3_a]:text-text [&>h3_a]:no-underline [&>h3_a:hover]:text-accent-ink`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] lg:[&>h3]:col-start-1 lg:[&>h3]:row-start-1 lg:[&>p:nth-of-type(1)]:col-start-2 lg:[&>p:nth-of-type(1)]:row-start-1 lg:[&>p:nth-of-type(2)]:col-start-1 lg:[&>p:nth-of-type(2)]:row-start-2 lg:[&>p:nth-of-type(3)]:col-start-3 lg:[&>p:nth-of-type(3)]:row-start-1 lg:[&>a]:col-start-4 lg:[&>a]:row-start-1 [&>h3_a]:text-text [&>h3_a]:no-underline [&>h3_a:hover]:text-accent-ink`}
             >
               <h3>
                 <Link prefetch={false} href={`/studio/posts/${post.id}`}>
                   {post.slug || `Unpublished article by ${post.author.displayName}`}
                 </Link>
               </h3>
-              <p>
-                {post.author.displayName} ·{' '}
-                {post.publicationState === 'PUBLISHED'
-                  ? 'Published'
-                  : post.publicationState === 'WITHDRAWN'
-                    ? 'Withdrawn from public view'
-                    : 'Never published'}{' '}
-                · {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+              <p className="flex flex-wrap items-center gap-2">
+                <span className="sr-only">{post.author.displayName} · </span>
+                <span
+                  className={studio.statusChip}
+                  data-tone={post.publicationState === 'PUBLISHED' ? 'success' : undefined}
+                >
+                  {post.publicationState === 'PUBLISHED'
+                    ? 'Published'
+                    : post.publicationState === 'WITHDRAWN'
+                      ? 'Withdrawn from public view'
+                      : 'Never published'}
+                </span>
+                <span className="sr-only"> · </span>
+                <span
+                  className={studio.statusChip}
+                  data-tone={
+                    post.workflowState === 'IN_REVIEW'
+                      ? 'warning'
+                      : post.workflowState === 'CHANGES_REQUESTED'
+                        ? 'danger'
+                        : undefined
+                  }
+                >
+                  {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+                </span>
               </p>
               <p className={studio.muted}>
+                <span aria-hidden="true">{post.author.displayName} · </span>
                 Working revision: {post.workingRevisionId ?? 'none'}
                 <br />
                 Published revision: {post.publishedRevisionId ?? 'none'}

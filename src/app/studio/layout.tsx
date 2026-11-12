@@ -72,7 +72,7 @@ export default async function StudioLayout({ children }: { children: ReactNode }
           <SignOutButton namespace={namespace} accountId={access.member.id} />
         </StaffRail>
         <div className="staff-main min-w-0 flex-1 px-4 pt-4 pb-16 sm:px-8 md:pt-8 lg:px-10">
-          <div className="mx-auto w-full max-w-[76rem]">{children}</div>
+          <div className="w-full max-w-[96rem]">{children}</div>
         </div>
       </div>
     </StaffSessionBoundary>

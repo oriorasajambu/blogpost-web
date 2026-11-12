@@ -89,10 +89,10 @@ export function MembersPanel({ accountId }: { accountId: string }) {
     }
   }
   return (
-    <section aria-labelledby="members-heading" className={studio.card}>
+    <section aria-labelledby="members-heading" className={studio.section}>
       <h2 id="members-heading">Staff members</h2>
       <form
-        className={studio.actions}
+        className={studio.filters}
         onSubmit={(event) => {
           event.preventDefault();
           if (selectionLock.current) return;
@@ -133,18 +133,30 @@ export function MembersPanel({ accountId }: { accountId: string }) {
       <div className={studio.table}>
         <ListHead
           columns={['Member', 'Role · access', '']}
-          template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
+          template="lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
         />
         <ul className={`staff-list ${studio.rows}`}>
           {members.map((member) => (
             <li
               key={member.id}
-              className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] md:[&>div]:contents md:[&_strong]:col-start-1 md:[&_strong]:row-start-1 md:[&_span]:col-start-2 md:[&_span]:row-start-1 md:[&_div>p]:col-start-1 md:[&_div>p]:row-start-2 md:[&>button]:col-start-3 md:[&>button]:row-span-2 md:[&>button]:row-start-1 [&_strong]:font-medium`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] lg:[&>div]:contents lg:[&_strong]:col-start-1 lg:[&_strong]:row-start-1 lg:[&>div>span]:col-start-2 lg:[&>div>span]:row-start-1 lg:[&_div>p]:col-start-1 lg:[&_div>p]:row-start-2 lg:[&>button]:col-start-3 lg:[&>button]:row-span-2 lg:[&>button]:row-start-1 [&_strong]:font-medium`}
             >
               <div>
                 <strong>{member.displayName}</strong>{' '}
-                <span>
-                  {member.role.toLowerCase()} · {member.active ? 'Active' : 'Disabled'}
+                <span className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={studio.statusChip}
+                    data-tone={member.role === 'ADMIN' ? 'accent' : undefined}
+                  >
+                    {member.role.toLowerCase()}
+                  </span>
+                  <span className="sr-only"> · </span>
+                  <span
+                    className={studio.statusChip}
+                    data-tone={member.active ? 'success' : 'danger'}
+                  >
+                    {member.active ? 'Active' : 'Disabled'}
+                  </span>
                 </span>
                 <p>{member.email}</p>
               </div>

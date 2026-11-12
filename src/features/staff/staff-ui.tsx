@@ -88,7 +88,7 @@ export function ListHead({ columns, template }: { columns: string[]; template: s
   return (
     <div
       aria-hidden="true"
-      className={`hidden min-h-10 items-center gap-x-6 border-b border-hairline bg-raised/40 px-5 text-xs font-medium tracking-[0.06em] text-faint uppercase md:grid ${template}`}
+      className={`hidden min-h-10 items-center gap-x-6 border-b border-hairline bg-raised/40 px-5 text-xs font-medium tracking-[0.06em] text-faint uppercase lg:grid ${template}`}
     >
       {columns.map((column, index) => (
         <span key={index}>{column}</span>

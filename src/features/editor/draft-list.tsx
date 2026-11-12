@@ -87,27 +87,33 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
       <div className={studio.table}>
         <ListHead
           columns={['Draft', 'Status']}
-          template="md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]"
+          template="lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]"
         />
         <ul className={studio.rows}>
           {localOnly.map((draft) => (
             <li
               key={draft.clientDraftId}
-              className={`${studio.row} md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
             >
               <Link href={`/studio/posts/new?local=${draft.clientDraftId}`} prefetch={false}>
                 <strong>{draft.content.title || 'Untitled draft'}</strong>
               </Link>
-              <p>
-                {draft.postId ? 'Server draft with a device copy' : 'On this device'} ·{' '}
-                {isDraftDirty(draft) ? 'Unsynced changes' : 'Synced'}
+              <p className="flex flex-wrap items-center gap-2">
+                <span>{draft.postId ? 'Server draft with a device copy' : 'On this device'}</span>
+                <span className="sr-only"> · </span>
+                <span
+                  className={studio.statusChip}
+                  data-tone={isDraftDirty(draft) ? 'warning' : undefined}
+                >
+                  {isDraftDirty(draft) ? 'Unsynced changes' : 'Synced'}
+                </span>
               </p>
             </li>
           ))}
           {posts.map((post) => (
             <li
               key={post.id}
-              className={`${studio.row} md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
             >
               <Link href={`/studio/posts/${post.id}`} prefetch={false}>
                 <strong>
@@ -116,12 +122,27 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
                     `Draft created ${new Date(post.createdAt).toLocaleDateString()}`}
                 </strong>
               </Link>
-              <p>
-                {post.publicationState === 'PUBLISHED' ? 'Published' : 'Not published'} ·{' '}
-                {post.workflowState.replaceAll('_', ' ').toLowerCase()} · version {post.version}
-                {local.some((draft) => draft.postId === post.id && isDraftDirty(draft))
-                  ? ' · Unsynced device changes'
-                  : ''}
+              <p className="flex flex-wrap items-center gap-2">
+                <span
+                  className={studio.statusChip}
+                  data-tone={post.publicationState === 'PUBLISHED' ? 'success' : 'info'}
+                >
+                  {post.publicationState === 'PUBLISHED' ? 'Published' : 'Not published'}
+                </span>
+                <span className="sr-only"> · </span>
+                <span className={studio.statusChip}>
+                  {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+                </span>
+                <span className="sr-only"> · </span>
+                <span>version {post.version}</span>
+                {local.some((draft) => draft.postId === post.id && isDraftDirty(draft)) && (
+                  <>
+                    <span className="sr-only"> · </span>
+                    <span className={studio.statusChip} data-tone="warning">
+                      Unsynced device changes
+                    </span>
+                  </>
+                )}
               </p>
             </li>
           ))}
