@@ -6,7 +6,7 @@ import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
 import { ContractError } from '@/lib/api-contract';
 import { staffRequest } from '@/features/staff/staff-api';
-import { ConfirmAction, StaffError, StaffTime } from '@/features/staff/staff-ui';
+import { ConfirmAction, ListHead, StaffError, StaffTime } from '@/features/staff/staff-ui';
 import {
   validateWorkspaceSummary,
   type WorkspacePost,
@@ -82,12 +82,16 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
   };
   return (
     <section className={studio.workspace} aria-labelledby="trash-heading">
-      <p className={eyebrow}>Recoverable work</p>
-      <h1 id="trash-heading">Trash</h1>
-      <p>
-        Trashed articles are unavailable to new public requests. Restore before the purge date to
-        recover an unpublished draft.
-      </p>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <p className={eyebrow}>Recoverable work</p>
+          <h1 id="trash-heading">Trash</h1>
+          <p>
+            Trashed articles are unavailable to new public requests. Restore before the purge date
+            to recover an unpublished draft.
+          </p>
+        </div>
+      </header>
       <StaffError error={error ?? command.error} />
       <div className={studio.actions}>
         <button
@@ -110,38 +114,51 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
       {busy && <p role="status">Loading recoverable work…</p>}
       {command.notice && <p role="status">{command.notice}</p>}
       {loaded && !items.length && <p>No recoverable articles in trash.</p>}
-      <div className={studio.grid}>
-        {items.map((post) => (
-          <article className={studio.card} key={post.id}>
-            <h2>{post.slug || `Article by ${post.author.displayName}`}</h2>
-            <p>
-              Post <code>{post.id}</code>
-            </p>
-            <p>Owner: {post.author.displayName}</p>
-            <p>Moved to trash {post.trashedAt && <StaffTime value={post.trashedAt} />}</p>
-            <p>
-              Permanent purge{' '}
-              {post.purgeAfter ? <StaffTime value={post.purgeAfter} /> : 'date unavailable'}
-            </p>
-            <div className={studio.actions}>
-              <Link className={textLink} href={`/studio/posts/${post.id}/history`} prefetch={false}>
-                Read retained history
-              </Link>
-              {post.allowedActions.includes('RESTORE') && (
-                <button
-                  className={buttonSecondary}
-                  disabled={busy || command.busy || command.uncertain || command.needsRefresh}
-                  onClick={(event) => {
-                    confirmationTrigger.current = event.currentTarget;
-                    void select(post.id);
-                  }}
+      <div className={studio.table}>
+        <ListHead
+          columns={['Article', 'Owner', 'Moved · purge', '']}
+          template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)]"
+        />
+        <div className="grid divide-y divide-hairline">
+          {items.map((post) => (
+            <article
+              className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)] md:[&>h2]:col-start-1 md:[&>h2]:row-start-1 md:[&>p:nth-of-type(1)]:col-start-1 md:[&>p:nth-of-type(1)]:row-start-2 md:[&>p:nth-of-type(2)]:col-start-2 md:[&>p:nth-of-type(2)]:row-start-1 md:[&>p:nth-of-type(3)]:col-start-3 md:[&>p:nth-of-type(3)]:row-start-1 md:[&>p:nth-of-type(4)]:col-start-3 md:[&>p:nth-of-type(4)]:row-start-2 md:[&>div]:col-start-4 md:[&>div]:row-span-2 md:[&>div]:row-start-1`}
+              key={post.id}
+            >
+              <h2>{post.slug || `Article by ${post.author.displayName}`}</h2>
+              <p>
+                Post <code>{post.id}</code>
+              </p>
+              <p>Owner: {post.author.displayName}</p>
+              <p>Moved to trash {post.trashedAt && <StaffTime value={post.trashedAt} />}</p>
+              <p>
+                Permanent purge{' '}
+                {post.purgeAfter ? <StaffTime value={post.purgeAfter} /> : 'date unavailable'}
+              </p>
+              <div className={studio.actions}>
+                <Link
+                  className={textLink}
+                  href={`/studio/posts/${post.id}/history`}
+                  prefetch={false}
                 >
-                  Restore as draft
-                </button>
-              )}
-            </div>
-          </article>
-        ))}
+                  Read retained history
+                </Link>
+                {post.allowedActions.includes('RESTORE') && (
+                  <button
+                    className={buttonSecondary}
+                    disabled={busy || command.busy || command.uncertain || command.needsRefresh}
+                    onClick={(event) => {
+                      confirmationTrigger.current = event.currentTarget;
+                      void select(post.id);
+                    }}
+                  >
+                    Restore as draft
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
       {cursor && (
         <button

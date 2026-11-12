@@ -46,7 +46,13 @@ export function ReadingNavigation({ children }: { children: ReactNode }) {
 export const useReadingNavigation = () => useContext(NavigationContext);
 
 /** Client feedback does not flush a server loading boundary or turn an outage into HTTP 200. */
-export function ReadingContent({ children }: { children: ReactNode }) {
+export function ReadingContent({
+  children,
+  wide = false,
+}: {
+  children: ReactNode;
+  wide?: boolean;
+}) {
   const { pending } = useReadingNavigation();
   const main = useRef<HTMLElement>(null);
   const needsFocus = useRef(false);
@@ -87,7 +93,7 @@ export function ReadingContent({ children }: { children: ReactNode }) {
     <main
       ref={main}
       id="main-content"
-      className={`${container} relative min-h-[55vh]`}
+      className={wide ? 'relative min-h-dvh' : `${container} relative min-h-[55vh]`}
       tabIndex={-1}
       aria-busy={pending || undefined}
     >

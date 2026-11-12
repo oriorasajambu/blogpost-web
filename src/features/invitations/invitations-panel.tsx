@@ -3,7 +3,7 @@
 import { buttonPrimary, buttonSecondary, staffError, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest, StaffApiError } from '@/features/staff/staff-api';
-import { StaffError, StaffTime, ConfirmAction } from '@/features/staff/staff-ui';
+import { ConfirmAction, ListHead, StaffError, StaffTime } from '@/features/staff/staff-ui';
 import type { CursorPagination } from '@/features/editor/editor-contract';
 import {
   adminList,
@@ -378,64 +378,73 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       ) : !error && !invitations.length ? (
         <p>No invitations match this filter.</p>
       ) : null}
-      <ul className={studio.list}>
-        {invitations.map((invitation) => (
-          <li key={invitation.id}>
-            <div>
-              <h3>{invitation.email}</h3>
-              <p>
-                {invitation.role.toLowerCase()} · {invitation.status.toLowerCase()} · version{' '}
-                {invitation.version}
-              </p>
-              <p>
-                Issued by {invitation.issuedBy.displayName} on{' '}
-                <StaffTime value={invitation.createdAt} />. Expires{' '}
-                <StaffTime value={invitation.expiresAt} />.
-              </p>
-              {invitation.acceptedAt && (
+      <div className={studio.table}>
+        <ListHead
+          columns={['Invitation', 'Role · status · version', '']}
+          template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
+        />
+        <ul className={`staff-list ${studio.rows}`}>
+          {invitations.map((invitation) => (
+            <li
+              key={invitation.id}
+              className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] md:[&>div:first-child]:contents md:[&_h3]:col-start-1 md:[&_h3]:row-start-1 md:[&>div:first-child>p:nth-of-type(1)]:col-start-2 md:[&>div:first-child>p:nth-of-type(1)]:row-start-1 md:[&>div:first-child>p:nth-of-type(n+2)]:col-start-1 md:[&>div:last-child:not(:first-child)]:col-start-3 md:[&>div:last-child:not(:first-child)]:row-span-3 md:[&>div:last-child:not(:first-child)]:row-start-1`}
+            >
+              <div>
+                <h3>{invitation.email}</h3>
                 <p>
-                  Accepted <StaffTime value={invitation.acceptedAt} />.
+                  {invitation.role.toLowerCase()} · {invitation.status.toLowerCase()} · version{' '}
+                  {invitation.version}
                 </p>
-              )}
-              {invitation.revokedAt && (
                 <p>
-                  Revoked <StaffTime value={invitation.revokedAt} />.
+                  Issued by {invitation.issuedBy.displayName} on{' '}
+                  <StaffTime value={invitation.createdAt} />. Expires{' '}
+                  <StaffTime value={invitation.expiresAt} />.
                 </p>
-              )}
-            </div>
-            {invitation.status !== 'ACCEPTED' && (
-              <div className={studio.actions}>
-                {webOrigin && (
-                  <button
-                    type="button"
-                    className={buttonSecondary}
-                    disabled={blocked || !!proposal}
-                    onClick={(event) => {
-                      confirmationTrigger.current = event.currentTarget;
-                      setProposal({ kind: 'reissue', invitation });
-                    }}
-                  >
-                    Reissue for {invitation.email}
-                  </button>
+                {invitation.acceptedAt && (
+                  <p>
+                    Accepted <StaffTime value={invitation.acceptedAt} />.
+                  </p>
                 )}
-                {invitation.status !== 'REVOKED' && (
-                  <button
-                    type="button"
-                    className={buttonSecondary}
-                    disabled={blocked || !!proposal}
-                    onClick={(event) => {
-                      confirmationTrigger.current = event.currentTarget;
-                      setProposal({ kind: 'revoke', invitation });
-                    }}
-                  >
-                    Revoke for {invitation.email}
-                  </button>
+                {invitation.revokedAt && (
+                  <p>
+                    Revoked <StaffTime value={invitation.revokedAt} />.
+                  </p>
                 )}
               </div>
-            )}
-          </li>
-        ))}
-      </ul>
+              {invitation.status !== 'ACCEPTED' && (
+                <div className={studio.actions}>
+                  {webOrigin && (
+                    <button
+                      type="button"
+                      className={buttonSecondary}
+                      disabled={blocked || !!proposal}
+                      onClick={(event) => {
+                        confirmationTrigger.current = event.currentTarget;
+                        setProposal({ kind: 'reissue', invitation });
+                      }}
+                    >
+                      Reissue for {invitation.email}
+                    </button>
+                  )}
+                  {invitation.status !== 'REVOKED' && (
+                    <button
+                      type="button"
+                      className={buttonSecondary}
+                      disabled={blocked || !!proposal}
+                      onClick={(event) => {
+                        confirmationTrigger.current = event.currentTarget;
+                        setProposal({ kind: 'revoke', invitation });
+                      }}
+                    >
+                      Revoke for {invitation.email}
+                    </button>
+                  )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className={studio.actions}>
         <button
           type="button"

@@ -57,9 +57,13 @@ export function ProfileForm({ initial }: { initial: StaffMember }) {
   }
   return (
     <section className={studio.workspace} aria-labelledby="profile-heading">
-      <p className={eyebrow}>Your account</p>
-      <h1 id="profile-heading">Your staff profile</h1>
-      <p>Your display name and biography appear on your public author profile.</p>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <p className={eyebrow}>Your account</p>
+          <h1 id="profile-heading">Your staff profile</h1>
+          <p>Your display name and biography appear on your public author profile.</p>
+        </div>
+      </header>
       <form
         className={`${studio.form} ${studio.card}`}
         onSubmit={(event) => {

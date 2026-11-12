@@ -3,7 +3,7 @@
 import { buttonSecondary, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest } from '@/features/staff/staff-api';
-import { StaffError, StaffTime } from '@/features/staff/staff-ui';
+import { ListHead, StaffError, StaffTime } from '@/features/staff/staff-ui';
 import type { CursorPagination } from '@/features/editor/editor-contract';
 import { adminList, validateAuditEvent, type AuditEvent } from './admin-contract';
 
@@ -110,26 +110,32 @@ export function AuditPanel() {
       ) : !error && !events.length ? (
         <p>No audit events match these filters.</p>
       ) : null}
-      <ol className={studio.list}>
-        {events.map((event) => (
-          <li key={event.id}>
-            <article>
-              <h3>{event.action.replaceAll('_', ' ').toLowerCase()}</h3>
-              <p>
-                {event.actor.displayName} ({event.actor.handle}) ·{' '}
-                <StaffTime value={event.createdAt} />
-              </p>
-              <p>
-                {event.subjectType} · <code>{event.subjectId}</code>
-              </p>
-              <details>
-                <summary>Recorded changes</summary>
-                <pre tabIndex={0}>{JSON.stringify(event.changes, null, 2)}</pre>
-              </details>
-            </article>
-          </li>
-        ))}
-      </ol>
+      <div className={studio.table}>
+        <ListHead
+          columns={['Event', 'Actor · time', 'Subject']}
+          template="md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)]"
+        />
+        <ol className={`staff-list ${studio.rows}`}>
+          {events.map((event) => (
+            <li key={event.id} className={studio.row}>
+              <article className="grid min-w-0 gap-x-6 gap-y-1.5 md:items-start md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)] [&>details]:col-span-full">
+                <h3>{event.action.replaceAll('_', ' ').toLowerCase()}</h3>
+                <p>
+                  {event.actor.displayName} ({event.actor.handle}) ·{' '}
+                  <StaffTime value={event.createdAt} />
+                </p>
+                <p>
+                  {event.subjectType} · <code>{event.subjectId}</code>
+                </p>
+                <details>
+                  <summary>Recorded changes</summary>
+                  <pre tabIndex={0}>{JSON.stringify(event.changes, null, 2)}</pre>
+                </details>
+              </article>
+            </li>
+          ))}
+        </ol>
+      </div>
       <div className={studio.actions}>
         <button
           type="button"

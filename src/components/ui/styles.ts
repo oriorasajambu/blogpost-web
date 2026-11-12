@@ -31,6 +31,10 @@ export const fadingRule =
  * workspace element layer in globals.css select on them.
  */
 export const studio = {
+  /** Page header: eyebrow, title and intro on the left, page actions on the right. */
+  pageHead:
+    'mb-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 [&_h1]:text-[1.875rem] [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] sm:[&_h1]:text-[2.25rem]',
+  pageTitle: 'flex min-w-0 max-w-[48rem] flex-col gap-2 [&>p:not([class])]:text-muted',
   workspace: 'staff-workspace flex min-w-0 flex-col gap-5 [overflow-wrap:anywhere]',
   card: 'staff-card min-w-0 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] sm:p-6 [&>*+*]:mt-3.5',
   confirm: 'staff-confirm min-w-0 rounded-xl bg-raised p-4 shadow-md sm:p-6 [&>*+*]:mt-3.5',
@@ -63,6 +67,11 @@ export const studio = {
     'auth-panel mx-auto my-10 w-full max-w-[36rem] rounded-2xl bg-surface p-5 shadow-md [overflow-wrap:anywhere] sm:my-14 sm:p-10 [&_h1]:text-[1.75rem] [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] [&>p]:my-4 [&_[role=alert]]:rounded-xl [&_[role=alert]]:bg-danger-bg [&_[role=alert]]:px-5 [&_[role=alert]]:py-4 [&_[role=alert]]:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-danger)_45%,transparent)]',
   dialog:
     'studio-dialog w-[min(40rem,calc(100%-2rem))] m-auto max-h-[calc(100dvh-2rem)] overflow-auto rounded-2xl border-0 bg-surface p-6 text-text shadow-lg backdrop:bg-scrim backdrop:backdrop-blur-[2px] sm:p-8 [&_h2]:text-xl [&>*+*]:mt-4',
+  /** Table-like surface around a list; rows keep their ul/ol semantics. */
+  table:
+    'hidden min-w-0 overflow-hidden rounded-xl has-[article]:block has-[li]:block bg-surface shadow-[0_0_0_1px_var(--color-hairline)]',
+  rows: 'm-0 grid list-none divide-y divide-hairline p-0',
+  row: 'grid min-w-0 gap-x-6 [&_button]:[overflow-wrap:anywhere] gap-y-1.5 px-4 py-4 sm:px-5 md:items-center [&_p]:m-0 [&_p]:text-sm [&_p]:text-muted [&_h2]:text-base [&_h2]:font-medium [&_h3]:text-base [&_h3]:font-medium',
 } as const;
 
 /** The staff error banner keeps its `staff-error` hook; tests select `.staff-error[role="alert"]`. */

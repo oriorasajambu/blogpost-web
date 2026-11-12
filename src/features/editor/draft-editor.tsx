@@ -452,7 +452,7 @@ export function DraftEditor(props: {
         </div>
       )}
       <div
-        className="editor-status sticky top-16 z-10 -mx-1 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-bg/90 px-1 py-2.5 text-[0.8125rem] text-muted backdrop-blur-md sm:top-[6.875rem]"
+        className="editor-status sticky top-14 z-10 -mx-1 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-bg/90 px-1 py-2.5 text-[0.8125rem] text-muted backdrop-blur-md md:top-0"
         aria-label="Draft save status"
         role="status"
       >

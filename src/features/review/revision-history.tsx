@@ -126,14 +126,19 @@ export function RevisionHistory({ postId }: { postId: string }) {
   };
   return (
     <section className={studio.workspace} aria-labelledby="history-heading">
-      <Link href={`/studio/posts/${postId}`} prefetch={false} className={textLink}>
-        Back to working draft
-      </Link>
-      <p className={eyebrow}>Immutable record</p>
-      <h1 id="history-heading">Revision and review history</h1>
-      <p>
-        Revisions cannot be edited. Restoring creates a new working revision without publishing it.
-      </p>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <Link href={`/studio/posts/${postId}`} prefetch={false} className={textLink}>
+            Back to working draft
+          </Link>
+          <p className={eyebrow}>Immutable record</p>
+          <h1 id="history-heading">Revision and review history</h1>
+          <p>
+            Revisions cannot be edited. Restoring creates a new working revision without publishing
+            it.
+          </p>
+        </div>
+      </header>
       <StaffError error={error ?? command.error} />
       <div className={studio.actions}>
         <button

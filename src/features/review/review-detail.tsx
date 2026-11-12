@@ -91,11 +91,15 @@ export function ReviewDetail({ postId }: { postId: string }) {
   };
   return (
     <section className={studio.workspace} aria-labelledby="review-detail-heading">
-      <Link href="/studio/review" prefetch={false} className={textLink}>
-        Back to review queue
-      </Link>
-      <p className={eyebrow}>Review and publication</p>
-      <h1 id="review-detail-heading">Review submitted work</h1>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <Link href="/studio/review" prefetch={false} className={textLink}>
+            Back to review queue
+          </Link>
+          <p className={eyebrow}>Review and publication</p>
+          <h1 id="review-detail-heading">Review submitted work</h1>
+        </div>
+      </header>
       <StaffError error={error ?? command.error} />
       {loading && <p role="status">Loading the authoritative revision…</p>}
       <div className={studio.actions}>
