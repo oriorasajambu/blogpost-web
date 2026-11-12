@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useRef, useState } from 'react';
 import type { UserCredential } from 'firebase/auth';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -208,8 +209,8 @@ export function AuthPanel({
     }
   }
   return (
-    <section className="auth-panel" aria-labelledby="auth-heading">
-      <p className="eyebrow">
+    <section className={studio.authPanel} aria-labelledby="auth-heading">
+      <p className={eyebrow}>
         {invitation || ready?.invitation ? 'Staff invitation' : 'Staff access'}
       </p>
       <h1 id="auth-heading">
@@ -220,11 +221,11 @@ export function AuthPanel({
           ? 'Use the verified Google account named in your invitation. Accepting the invitation enables your staff access.'
           : 'The journal is open to everyone. Invited authors, editors and administrators can sign in with their Google account.'}
       </p>
-      <div className="auth-actions">
+      <div className={studio.actions}>
         {!redirectReturn && !(invitation && !ready && code === 'INVALID_INVITATION') && (
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={busy || (invitation && !ready && !message)}
             onClick={() => void signIn()}
           >
@@ -238,7 +239,7 @@ export function AuthPanel({
         {code === 'auth/popup-blocked' && redirectAllowed && ready && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy}
             onClick={() => void redirectSignIn()}
           >
@@ -251,7 +252,7 @@ export function AuthPanel({
       {redirectReturn && message && (
         <p>
           <a
-            className="text-link"
+            className={textLink}
             href={`/sign-in?returnTo=${encodeURIComponent(recoveryReturnTo)}`}
           >
             Start sign-in again
@@ -275,12 +276,12 @@ export function AuthPanel({
       )}
       {(invitation || ready?.invitation) && (
         <p>
-          <a className="text-link" href="/sign-in">
+          <a className={textLink} href="/sign-in">
             Already accepted? Sign in to your workspace
           </a>
         </p>
       )}
-      <p className="field-label">
+      <p className={studio.fieldLabel}>
         Google credentials stay in memory during sign-in. Your staff session lasts up to five days.
       </p>
     </section>

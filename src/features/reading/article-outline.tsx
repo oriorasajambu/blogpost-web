@@ -51,7 +51,7 @@ export function ArticleOutline({ items }: { items: OutlineItem[] }) {
               <a
                 href={`#${item.id}`}
                 aria-current={item.id === current ? 'location' : undefined}
-                className={`block border-l border-hairline py-1.5 leading-snug text-muted no-underline transition-colors hover:text-text aria-[current=location]:border-l-2 aria-[current=location]:border-accent aria-[current=location]:text-text ${item.level === 3 ? 'pl-7 aria-[current=location]:pl-[1.6875rem]' : 'pl-3.5 aria-[current=location]:pl-[0.8125rem]'}`}
+                className={`block border-l border-hairline py-1.5 leading-snug text-muted no-underline hover:transition-colors hover:text-text aria-[current=location]:border-l-2 aria-[current=location]:border-accent aria-[current=location]:text-text ${item.level === 3 ? 'pl-7 aria-[current=location]:pl-[1.6875rem]' : 'pl-3.5 aria-[current=location]:pl-[0.8125rem]'}`}
               >
                 {item.text}
               </a>

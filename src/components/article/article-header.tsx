@@ -87,7 +87,7 @@ export function ArticleTags({ tags = [] }: { tags?: ReadingPost['tags'] }) {
         <Link
           key={tag.slug}
           href={`/tags/${encodeURIComponent(tag.slug)}`}
-          className="inline-flex min-h-8 items-center rounded-full px-3 text-[0.8125rem] text-muted no-underline shadow-[inset_0_0_0_1px_var(--color-divider)] transition-colors hover:bg-raised hover:text-text"
+          className="inline-flex min-h-8 items-center rounded-full px-3 text-[0.8125rem] text-muted no-underline shadow-[inset_0_0_0_1px_var(--color-divider)] hover:transition-colors hover:bg-raised hover:text-text"
         >
           {tag.name}
         </Link>

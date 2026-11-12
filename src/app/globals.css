@@ -4,10 +4,9 @@
  * Themes switch by overriding the color variables on :root, so the pre-paint theme script and the
  * no-JavaScript path keep working without a `dark:` variant on every element.
  */
-@layer theme, base, legacy, components, utilities;
+@layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
-@import './legacy.css';
 
 /* Nocturne (dark) is the default ground. `static` keeps every variable in the output for the
    Studio stylesheets, which read them with var(). */
@@ -204,6 +203,9 @@
     color: inherit;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
+  }
+  /* Transitions run only on interaction, so a theme switch repaints every colour at once. */
+  a:hover {
     transition: color 160ms ease-out;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -269,11 +271,11 @@
     min-width: 0;
     min-height: 2.25rem;
     caret-color: var(--color-accent);
-    transition: border-color 160ms ease-out;
   }
   input:hover,
   select:hover,
   textarea:hover {
+    transition: border-color 160ms ease-out;
     border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
   }
   input:focus-visible,
@@ -480,5 +482,152 @@
   }
   .article-outline summary::-webkit-details-marker {
     display: none;
+  }
+
+  /* Studio workspaces: element defaults for forms, tables, definition lists and source blocks.
+     Utilities style the structure; these cover the many plain elements inside each panel. */
+  :is(.staff-workspace, .staff-form, .auth-panel, .studio-dialog, .draft-editor) {
+    & :is(h1, h2, h3) {
+      line-height: 1.25;
+    }
+    & h1 {
+      font-size: 1.875rem;
+      letter-spacing: -0.02em;
+    }
+    & h2 {
+      font-size: 1.375rem;
+    }
+    & h3 {
+      font-size: 1.125rem;
+    }
+    & p + p {
+      margin-top: 0.5rem;
+    }
+    & :is(ul, ol):not([class]) {
+      margin: 0.5rem 0;
+      padding-left: 1.25rem;
+    }
+    & label:not(:has(> input:is([type='checkbox'], [type='radio']))) {
+      display: grid;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    & label:has(> input:is([type='checkbox'], [type='radio'])) {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 2.5rem;
+      font-size: 0.875rem;
+    }
+    & :is(input:not([type='checkbox'], [type='radio'], [type='file']), select, textarea) {
+      width: 100%;
+      min-height: 2.5rem;
+      font-weight: 400;
+    }
+    & input[type='file'] {
+      width: 100%;
+      min-height: 2.5rem;
+      padding: 0.45rem 0.7rem;
+    }
+    & textarea {
+      min-height: 8rem;
+      line-height: 1.6;
+      resize: vertical;
+    }
+    & :is(input, select, textarea):disabled {
+      opacity: 0.6;
+    }
+    & input:is([type='checkbox'], [type='radio']) {
+      min-height: 0;
+      inline-size: 1.1rem;
+      block-size: 1.1rem;
+      padding: 0;
+      accent-color: var(--color-accent);
+    }
+    & fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 1rem;
+      border: 1px solid var(--color-hairline);
+      border-radius: 10px;
+    }
+    & legend {
+      padding: 0 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    & small {
+      color: var(--color-muted);
+      font-size: 0.8125rem;
+    }
+    & table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    & :is(th, td) {
+      padding: 0.6rem 0.9rem;
+      vertical-align: top;
+      border-bottom: 1px solid var(--color-hairline);
+    }
+    & th {
+      color: var(--color-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: color-mix(in srgb, var(--color-raised) 40%, transparent);
+    }
+    & tr:last-child td {
+      border-bottom: 0;
+    }
+    & dl:not([class]) {
+      display: grid;
+      grid-template-columns: minmax(6rem, max-content) minmax(0, 1fr);
+      gap: 0.4rem 1rem;
+      margin: 0;
+    }
+    & dt {
+      color: var(--color-muted);
+    }
+    & dd {
+      margin: 0;
+    }
+    & pre {
+      margin: 0;
+      max-height: 30rem;
+      overflow: auto;
+      padding: 1rem;
+      border-radius: 10px;
+      background: var(--color-sunk);
+      box-shadow: inset 0 0 0 1px var(--color-hairline);
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    & :not(pre) > code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+    }
+    & summary {
+      cursor: pointer;
+      padding-block: 0.5rem;
+      font-weight: 500;
+    }
+    & .article-body pre {
+      white-space: pre;
+      overflow-wrap: normal;
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+    }
+  }
+  @media (max-width: 38rem) {
+    :is(.staff-workspace, .staff-form, .auth-panel, .studio-dialog) dl:not([class]) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 }

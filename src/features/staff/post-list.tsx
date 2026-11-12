@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
@@ -65,13 +66,13 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
     };
   }, [load, memberId, invalidate]);
   return (
-    <section className="staff-workspace" aria-labelledby="publication-workspace-heading">
+    <section className={studio.workspace} aria-labelledby="publication-workspace-heading">
       <header>
-        <p className="eyebrow">Publication workspace</p>
+        <p className={eyebrow}>Publication workspace</p>
         <h2 id="publication-workspace-heading">Browse staff articles</h2>
         <p>Working revisions stay private until an editor reviews and publishes them.</p>
       </header>
-      <form className="staff-filters" action="/studio/posts" method="get">
+      <form className={studio.filters} action="/studio/posts" method="get">
         <label>
           Ownership
           <select name="scope" defaultValue={filters.scope}>
@@ -101,16 +102,16 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
             ))}
           </select>
         </label>
-        <button className="button-secondary" type="submit">
+        <button className={buttonSecondary} type="submit">
           Apply filters
         </button>
       </form>
       <StaffError error={error} />
       {busy && <p role="status">Loading staff articles…</p>}
       {!busy && !error && !posts.length && <p>No articles match these filters.</p>}
-      <ul className="staff-post-list">
+      <ul className="staff-post-list m-0 grid list-none gap-3 p-0">
         {posts.map((post) => (
-          <li key={post.id} className="staff-card">
+          <li key={post.id} className={studio.card}>
             <h3>
               <Link prefetch={false} href={`/studio/posts/${post.id}`}>
                 {post.slug || `Unpublished article by ${post.author.displayName}`}
@@ -125,7 +126,7 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
                   : 'Never published'}{' '}
               · {post.workflowState.replaceAll('_', ' ').toLowerCase()}
             </p>
-            <p className="staff-muted">
+            <p className={studio.muted}>
               Working revision: {post.workingRevisionId ?? 'none'}
               <br />
               Published revision: {post.publishedRevisionId ?? 'none'}
@@ -133,19 +134,19 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
                 ? ' · Unpublished working changes'
                 : ''}
             </p>
-            <p className="staff-muted">
+            <p className={studio.muted}>
               Updated <StaffTime value={post.updatedAt} /> · version {post.version}
             </p>
-            <Link prefetch={false} className="text-link" href={`/studio/posts/${post.id}/history`}>
+            <Link prefetch={false} className={textLink} href={`/studio/posts/${post.id}/history`}>
               Revision history
             </Link>
           </li>
         ))}
       </ul>
-      <div className="staff-actions">
+      <div className={studio.actions}>
         {Boolean(error) && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             type="button"
             disabled={busy}
             onClick={() => void load()}
@@ -155,7 +156,7 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
         )}
         {cursor && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             type="button"
             disabled={busy}
             onClick={() => void load(cursor)}

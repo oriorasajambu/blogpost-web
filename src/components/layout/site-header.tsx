@@ -10,7 +10,7 @@ import { ThemeToggle } from './theme-toggle';
 export type CategoryLink = { name: string; slug: string };
 
 const navLink =
-  'relative inline-flex min-h-11 max-w-full items-center gap-1.5 truncate px-3 text-sm text-muted no-underline transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
+  'relative inline-flex min-h-11 max-w-full items-center gap-1.5 truncate px-3 text-sm text-muted no-underline hover:transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
 
 export function SiteHeader({
   categories = [],

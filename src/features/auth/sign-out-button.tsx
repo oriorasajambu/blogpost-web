@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio, textLink } from '@/components/ui/styles';
 import { useId, useRef, useState } from 'react';
 import { authMutation, freshCsrf } from './client-api';
 import { clearIdentity } from './identity-sdk';
@@ -82,7 +83,7 @@ export function SignOutButton({
       <button
         ref={trigger}
         type="button"
-        className="button-secondary"
+        className={buttonSecondary}
         disabled={busy}
         onClick={() => void requestExit()}
       >
@@ -91,7 +92,7 @@ export function SignOutButton({
       {error && <p role="alert">{error}</p>}
       <dialog
         ref={dialog}
-        className="auth-dialog"
+        className={studio.dialog}
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         onCancel={() => close()}
@@ -106,10 +107,10 @@ export function SignOutButton({
             <li key={item.id}>{item.title || 'Untitled draft'}</li>
           ))}
         </ul>
-        <div className="auth-actions">
+        <div className={studio.actions}>
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={busy}
             onClick={() => {
               exportRecovery(items);
@@ -120,13 +121,13 @@ export function SignOutButton({
           </button>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy}
             onClick={() => void complete()}
           >
             Remove local work and sign out
           </button>
-          <button type="button" className="text-link" disabled={busy} onClick={close}>
+          <button type="button" className={textLink} disabled={busy} onClick={close}>
             Cancel
           </button>
         </div>

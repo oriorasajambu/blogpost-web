@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ContractError } from '@/lib/api-contract';
@@ -124,19 +125,19 @@ export function RevisionHistory({ postId }: { postId: string }) {
     });
   };
   return (
-    <section className="staff-workspace" aria-labelledby="history-heading">
-      <Link href={`/studio/posts/${postId}`} prefetch={false} className="text-link">
+    <section className={studio.workspace} aria-labelledby="history-heading">
+      <Link href={`/studio/posts/${postId}`} prefetch={false} className={textLink}>
         Back to working draft
       </Link>
-      <p className="eyebrow">Immutable record</p>
+      <p className={eyebrow}>Immutable record</p>
       <h1 id="history-heading">Revision and review history</h1>
       <p>
         Revisions cannot be edited. Restoring creates a new working revision without publishing it.
       </p>
       <StaffError error={error ?? command.error} />
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={busy || command.busy || command.uncertain}
           onClick={() => void load()}
         >
@@ -144,7 +145,7 @@ export function RevisionHistory({ postId }: { postId: string }) {
         </button>
         {command.uncertain && (
           <button
-            className="button-primary"
+            className={buttonPrimary}
             disabled={command.busy}
             onClick={() => void command.execute()}
           >
@@ -160,15 +161,15 @@ export function RevisionHistory({ postId }: { postId: string }) {
             Working revision <code>{post.workingRevisionId ?? 'None'}</code> · Published revision{' '}
             <code>{post.publishedRevisionId ?? 'None'}</code>.
           </p>
-          <div className="staff-grid">
-            <section className="staff-card">
+          <div className={studio.grid}>
+            <section className={studio.card}>
               <h2>Saved revisions</h2>
               <ol>
                 {revisions.map((revision) => (
                   <li key={revision.id}>
                     <button
                       type="button"
-                      className="button-secondary"
+                      className={buttonSecondary}
                       disabled={busy || command.busy || command.uncertain}
                       onClick={() => void select(revision.id)}
                     >
@@ -183,7 +184,7 @@ export function RevisionHistory({ postId }: { postId: string }) {
               {!revisions.length && <p>No saved revisions.</p>}
               {revisionCursor && (
                 <button
-                  className="button-secondary"
+                  className={buttonSecondary}
                   disabled={busy || command.busy || command.uncertain || command.needsRefresh}
                   onClick={() => void runRead(() => loadRevisions(revisionCursor))}
                 >
@@ -191,7 +192,7 @@ export function RevisionHistory({ postId }: { postId: string }) {
                 </button>
               )}
             </section>
-            <section className="staff-card">
+            <section className={studio.card}>
               <h2>Review activity</h2>
               <ol>
                 {events.map((event) => (
@@ -210,7 +211,7 @@ export function RevisionHistory({ postId }: { postId: string }) {
               {!events.length && <p>No review activity.</p>}
               {eventCursor && (
                 <button
-                  className="button-secondary"
+                  className={buttonSecondary}
                   disabled={busy || command.busy || command.uncertain || command.needsRefresh}
                   onClick={() => void runRead(() => loadEvents(eventCursor))}
                 >
@@ -229,7 +230,7 @@ export function RevisionHistory({ postId }: { postId: string }) {
               {post.allowedActions.includes('RESTORE_REVISION') ? (
                 <button
                   ref={confirmationTrigger}
-                  className="button-primary"
+                  className={buttonPrimary}
                   disabled={busy || command.busy || command.uncertain || command.needsRefresh}
                   onClick={() => setConfirm(true)}
                 >

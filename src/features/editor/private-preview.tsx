@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonSecondary, eyebrow } from '@/components/ui/styles';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { remarkTables } from '@/components/article/markdown';
@@ -73,10 +74,17 @@ export function PrivatePreview({ draft }: { draft: LocalDraft }) {
     ? resolveImage(`media://${draft.content.coverMediaId}`)
     : null;
   return (
-    <article className="editor-preview" aria-label="Private draft preview">
-      <p className="eyebrow">Private preview · only you and authorized staff</p>
+    <article
+      className="editor-preview p-5 [overflow-wrap:anywhere] sm:p-6 [&>h2]:my-4 [&>h2]:text-[1.875rem] [&>h2]:leading-[1.1] [&>h2]:tracking-[-0.02em] [&_img]:my-4 [&_.article-body]:text-base"
+      aria-label="Private draft preview"
+    >
+      <p className={eyebrow}>Private preview · only you and authorized staff</p>
       <h2>{draft.content.title || 'Untitled draft'}</h2>
-      {draft.content.summary && <p className="editor-preview-summary">{draft.content.summary}</p>}
+      {draft.content.summary && (
+        <p className="editor-preview-summary mb-5 text-[1.0625rem] text-muted">
+          {draft.content.summary}
+        </p>
+      )}
       {cover && (
         <PreviewImage
           key={cover.src}
@@ -188,7 +196,7 @@ function PreviewImage(props: {
       Image unavailable{props.alt ? `: ${props.alt}` : ''}.
       <button
         type="button"
-        className="button-secondary"
+        className={buttonSecondary}
         onClick={() => setFailed(false)}
         aria-label={`Retry image${props.alt ? `: ${props.alt}` : ''}`}
       >

@@ -30,7 +30,7 @@ export function CodeBlock({ source, language }: { source: string; language: stri
           onClick={copy}
           aria-disabled={copying || undefined}
           aria-controls={`${identifier}-code`}
-          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border-0 bg-transparent px-2.5 text-[0.8125rem] font-medium text-accent-ink transition-colors hover:bg-accent-tint"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-md border-0 bg-transparent px-2.5 text-[0.8125rem] font-medium text-accent-ink hover:transition-colors hover:bg-accent-tint"
         >
           <Icon name={message === 'Code copied.' ? 'check' : 'copy'} size={14} />
           Copy code

@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio } from '@/components/ui/styles';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type StaffMember } from '@/lib/auth-contract';
 import { validateProfile, profileValidation } from './profile-contract';
@@ -55,12 +56,12 @@ export function ProfileForm({ initial }: { initial: StaffMember }) {
     }
   }
   return (
-    <section className="staff-workspace" aria-labelledby="profile-heading">
-      <p className="eyebrow">Your account</p>
+    <section className={studio.workspace} aria-labelledby="profile-heading">
+      <p className={eyebrow}>Your account</p>
       <h1 id="profile-heading">Your staff profile</h1>
       <p>Your display name and biography appear on your public author profile.</p>
       <form
-        className="staff-form staff-card"
+        className={`${studio.form} ${studio.card}`}
         onSubmit={(event) => {
           event.preventDefault();
           if (validation || blocked || needsRefresh) return;
@@ -99,20 +100,20 @@ export function ProfileForm({ initial }: { initial: StaffMember }) {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
-          <p className="field-label">
+          <p className={studio.fieldLabel}>
             Public handle: <strong>{member.handle}</strong>. Your handle is fixed for this account.
           </p>
           {validation && <p role="alert">{validation}</p>}
-          <button className="button-primary" type="submit" disabled={!!validation}>
+          <button className={buttonPrimary} type="submit" disabled={!!validation}>
             Save public profile
           </button>
         </fieldset>
-        <p className="field-label">
+        <p className={studio.fieldLabel}>
           Loaded profile version {member.version}. A conflict keeps your entered text; load the
           latest version, review your changes, and save explicitly.
         </p>
       </form>
-      <details className="staff-card">
+      <details className={studio.card}>
         <summary>Current server profile for comparison</summary>
         <p>
           <strong>{member.displayName}</strong>
@@ -127,9 +128,9 @@ export function ProfileForm({ initial }: { initial: StaffMember }) {
         }}
         onCheck={loadLatest}
       />
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           type="button"
           disabled={blocked}
           onClick={() => {
@@ -149,9 +150,9 @@ export function ProfileForm({ initial }: { initial: StaffMember }) {
       </div>
       <StaffError error={loadError} />
       <p role="status">{notice}</p>
-      <section className="staff-card" aria-labelledby="private-profile-heading">
+      <section className={studio.card} aria-labelledby="private-profile-heading">
         <h2 id="private-profile-heading">Private staff account</h2>
-        <dl className="staff-profile">
+        <dl className={studio.definitions}>
           <dt>Private sign-in email</dt>
           <dd>{member.email}</dd>
           <dt>Staff role</dt>

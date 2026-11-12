@@ -33,7 +33,7 @@ export function SearchForm({
       <label htmlFor="article-search" className="sr-only">
         Search articles
       </label>
-      <div className="flex flex-wrap items-center gap-2.5 rounded-xl bg-sunk p-2 pl-4 shadow-[inset_0_0_0_1px_var(--color-control)] transition-shadow focus-within:shadow-[inset_0_0_0_2px_var(--color-accent),var(--shadow-glow)] max-sm:pl-3">
+      <div className="flex flex-wrap items-center gap-2.5 rounded-xl bg-sunk p-2 pl-4 shadow-[inset_0_0_0_1px_var(--color-control)] focus-within:transition-shadow focus-within:shadow-[inset_0_0_0_2px_var(--color-accent),var(--shadow-glow)] max-sm:pl-3">
         <Icon name="search" className="text-muted" />
         <input
           id="article-search"

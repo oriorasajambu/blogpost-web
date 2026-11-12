@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  buttonPrimary,
+  buttonSecondary,
+  eyebrow,
+  staffError,
+  studio,
+  textLink,
+} from '@/components/ui/styles';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import type { components } from '@/lib/api-types';
@@ -22,14 +30,14 @@ const retryWindow = 24 * 60 * 60 * 1000;
 function TaxonomyError({ error }: { error: unknown }) {
   if (error instanceof StaffApiError && ['WORKFLOW_CONFLICT', 'SLUG_CONFLICT'].includes(error.code))
     return (
-      <div className="staff-error" role="alert">
+      <div className={staffError} role="alert">
         <p>
           {error.code === 'SLUG_CONFLICT'
             ? 'This taxonomy slug already exists. Choose another slug or open the existing entry.'
             : 'This taxonomy name already exists after normalization. Choose another name or open the existing entry.'}
         </p>
         {error.traceId && (
-          <p className="staff-muted">
+          <p className={studio.muted}>
             Support reference: <code>{error.traceId}</code>
           </p>
         )}
@@ -47,18 +55,18 @@ export function TaxonomyWorkspace() {
     setLockedState(value);
   };
   return (
-    <section className="staff-workspace" aria-labelledby="taxonomy-heading">
-      <p className="eyebrow">Editorial vocabulary</p>
+    <section className={studio.workspace} aria-labelledby="taxonomy-heading">
+      <p className={eyebrow}>Editorial vocabulary</p>
       <h1 id="taxonomy-heading">Taxonomy workspace</h1>
       <p>
         Manage the categories and tags readers use to find articles. Archived entries retain their
         existing references.
       </p>
-      <div className="staff-actions" role="group" aria-label="Vocabulary type">
+      <div className={studio.actions} role="group" aria-label="Vocabulary type">
         <button
           type="button"
           disabled={locked}
-          className={kind === 'categories' ? 'button-primary' : 'button-secondary'}
+          className={kind === 'categories' ? buttonPrimary : buttonSecondary}
           aria-pressed={kind === 'categories'}
           onClick={() => {
             if (!lockRef.current) setKind('categories');
@@ -69,7 +77,7 @@ export function TaxonomyWorkspace() {
         <button
           type="button"
           disabled={locked}
-          className={kind === 'tags' ? 'button-primary' : 'button-secondary'}
+          className={kind === 'tags' ? buttonPrimary : buttonSecondary}
           aria-pressed={kind === 'tags'}
           onClick={() => {
             if (!lockRef.current) setKind('tags');
@@ -154,7 +162,7 @@ function TaxonomyCollection({
 
   return (
     <>
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <label>
           Show {kind}
           <select
@@ -171,7 +179,7 @@ function TaxonomyCollection({
         </label>
         <button
           type="button"
-          className="button-primary"
+          className={buttonPrimary}
           disabled={locked}
           onClick={() => {
             if (lockRef.current) return;
@@ -184,7 +192,7 @@ function TaxonomyCollection({
         </button>
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={busy}
           onClick={() => setRefresh((current) => current + 1)}
         >
@@ -204,12 +212,12 @@ function TaxonomyCollection({
       )}
       {items && items.length > 0 && (
         <div
-          className="staff-table-wrap"
+          className={studio.tableWrap}
           role="region"
           aria-label={`${kind === 'categories' ? 'Categories' : 'Tags'} table`}
           tabIndex={0}
         >
-          <p className="staff-muted">Scroll horizontally to read all columns.</p>
+          <p className={studio.muted}>Scroll horizontally to read all columns.</p>
           <table>
             <caption>
               {kind === 'categories' ? 'Categories' : 'Tags'} · page {page}
@@ -246,7 +254,7 @@ function TaxonomyCollection({
                   <td>
                     <button
                       type="button"
-                      className="button-secondary"
+                      className={buttonSecondary}
                       disabled={locked}
                       onClick={() => void edit(taxon)}
                     >
@@ -260,10 +268,10 @@ function TaxonomyCollection({
         </div>
       )}
       {pagination && (
-        <div className="staff-actions" aria-label={`${kind} pages`}>
+        <div className={studio.actions} aria-label={`${kind} pages`}>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy || page <= 1}
             onClick={() => setPage((current) => current - 1)}
           >
@@ -274,7 +282,7 @@ function TaxonomyCollection({
           </p>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy || !pagination.hasMore}
             onClick={() => setPage((current) => current + 1)}
           >
@@ -448,7 +456,7 @@ function TaxonEditor({
   }
 
   return (
-    <section className="staff-card" aria-labelledby="taxon-editor-heading">
+    <section className={studio.card} aria-labelledby="taxon-editor-heading">
       <h2 id="taxon-editor-heading" ref={heading} tabIndex={-1}>
         {base ? `Edit ${base.name}` : `Create a ${label}`}
       </h2>
@@ -457,7 +465,7 @@ function TaxonEditor({
           ? `Editing version ${base.version}. The slug stays fixed after creation.`
           : 'A new entry is active when created.'}
       </p>
-      <form className="staff-form" onSubmit={propose}>
+      <form className={studio.form} onSubmit={propose}>
         <fieldset disabled={busy || pending !== null}>
           <legend>{label === 'category' ? 'Category' : 'Tag'} details</legend>
           <label>
@@ -501,7 +509,7 @@ function TaxonEditor({
           <button
             ref={confirmationTrigger}
             type="submit"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={conflict}
           >
             Review {base ? 'changes' : 'new entry'}
@@ -516,12 +524,12 @@ function TaxonEditor({
       )}
       {error !== null && <TaxonomyError error={error} />}
       {inputError && (
-        <p className="staff-error" role="alert">
+        <p className={staffError} role="alert">
           {inputError}
         </p>
       )}
       {conflict && (
-        <div className="staff-card">
+        <div className={studio.card}>
           <h3>Another editor changed this entry</h3>
           <p>
             Your proposed name and active state have been kept. Review the current version before
@@ -529,7 +537,7 @@ function TaxonEditor({
           </p>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy}
             onClick={() => void compare()}
           >
@@ -547,7 +555,7 @@ function TaxonEditor({
               </p>
               <button
                 type="button"
-                className="button-secondary"
+                className={buttonSecondary}
                 disabled={busy}
                 onClick={() => {
                   setBase(latest);
@@ -606,7 +614,7 @@ function TaxonEditor({
                 editor. Archiving does not reassign articles or delete history.
               </p>
               <Link
-                className="text-link"
+                className={textLink}
                 href="/studio/posts"
                 prefetch={false}
                 target="_blank"
@@ -635,7 +643,7 @@ function TaxonEditor({
               </p>
               <button
                 type="button"
-                className="button-secondary"
+                className={buttonSecondary}
                 disabled={busy}
                 onClick={() => void inspectPending()}
               >
@@ -650,7 +658,7 @@ function TaxonEditor({
                   </p>
                   <button
                     type="button"
-                    className="button-secondary"
+                    className={buttonSecondary}
                     disabled={busy}
                     onClick={() => {
                       setLocked(false);
@@ -666,7 +674,7 @@ function TaxonEditor({
         </ConfirmAction>
       )}
       {!pending && (
-        <button type="button" className="button-secondary" disabled={busy} onClick={onClose}>
+        <button type="button" className={buttonSecondary} disabled={busy} onClick={onClose}>
           Close {label} editor
         </button>
       )}

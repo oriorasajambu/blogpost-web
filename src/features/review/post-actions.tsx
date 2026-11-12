@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -56,24 +57,24 @@ export function PostActions({
     );
   };
   return (
-    <section className="staff-card" aria-labelledby="post-actions-heading">
+    <section className={studio.card} aria-labelledby="post-actions-heading">
       <h2 id="post-actions-heading">Publication and history</h2>
       <p>
         Working and published snapshots are separate. These actions operate on server version{' '}
         {post.version}.
       </p>
-      <div className="staff-actions">
-        <Link className="text-link" href={`/studio/posts/${post.id}/history`} prefetch={false}>
+      <div className={studio.actions}>
+        <Link className={textLink} href={`/studio/posts/${post.id}/history`} prefetch={false}>
           Revision and review history
         </Link>
         {member.role !== 'AUTHOR' && post.review.submittedRevisionId && (
-          <Link className="text-link" href={`/studio/review/${post.id}`} prefetch={false}>
+          <Link className={textLink} href={`/studio/review/${post.id}`} prefetch={false}>
             Review submitted revision
           </Link>
         )}
         {allowed('UNPUBLISH') && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={blocked}
             onClick={(event) => {
               confirmationTrigger.current = event.currentTarget;
@@ -85,7 +86,7 @@ export function PostActions({
         )}
         {allowed('TRASH') && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={blocked}
             onClick={(event) => {
               confirmationTrigger.current = event.currentTarget;
@@ -97,7 +98,7 @@ export function PostActions({
         )}
         {allowed('RESTORE') && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={blocked}
             onClick={(event) => {
               confirmationTrigger.current = event.currentTarget;
@@ -109,7 +110,7 @@ export function PostActions({
         )}
         {allowed('CHANGE_SLUG') && (
           <button
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={blocked}
             onClick={(event) => {
               confirmationTrigger.current = event.currentTarget;
@@ -134,7 +135,7 @@ export function PostActions({
       {command.notice && <p role="status">{command.notice}</p>}
       {command.uncertain && (
         <button
-          className="button-primary"
+          className={buttonPrimary}
           disabled={command.busy}
           onClick={() => void command.execute()}
         >
@@ -173,7 +174,7 @@ export function PostActions({
           <p>{consequences[action]}</p>
           {action === 'slug' && (
             <>
-              <label className="field-label" htmlFor="post-new-slug">
+              <label className={studio.fieldLabel} htmlFor="post-new-slug">
                 New article slug
               </label>
               <input

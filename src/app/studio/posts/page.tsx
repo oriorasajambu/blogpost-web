@@ -1,3 +1,4 @@
+import { eyebrow, studio } from '@/components/ui/styles';
 import {
   readStaffAccess,
   staffNamespace,
@@ -14,8 +15,8 @@ export default async function StaffPostsPage({
   const access = await readStaffAccess('/studio/posts');
   if (access.denied) return <StaffAccessUnavailable reason={access.denied} />;
   return (
-    <section aria-labelledby="workspace-heading">
-      <p className="eyebrow">Staff workspace</p>
+    <section className={studio.workspace} aria-labelledby="workspace-heading">
+      <p className={eyebrow}>Staff workspace</p>
       <h1 id="workspace-heading">Your staff workspace</h1>
       <p>
         Welcome, {access.member.displayName}. Your account has {access.member.role.toLowerCase()}{' '}

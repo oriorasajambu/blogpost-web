@@ -1,3 +1,4 @@
+import { eyebrow, studio, textLink } from '@/components/ui/styles';
 import 'server-only';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -36,8 +37,8 @@ export async function readStaffAccess(path: string, roles?: StaffRole[]): Promis
 }
 export function StaffAccessUnavailable({ reason }: { reason: 'role' | 'account' }) {
   return (
-    <section className="auth-panel" aria-labelledby="staff-access-heading">
-      <p className="eyebrow">Staff access</p>
+    <section className={studio.authPanel} aria-labelledby="staff-access-heading">
+      <p className={eyebrow}>Staff access</p>
       <h1 id="staff-access-heading">
         {reason === 'role'
           ? 'This area is not available for your role.'
@@ -49,7 +50,7 @@ export function StaffAccessUnavailable({ reason }: { reason: 'role' | 'account' 
           : 'This account no longer has active staff access. Local work has been kept so you can review or export it before signing out.'}
       </p>
       {reason === 'role' && (
-        <Link className="text-link" href="/studio/posts" prefetch={false}>
+        <Link className={textLink} href="/studio/posts" prefetch={false}>
           Return to your workspace
         </Link>
       )}
