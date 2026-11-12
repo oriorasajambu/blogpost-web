@@ -13,12 +13,16 @@ export function AdminWorkspace({
 }) {
   return (
     <section className={studio.workspace} aria-labelledby="admin-heading">
-      <p className={eyebrow}>Administrator access</p>
-      <h1 id="admin-heading">Staff access administration</h1>
-      <p>
-        Manage invitations, staff permissions and article attribution. The server verifies every
-        change against current permissions and versions.
-      </p>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <p className={eyebrow}>Administrator access</p>
+          <h1 id="admin-heading">Staff access administration</h1>
+          <p>
+            Manage invitations, staff permissions and article attribution. The server verifies every
+            change against current permissions and versions.
+          </p>
+        </div>
+      </header>
       <MembersPanel accountId={accountId} />
       <InvitationsPanel webOrigin={webOrigin} />
       <ReassignmentPanel />

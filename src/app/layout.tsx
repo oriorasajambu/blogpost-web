@@ -5,7 +5,8 @@ import { SiteHeader } from '@/components/layout/site-header';
 import { SiteFooter, EnvironmentBanner } from '@/components/layout/site-footer';
 import { themeScript } from '@/lib/theme';
 import { draftHistoryGuardScript } from '@/lib/draft-history-guard';
-import { ReadingNavigation, ReadingContent } from '@/components/layout/reading-navigation';
+import { ReadingNavigation } from '@/components/layout/reading-navigation';
+import { SiteChrome } from '@/components/layout/site-chrome';
 import { getConfig } from '@/lib/config';
 import { getCategories } from '@/lib/api-server';
 import './globals.css';
@@ -41,13 +42,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </a>
         <ReadingNavigation>
           <EnvironmentBanner environment={config.environment} />
-          <SiteHeader
-            categories={categories}
-            loginEnabled={config.loginEnabled}
-            staffSession={staffSession}
-          />
-          <ReadingContent>{children}</ReadingContent>
-          <SiteFooter />
+          <SiteChrome
+            header={
+              <SiteHeader
+                categories={categories}
+                loginEnabled={config.loginEnabled}
+                staffSession={staffSession}
+              />
+            }
+            footer={<SiteFooter />}
+          >
+            {children}
+          </SiteChrome>
         </ReadingNavigation>
       </body>
     </html>

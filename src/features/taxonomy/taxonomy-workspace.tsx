@@ -56,12 +56,16 @@ export function TaxonomyWorkspace() {
   };
   return (
     <section className={studio.workspace} aria-labelledby="taxonomy-heading">
-      <p className={eyebrow}>Editorial vocabulary</p>
-      <h1 id="taxonomy-heading">Taxonomy workspace</h1>
-      <p>
-        Manage the categories and tags readers use to find articles. Archived entries retain their
-        existing references.
-      </p>
+      <header className={studio.pageHead}>
+        <div className={studio.pageTitle}>
+          <p className={eyebrow}>Editorial vocabulary</p>
+          <h1 id="taxonomy-heading">Taxonomy workspace</h1>
+          <p>
+            Manage the categories and tags readers use to find articles. Archived entries retain
+            their existing references.
+          </p>
+        </div>
+      </header>
       <div className={studio.actions} role="group" aria-label="Vocabulary type">
         <button
           type="button"

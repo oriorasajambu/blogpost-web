@@ -1,6 +1,7 @@
 'use client';
+import { ListHead } from '@/features/staff/staff-ui';
 
-import { buttonPrimary, buttonSecondary, studio, textLink } from '@/components/ui/styles';
+import { buttonSecondary, studio } from '@/components/ui/styles';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -72,15 +73,7 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
   // them. Absence from a paged response is not proof of deletion or permission.
   const localOnly = local.filter((draft) => !draft.postId);
   return (
-    <div className="draft-list my-6 flex flex-col gap-4 [&>ul]:m-0 [&>ul]:grid [&>ul]:list-none [&>ul]:gap-3 [&>ul]:p-0 [&_li]:rounded-xl [&_li]:bg-surface [&_li]:px-5 [&_li]:py-4 [&_li]:shadow-[0_0_0_1px_var(--color-hairline)] [&_li_a]:font-medium [&_li_a]:text-text [&_li_a]:no-underline [&_li_a:hover]:text-accent-ink [&_li_p]:mt-1.5 [&_li_p]:text-sm [&_li_p]:text-muted [&>h2]:text-xl">
-      <div className={studio.actions}>
-        <Link className={buttonPrimary} href="/studio/posts/new" prefetch={false}>
-          Write a draft
-        </Link>
-        <Link className={textLink} href="/studio/profile" prefetch={false}>
-          View your staff profile
-        </Link>
-      </div>
+    <div className="draft-list my-6 flex flex-col gap-4 [&_li_a]:font-medium [&_li_a]:text-text [&_li_a]:no-underline [&_li_a:hover]:text-accent-ink [&>h2]:text-xl">
       {error && (
         <p role="alert" className={`editor-error ${studio.danger}`}>
           {error} Local work has been kept. Reconnect or sign in again to load the workspace.
@@ -91,37 +84,49 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
       {!busy && !posts.length && !localOnly.length && !error && (
         <p>Your writing starts here. Create a draft to keep an idea on this device.</p>
       )}
-      <ul>
-        {localOnly.map((draft) => (
-          <li key={draft.clientDraftId}>
-            <Link href={`/studio/posts/new?local=${draft.clientDraftId}`} prefetch={false}>
-              <strong>{draft.content.title || 'Untitled draft'}</strong>
-            </Link>
-            <p>
-              {draft.postId ? 'Server draft with a device copy' : 'On this device'} ·{' '}
-              {isDraftDirty(draft) ? 'Unsynced changes' : 'Synced'}
-            </p>
-          </li>
-        ))}
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href={`/studio/posts/${post.id}`} prefetch={false}>
-              <strong>
-                {local.find((draft) => draft.postId === post.id)?.content.title ||
-                  post.slug ||
-                  `Draft created ${new Date(post.createdAt).toLocaleDateString()}`}
-              </strong>
-            </Link>
-            <p>
-              {post.publicationState === 'PUBLISHED' ? 'Published' : 'Not published'} ·{' '}
-              {post.workflowState.replaceAll('_', ' ').toLowerCase()} · version {post.version}
-              {local.some((draft) => draft.postId === post.id && isDraftDirty(draft))
-                ? ' · Unsynced device changes'
-                : ''}
-            </p>
-          </li>
-        ))}
-      </ul>
+      <div className={studio.table}>
+        <ListHead
+          columns={['Draft', 'Status']}
+          template="md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]"
+        />
+        <ul className={studio.rows}>
+          {localOnly.map((draft) => (
+            <li
+              key={draft.clientDraftId}
+              className={`${studio.row} md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
+            >
+              <Link href={`/studio/posts/new?local=${draft.clientDraftId}`} prefetch={false}>
+                <strong>{draft.content.title || 'Untitled draft'}</strong>
+              </Link>
+              <p>
+                {draft.postId ? 'Server draft with a device copy' : 'On this device'} ·{' '}
+                {isDraftDirty(draft) ? 'Unsynced changes' : 'Synced'}
+              </p>
+            </li>
+          ))}
+          {posts.map((post) => (
+            <li
+              key={post.id}
+              className={`${studio.row} md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]`}
+            >
+              <Link href={`/studio/posts/${post.id}`} prefetch={false}>
+                <strong>
+                  {local.find((draft) => draft.postId === post.id)?.content.title ||
+                    post.slug ||
+                    `Draft created ${new Date(post.createdAt).toLocaleDateString()}`}
+                </strong>
+              </Link>
+              <p>
+                {post.publicationState === 'PUBLISHED' ? 'Published' : 'Not published'} ·{' '}
+                {post.workflowState.replaceAll('_', ' ').toLowerCase()} · version {post.version}
+                {local.some((draft) => draft.postId === post.id && isDraftDirty(draft))
+                  ? ' · Unsynced device changes'
+                  : ''}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
       {cursor && (
         <button
           type="button"

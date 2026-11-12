@@ -1,4 +1,5 @@
 'use client';
+import { ListHead } from '@/features/staff/staff-ui';
 
 import { buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -109,40 +110,49 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
       <StaffError error={error} />
       {busy && <p role="status">Loading staff articles…</p>}
       {!busy && !error && !posts.length && <p>No articles match these filters.</p>}
-      <ul className="staff-post-list m-0 grid list-none gap-3 p-0">
-        {posts.map((post) => (
-          <li key={post.id} className={studio.card}>
-            <h3>
-              <Link prefetch={false} href={`/studio/posts/${post.id}`}>
-                {post.slug || `Unpublished article by ${post.author.displayName}`}
+      <div className={studio.table}>
+        <ListHead
+          columns={['Article', 'Publication · workflow', 'Updated', '']}
+          template="md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto]"
+        />
+        <ul className={`staff-post-list ${studio.rows}`}>
+          {posts.map((post) => (
+            <li
+              key={post.id}
+              className={`${studio.row} md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] md:[&>h3]:col-start-1 md:[&>h3]:row-start-1 md:[&>p:nth-of-type(1)]:col-start-2 md:[&>p:nth-of-type(1)]:row-start-1 md:[&>p:nth-of-type(2)]:col-start-1 md:[&>p:nth-of-type(2)]:row-start-2 md:[&>p:nth-of-type(3)]:col-start-3 md:[&>p:nth-of-type(3)]:row-start-1 md:[&>a]:col-start-4 md:[&>a]:row-start-1 [&>h3_a]:text-text [&>h3_a]:no-underline [&>h3_a:hover]:text-accent-ink`}
+            >
+              <h3>
+                <Link prefetch={false} href={`/studio/posts/${post.id}`}>
+                  {post.slug || `Unpublished article by ${post.author.displayName}`}
+                </Link>
+              </h3>
+              <p>
+                {post.author.displayName} ·{' '}
+                {post.publicationState === 'PUBLISHED'
+                  ? 'Published'
+                  : post.publicationState === 'WITHDRAWN'
+                    ? 'Withdrawn from public view'
+                    : 'Never published'}{' '}
+                · {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+              </p>
+              <p className={studio.muted}>
+                Working revision: {post.workingRevisionId ?? 'none'}
+                <br />
+                Published revision: {post.publishedRevisionId ?? 'none'}
+                {post.publishedRevisionId && post.publishedRevisionId !== post.workingRevisionId
+                  ? ' · Unpublished working changes'
+                  : ''}
+              </p>
+              <p className={studio.muted}>
+                Updated <StaffTime value={post.updatedAt} /> · version {post.version}
+              </p>
+              <Link prefetch={false} className={textLink} href={`/studio/posts/${post.id}/history`}>
+                Revision history
               </Link>
-            </h3>
-            <p>
-              {post.author.displayName} ·{' '}
-              {post.publicationState === 'PUBLISHED'
-                ? 'Published'
-                : post.publicationState === 'WITHDRAWN'
-                  ? 'Withdrawn from public view'
-                  : 'Never published'}{' '}
-              · {post.workflowState.replaceAll('_', ' ').toLowerCase()}
-            </p>
-            <p className={studio.muted}>
-              Working revision: {post.workingRevisionId ?? 'none'}
-              <br />
-              Published revision: {post.publishedRevisionId ?? 'none'}
-              {post.publishedRevisionId && post.publishedRevisionId !== post.workingRevisionId
-                ? ' · Unpublished working changes'
-                : ''}
-            </p>
-            <p className={studio.muted}>
-              Updated <StaffTime value={post.updatedAt} /> · version {post.version}
-            </p>
-            <Link prefetch={false} className={textLink} href={`/studio/posts/${post.id}/history`}>
-              Revision history
-            </Link>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className={studio.actions}>
         {Boolean(error) && (
           <button

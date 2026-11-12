@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Icon, type IconName } from '@/components/ui/icon';
 import { iconButton } from '@/components/ui/styles';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 
 const icons: Record<string, IconName> = {
   '/studio/posts': 'file',
@@ -42,7 +44,7 @@ function Navigation({
 }
 
 const foot =
-  'staff-rail-foot mt-auto grid gap-3 border-t border-hairline pt-4 text-[0.8125rem] [&_button]:w-full';
+  'staff-rail-foot mt-auto grid gap-3 border-t border-hairline px-1 pt-4 text-[0.8125rem] [&_.staff-exit>button]:w-full';
 
 /**
  * The Studio's navigation: a sticky left rail from 768px, and on phones a modal drawer
@@ -78,7 +80,7 @@ export function StaffRail({
   }, []);
   return (
     <>
-      <div className="flex min-h-12 items-center gap-2 rounded-xl bg-surface pr-3 shadow-[0_0_0_1px_var(--color-hairline)] md:hidden">
+      <header className="sticky top-0 z-30 flex min-h-14 items-center gap-2 border-b border-hairline bg-bg/90 px-2 backdrop-blur-md md:hidden">
         <button
           ref={trigger}
           type="button"
@@ -89,36 +91,62 @@ export function StaffRail({
         >
           <Icon name="menu" />
         </button>
-        <span className="truncate text-sm font-medium">{currentLabel}</span>
-      </div>
+        <Brand />
+        <span className="ml-auto truncate text-sm font-medium text-muted">{currentLabel}</span>
+        <ThemeToggle />
+      </header>
       <dialog
         ref={drawer}
         aria-label="Studio navigation"
-        className="studio-drawer m-0 h-dvh max-h-none w-[min(20rem,calc(100%-3rem))] max-w-none flex-col gap-5 border-0 bg-surface p-3 text-text shadow-lg backdrop:bg-scrim open:flex md:hidden"
+        className="studio-drawer m-0 h-dvh max-h-none w-[min(20rem,calc(100%-3rem))] max-w-none border-0 bg-surface p-0 text-text shadow-lg backdrop:bg-scrim md:hidden"
         onClick={(event) => {
-          // A click on the backdrop lands on the dialog element itself.
+          // Only a click on the backdrop lands on the dialog element itself.
           if (event.target === event.currentTarget) event.currentTarget.close();
         }}
         onClose={() => trigger.current?.focus()}
       >
-        <div className="flex items-center justify-between pl-3">
-          <span className="text-xs font-medium uppercase tracking-[0.08em] text-faint">Studio</span>
-          <button
-            type="button"
-            className={iconButton}
-            aria-label="Close Studio navigation"
-            onClick={() => drawer.current?.close()}
-          >
-            <Icon name="close" />
-          </button>
+        <div className="flex h-full flex-col gap-5 p-3">
+          <div className="flex items-center justify-between pl-2">
+            <Brand />
+            <button
+              type="button"
+              className={iconButton}
+              aria-label="Close Studio navigation"
+              onClick={() => drawer.current?.close()}
+            >
+              <Icon name="close" />
+            </button>
+          </div>
+          <Navigation items={items} pathname={pathname} />
+          <div className={foot}>{children}</div>
         </div>
-        <Navigation items={items} pathname={pathname} />
-        <div className={foot}>{children}</div>
       </dialog>
-      <aside className="staff-rail sticky top-[7.5rem] flex w-60 shrink-0 flex-col gap-6 self-start rounded-xl bg-surface/50 p-3 shadow-[0_0_0_1px_var(--color-hairline)] max-md:hidden">
+      <aside className="staff-rail sticky top-0 flex h-dvh w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-hairline bg-sunk/50 px-3 pt-5 pb-4 max-md:hidden">
+        <div className="flex items-center justify-between pl-3">
+          <Brand />
+          <ThemeToggle />
+        </div>
         <Navigation items={items} pathname={pathname} />
         <div className={foot}>{children}</div>
       </aside>
     </>
+  );
+}
+
+function Brand() {
+  return (
+    <span className="flex items-center gap-2.5">
+      <Link
+        href="/"
+        prefetch={false}
+        className="text-[1.1875rem] font-semibold tracking-[-0.02em] text-text no-underline hover:text-text"
+        aria-label="Blogpost home"
+      >
+        blogpost<span className="text-accent">.</span>
+      </Link>
+      <span className="inline-flex h-5 items-center rounded-full bg-tag-bg px-2 text-[0.6875rem] font-medium text-tag-ink">
+        Studio
+      </span>
+    </span>
   );
 }

@@ -83,6 +83,19 @@ export function StaffError({ error }: { error: unknown }) {
     </div>
   );
 }
+/** Visual column labels for a list laid out as a table; screen readers read each row's own text. */
+export function ListHead({ columns, template }: { columns: string[]; template: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`hidden min-h-10 items-center gap-x-6 border-b border-hairline bg-raised/40 px-5 text-xs font-medium tracking-[0.06em] text-faint uppercase md:grid ${template}`}
+    >
+      {columns.map((column, index) => (
+        <span key={index}>{column}</span>
+      ))}
+    </div>
+  );
+}
 const subscribe = () => () => {};
 const timezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 export function StaffTime({ value }: { value: string | null }) {
