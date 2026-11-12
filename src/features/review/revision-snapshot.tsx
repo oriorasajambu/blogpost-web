@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonSecondary, eyebrow, studio } from '@/components/ui/styles';
 import ReactMarkdown from 'react-markdown';
 import { Children, isValidElement, useId, useState, type ReactNode } from 'react';
 import type { Plugin } from 'unified';
@@ -34,7 +35,7 @@ function RevisionImage(props: {
     <span className="media-unavailable">
       Image unavailable{props.alt ? `: ${props.alt}` : ''}.{' '}
       <button
-        className="button-secondary"
+        className={buttonSecondary}
         type="button"
         aria-label={`Retry image${props.alt ? `: ${props.alt}` : ''}`}
         onClick={() => setFailed(false)}
@@ -112,13 +113,13 @@ export function RevisionSnapshot({
     );
   };
   return (
-    <section className="staff-card staff-revision" aria-label={label}>
-      <p className="eyebrow">
+    <section className={`${studio.card} staff-revision`} aria-label={label}>
+      <p className={eyebrow}>
         {label} · revision {revision.number}
       </p>
       <h2>{content.title || 'Untitled revision'}</h2>
       <p>{content.summary || 'No summary.'}</p>
-      <dl className="staff-profile">
+      <dl className={studio.definitions}>
         <dt>Revision ID</dt>
         <dd>
           <code>{revision.id}</code>

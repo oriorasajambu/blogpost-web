@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio } from '@/components/ui/styles';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { staffRequest } from '@/features/staff/staff-api';
@@ -88,10 +89,10 @@ export function MembersPanel({ accountId }: { accountId: string }) {
     }
   }
   return (
-    <section aria-labelledby="members-heading" className="staff-card">
+    <section aria-labelledby="members-heading" className={studio.card}>
       <h2 id="members-heading">Staff members</h2>
       <form
-        className="staff-actions"
+        className={studio.actions}
         onSubmit={(event) => {
           event.preventDefault();
           if (selectionLock.current) return;
@@ -119,7 +120,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
             <option value="false">Disabled</option>
           </select>
         </label>
-        <button type="submit" className="button-secondary" disabled={loading || editorLocked}>
+        <button type="submit" className={buttonSecondary} disabled={loading || editorLocked}>
           Apply member filters
         </button>
       </form>
@@ -129,7 +130,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
       ) : members.length === 0 && !error ? (
         <p>No staff members match these filters.</p>
       ) : null}
-      <ul className="staff-list">
+      <ul className={studio.list}>
         {members.map((member) => (
           <li key={member.id}>
             <div>
@@ -141,7 +142,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
             </div>
             <button
               type="button"
-              className="button-secondary"
+              className={buttonSecondary}
               disabled={selectionBusy || editorLocked}
               onClick={() => {
                 void select(member.id);
@@ -152,10 +153,10 @@ export function MembersPanel({ accountId }: { accountId: string }) {
           </li>
         ))}
       </ul>
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={loading || editorLocked}
           onClick={() => {
             if (selectionLock.current) return;
@@ -167,7 +168,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
         {page?.hasMore && page.nextCursor && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={loading || editorLocked}
             onClick={() => {
               if (selectionLock.current) return;
@@ -256,12 +257,12 @@ function MemberEditor({
     }
   }
   return (
-    <section className="staff-card" aria-labelledby={`manage-${member.id}`}>
+    <section className={studio.card} aria-labelledby={`manage-${member.id}`}>
       <h3 id={`manage-${member.id}`}>Manage {member.displayName}</h3>
       <p>
         {member.email} · public handle {member.handle}
       </p>
-      <dl className="staff-profile">
+      <dl className={studio.definitions}>
         <dt>Current role</dt>
         <dd>{member.role.toLowerCase()}</dd>
         <dt>Current access</dt>
@@ -278,7 +279,7 @@ function MemberEditor({
         <dd>{member.version}</dd>
       </dl>
       <form
-        className="staff-form"
+        className={studio.form}
         onSubmit={(event) => {
           event.preventDefault();
           onLockChange(true);
@@ -303,7 +304,7 @@ function MemberEditor({
           <button
             ref={confirmationTrigger}
             type="submit"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={role === member.role && active === member.active}
           >
             Review access change
@@ -365,7 +366,7 @@ function MemberEditor({
       <p role="status">{notice}</p>
       <button
         type="button"
-        className="button-secondary"
+        className={buttonSecondary}
         disabled={readingBlocked}
         onClick={() => {
           setLoading(true);

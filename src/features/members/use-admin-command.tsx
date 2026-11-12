@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio } from '@/components/ui/styles';
 import { useRef, useState } from 'react';
 import { staffRequest } from '@/features/staff/staff-api';
 import { StaffError } from '@/features/staff/staff-ui';
@@ -100,7 +101,7 @@ export function AdminCommandRecovery({
   if (!command.pending) return <StaffError error={command.error} />;
   if (command.busy) return <p role="status">The server action is processing…</p>;
   return (
-    <div className="staff-card" role="status">
+    <div className={studio.card} role="status">
       <p>
         The server outcome is uncertain. Keep this tab open. Changing the request could repeat an
         action that already completed.
@@ -112,11 +113,11 @@ export function AdminCommandRecovery({
         </p>
       )}
       <StaffError error={command.error} />
-      <div className="staff-actions">
+      <div className={studio.actions}>
         {canRetryAdminCommand(command.pending) && (
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={command.busy || checking}
             onClick={onRetry}
           >
@@ -125,7 +126,7 @@ export function AdminCommandRecovery({
         )}
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={command.busy || checking}
           onClick={() => {
             setChecking(true);
@@ -150,7 +151,7 @@ export function AdminCommandRecovery({
           </p>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             onClick={() => {
               command.reviewed();
               onReviewed?.();

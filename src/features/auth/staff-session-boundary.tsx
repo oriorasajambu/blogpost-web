@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio } from '@/components/ui/styles';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { StaffMember } from '@/lib/auth-contract';
 import { safeReturnTo } from '@/lib/auth-navigation';
@@ -136,8 +137,8 @@ export function StaffSessionBoundary({
         {children}
       </div>
       {state !== 'active' && (
-        <section className="auth-panel" aria-labelledby="session-status-heading">
-          <p className="eyebrow">Staff session</p>
+        <section className={studio.authPanel} aria-labelledby="session-status-heading">
+          <p className={eyebrow}>Staff session</p>
           <h1 id="session-status-heading">
             {state === 'expired'
               ? 'Sign in again to continue.'
@@ -152,11 +153,11 @@ export function StaffSessionBoundary({
                 ? 'Your loaded workspace remains available for local writing. Sync needs a verified session and connection.'
                 : 'Local work has been kept. Export it or sign in again with the same staff account to continue.'}
           </p>
-          <div className="auth-actions">
+          <div className={studio.actions}>
             {state !== 'revoked' && (
               <button
                 type="button"
-                className="button-secondary"
+                className={buttonSecondary}
                 onClick={() => {
                   void flushStaffRecovery()
                     .then(() => window.location.reload())
@@ -171,7 +172,7 @@ export function StaffSessionBoundary({
             {state === 'expired' && (
               <button
                 type="button"
-                className="button-primary"
+                className={buttonPrimary}
                 onClick={() => {
                   void flushStaffRecovery()
                     .then(() => {
@@ -192,7 +193,7 @@ export function StaffSessionBoundary({
             )}
             <button
               type="button"
-              className="button-secondary"
+              className={buttonSecondary}
               onClick={() => {
                 void exportStaffRecovery(namespace, member.id).catch(() =>
                   setExitError(

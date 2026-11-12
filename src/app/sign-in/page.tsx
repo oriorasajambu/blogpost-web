@@ -4,7 +4,6 @@ import { getConfig } from '@/lib/config';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { staffNamespace } from '@/features/auth/staff-access';
 import { safeReturnTo } from '@/lib/auth-navigation';
-import '@/features/auth/auth.css';
 export const metadata: Metadata = {
   title: 'Staff access',
   robots: { index: false, follow: false },

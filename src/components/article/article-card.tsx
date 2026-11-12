@@ -68,7 +68,7 @@ export function ArticleCard({ post, featured = false }: { post: ReadingPost; fea
   const readLink = (
     <Link
       href={href}
-      className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-accent-ink no-underline transition-colors hover:bg-accent-tint"
+      className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-accent-ink no-underline hover:transition-colors hover:bg-accent-tint"
       aria-label={`Read ${post.title}`}
     >
       <span className="max-sm:hidden">Read story</span>

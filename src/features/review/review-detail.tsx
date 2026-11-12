@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import Link from 'next/link';
 import { staffRequest, notifyStaffAccess } from '@/features/staff/staff-api';
@@ -89,17 +90,17 @@ export function ReviewDetail({ postId }: { postId: string }) {
     }
   };
   return (
-    <section className="staff-workspace" aria-labelledby="review-detail-heading">
-      <Link href="/studio/review" prefetch={false} className="text-link">
+    <section className={studio.workspace} aria-labelledby="review-detail-heading">
+      <Link href="/studio/review" prefetch={false} className={textLink}>
         Back to review queue
       </Link>
-      <p className="eyebrow">Review and publication</p>
+      <p className={eyebrow}>Review and publication</p>
       <h1 id="review-detail-heading">Review submitted work</h1>
       <StaffError error={error ?? command.error} />
       {loading && <p role="status">Loading the authoritative revision…</p>}
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={loading || command.busy || command.uncertain}
           onClick={() => void load()}
         >
@@ -107,7 +108,7 @@ export function ReviewDetail({ postId }: { postId: string }) {
         </button>
         {command.uncertain && (
           <button
-            className="button-primary"
+            className={buttonPrimary}
             disabled={command.busy}
             onClick={() => void command.execute()}
           >
@@ -142,7 +143,7 @@ export function ReviewDetail({ postId }: { postId: string }) {
             </blockquote>
           )}
           {submitted ? (
-            <div className="staff-grid staff-comparison">
+            <div className={`${studio.grid} staff-comparison`}>
               <RevisionSnapshot
                 revision={submitted}
                 configuration={configuration}
@@ -155,7 +156,7 @@ export function ReviewDetail({ postId }: { postId: string }) {
                   label="Published snapshot"
                 />
               ) : (
-                <section className="staff-card">
+                <section className={studio.card}>
                   <h2>No published snapshot</h2>
                   <p>This would be the first publication.</p>
                 </section>
@@ -165,12 +166,12 @@ export function ReviewDetail({ postId }: { postId: string }) {
             <p>No revision is currently submitted. Refresh the queue to see current work.</p>
           )}
           {submitted && (
-            <div className="staff-card">
+            <div className={studio.card}>
               <h2>Decision on revision {submitted.number}</h2>
               <p>
                 <code>{submitted.id}</code>
               </p>
-              <label className="field-label" htmlFor="review-feedback">
+              <label className={studio.fieldLabel} htmlFor="review-feedback">
                 Feedback for changes requested
               </label>
               <textarea
@@ -190,10 +191,10 @@ export function ReviewDetail({ postId }: { postId: string }) {
               {!!feedback && !validReviewFeedback(feedback) && (
                 <p role="alert">Feedback must contain valid text and at most 2000 characters.</p>
               )}
-              <div className="staff-actions">
+              <div className={studio.actions}>
                 {canReview(post, 'PUBLISH') && (
                   <button
-                    className="button-primary"
+                    className={buttonPrimary}
                     disabled={command.busy || command.uncertain || command.needsRefresh || loading}
                     onClick={(event) => {
                       confirmationTrigger.current = event.currentTarget;
@@ -205,7 +206,7 @@ export function ReviewDetail({ postId }: { postId: string }) {
                 )}
                 {canReview(post, 'REJECT') && (
                   <button
-                    className="button-secondary"
+                    className={buttonSecondary}
                     disabled={
                       !validReviewFeedback(feedback) ||
                       command.busy ||
@@ -221,7 +222,7 @@ export function ReviewDetail({ postId }: { postId: string }) {
                     Request changes
                   </button>
                 )}
-                <Link className="text-link" href={`/studio/posts/${post.id}`} prefetch={false}>
+                <Link className={textLink} href={`/studio/posts/${post.id}`} prefetch={false}>
                   Open working draft
                 </Link>
               </div>

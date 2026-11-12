@@ -1,6 +1,13 @@
 'use client';
 
 import {
+  buttonDanger,
+  buttonPrimary,
+  buttonSecondary,
+  staffError,
+  studio,
+} from '@/components/ui/styles';
+import {
   useEffect,
   useId,
   useRef,
@@ -9,6 +16,7 @@ import {
   type RefObject,
 } from 'react';
 import { StaffApiError } from './staff-api';
+import { Icon } from '@/components/ui/icon';
 
 export function staffErrorCopy(code: string, status?: number) {
   switch (code) {
@@ -65,10 +73,10 @@ export function StaffError({ error }: { error: unknown }) {
   if (!error) return null;
   const known = error instanceof StaffApiError;
   return (
-    <div className="staff-error" role="alert">
+    <div className={staffError} role="alert">
       <p>{staffErrorCopy(known ? error.code : '', known ? error.status : undefined)}</p>
       {known && error.traceId && (
-        <p className="staff-muted">
+        <p className={studio.muted}>
           Support reference: <code>{error.traceId}</code>
         </p>
       )}
@@ -136,22 +144,29 @@ export function ConfirmAction({
     };
   }, [returnFocusRef, title]);
   return (
-    <section className="staff-confirm" aria-labelledby={id}>
-      <h3 ref={heading} tabIndex={-1} id={id}>
+    <section className={danger ? studio.dangerConfirm : studio.confirm} aria-labelledby={id}>
+      <h3 ref={heading} tabIndex={-1} id={id} className="flex items-center gap-2.5">
+        {danger && <Icon name="warning" size={18} className="shrink-0 text-danger" />}
         {title}
       </h3>
       {children}
-      <div className="staff-actions">
+      {/* Removing actions put Cancel first and the danger control last, on the right. */}
+      <div className={`${studio.actions} ${danger ? 'sm:justify-end' : ''}`}>
+        {danger && onCancel && (
+          <button type="button" className={buttonSecondary} disabled={busy} onClick={onCancel}>
+            Cancel
+          </button>
+        )}
         <button
           type="button"
-          className={danger ? 'button-danger' : 'button-primary'}
+          className={danger ? buttonDanger : buttonPrimary}
           disabled={busy || disabled}
           onClick={() => void onConfirm()}
         >
           {busy ? 'Working…' : confirmLabel}
         </button>
-        {onCancel && (
-          <button type="button" className="button-secondary" disabled={busy} onClick={onCancel}>
+        {!danger && onCancel && (
+          <button type="button" className={buttonSecondary} disabled={busy} onClick={onCancel}>
             Cancel
           </button>
         )}

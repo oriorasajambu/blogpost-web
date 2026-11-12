@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  buttonPrimary,
+  buttonSecondary,
+  eyebrow,
+  studio,
+  textLink,
+  wideDialog,
+} from '@/components/ui/styles';
 import { Icon } from '@/components/ui/icon';
 import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -14,7 +22,6 @@ import { PrivatePreview } from './private-preview';
 import { scalarLength, validateEditorContent } from './editor-validation';
 import { notifyEditorAccess, recoveryItem, useDurableDraft } from './use-durable-draft';
 import { PostActions } from '@/features/review/post-actions';
-import './editor.css';
 
 function dateLabel(value: string) {
   return new Date(value).toLocaleTimeString([], {
@@ -326,14 +333,14 @@ export function DraftEditor(props: {
   }
   if (editor.loading)
     return (
-      <section className="editor-loading" aria-busy="true">
+      <section className="editor-loading draft-editor flex flex-col gap-3 py-6" aria-busy="true">
         <h1>Write a draft</h1>
         <p role="status">Opening your device drafts…</p>
       </section>
     );
   if (!draft)
     return (
-      <section className="auth-panel">
+      <section className={studio.authPanel}>
         <h1>Device draft unavailable</h1>
         <p role="alert">{editor.error}</p>
         <p>
@@ -352,19 +359,25 @@ export function DraftEditor(props: {
   const pendingDevice = draft.generation !== editor.committedGeneration.current;
   const knownMedia = draft.base?.workingRevision?.media ?? [];
   return (
-    <section className="draft-editor" aria-labelledby={`${prefix}-heading`}>
-      <header className="editor-heading">
+    <section
+      className="draft-editor flex min-w-0 flex-col gap-5 pb-10"
+      aria-labelledby={`${prefix}-heading`}
+    >
+      <header className="editor-heading flex flex-wrap items-start justify-between gap-5 [&_h1]:mt-1.5 [&_h1]:mb-2 [&_p:last-child]:text-muted">
         <div>
-          <p className="eyebrow">Your writing desk</p>
+          <p className={eyebrow}>Your writing desk</p>
           <h1 id={`${prefix}-heading`}>Write a draft</h1>
           <p>Shape an idea here. Sync when you’re ready to send it to the workspace.</p>
         </div>
-        <Link className="text-link" href="/studio/posts" prefetch={false}>
+        <Link className={textLink} href="/studio/posts" prefetch={false}>
           All your drafts
         </Link>
       </header>
       {storageInfo && (
-        <aside className="editor-storage-note" aria-label="About device drafts">
+        <aside
+          className={`editor-storage-note ${studio.info} [&_h2]:text-lg`}
+          aria-label="About device drafts"
+        >
           <h2>A copy stays in this browser</h2>
           <p>
             Drafts and pending images are saved in this browser profile for your staff account. They
@@ -372,10 +385,10 @@ export function DraftEditor(props: {
             work you need to keep; browser persistence cannot guarantee recovery after eviction or
             private browsing ends.
           </p>
-          <div className="auth-actions">
+          <div className={studio.actions}>
             <button
               type="button"
-              className="button-secondary"
+              className={buttonSecondary}
               onClick={() => {
                 setStorageInfo(false);
                 try {
@@ -389,7 +402,7 @@ export function DraftEditor(props: {
             </button>
             <button
               type="button"
-              className="text-link"
+              className={textLink}
               onClick={() => {
                 void (navigator.storage?.persist?.() ?? Promise.resolve(false))
                   .then((granted) =>
@@ -413,20 +426,20 @@ export function DraftEditor(props: {
         </aside>
       )}
       {editor.contended && (
-        <p className="editor-warning" role="status">
+        <p className={`editor-warning ${studio.warning}`} role="status">
           This draft is open in another tab. Device saves will stop if that tab changes it; server
           version checks still apply. Keep one writing tab open.
         </p>
       )}
       {(editor.error || configurationError || compatibility) && (
-        <div className="editor-error" role="alert">
+        <div className={`editor-error ${studio.danger} [&_h2]:text-lg`} role="alert">
           {editor.error && <p>{editor.error}</p>}
           {configurationError && <p>{configurationError}</p>}
           {compatibility && <p>{compatibility}</p>}
           <p>Keep this tab open or export Markdown before leaving.</p>
           <button
             type="button"
-            className="text-link"
+            className={textLink}
             onClick={() =>
               void editor
                 .flush()
@@ -438,9 +451,13 @@ export function DraftEditor(props: {
           </button>
         </div>
       )}
-      <div className="editor-status" aria-label="Draft save status" role="status">
+      <div
+        className="editor-status sticky top-16 z-10 -mx-1 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-bg/90 px-1 py-2.5 text-[0.8125rem] text-muted backdrop-blur-md sm:top-[6.875rem]"
+        aria-label="Draft save status"
+        role="status"
+      >
         <span
-          className="status-chip"
+          className={studio.statusChip}
           data-tone={pendingDevice ? 'info' : draft.savedAt ? 'success' : 'warning'}
         >
           <Icon name={pendingDevice ? 'sync' : draft.savedAt ? 'check' : 'warning'} size={14} />
@@ -450,7 +467,7 @@ export function DraftEditor(props: {
               ? `Saved on this device at ${dateLabel(draft.savedAt)}`
               : 'Not saved on this device'}
         </span>
-        <span className="status-chip" data-tone={isDraftDirty(draft) ? 'warning' : 'success'}>
+        <span className={studio.statusChip} data-tone={isDraftDirty(draft) ? 'warning' : 'success'}>
           <Icon name={isDraftDirty(draft) ? 'sync' : 'cloud-check'} size={14} />
           {isDraftDirty(draft) ? 'Unsynced changes' : 'All captured changes synced'}
           {draft.lastSyncedAt
@@ -474,25 +491,28 @@ export function DraftEditor(props: {
         </span>
       </div>
       {draft.pending && (
-        <p className="editor-warning">
+        <p className={`editor-warning ${studio.warning}`}>
           A saved operation is unfinished. Sync retries its captured input and operation key; newer
           edits remain separate.
         </p>
       )}
       {draft.base?.review.lastFeedback && (
-        <aside className="editor-storage-note">
+        <aside className={`editor-storage-note ${studio.info} [&_h2]:text-lg`}>
           <h2>Review feedback</h2>
           <p>{draft.base.review.lastFeedback.text}</p>
         </aside>
       )}
       {inReview && (
-        <p className="editor-warning">
+        <p className={`editor-warning ${studio.warning}`}>
           This revision is in review. Withdraw it before making changes.
         </p>
       )}
-      <fieldset className="editor-fields" disabled={!canEdit}>
+      <fieldset
+        className="editor-fields m-0 flex min-w-0 flex-col gap-4 border-0 p-0"
+        disabled={!canEdit}
+      >
         <legend className="sr-only">Draft details</legend>
-        <div className="editor-field">
+        <div className="editor-field grid min-w-0 gap-1.5">
           <label htmlFor={`${prefix}-title`}>Title</label>
           <input
             id={`${prefix}-title`}
@@ -504,7 +524,7 @@ export function DraftEditor(props: {
             {scalarLength(draft.content.title)} / 160 characters
           </small>
         </div>
-        <div className="editor-field">
+        <div className="editor-field grid min-w-0 gap-1.5">
           <label htmlFor={`${prefix}-summary`}>Summary</label>
           <textarea
             id={`${prefix}-summary`}
@@ -514,8 +534,8 @@ export function DraftEditor(props: {
           />
           <small>{scalarLength(draft.content.summary)} / 320 characters</small>
         </div>
-        <div className="editor-metadata">
-          <div className="editor-field">
+        <div className="editor-metadata grid items-start gap-5 md:grid-cols-2">
+          <div className="editor-field grid min-w-0 gap-1.5">
             <label htmlFor={`${prefix}-category`}>Category</label>
             <select
               id={`${prefix}-category`}
@@ -534,9 +554,9 @@ export function DraftEditor(props: {
               ))}
             </select>
           </div>
-          <fieldset className="editor-tags">
+          <fieldset className="editor-tags m-0 min-w-0 border-0 p-0 [&>div]:flex [&>div]:flex-wrap [&>div]:gap-x-4 [&>div]:gap-y-1 [&>legend]:mb-1 [&>legend]:px-0">
             <legend>Tags</legend>
-            <p className="editor-hint">
+            <p className="editor-hint text-[0.8125rem] text-muted">
               Choose up to five · {draft.content.tagIds.length} selected
             </p>
             <div>
@@ -574,12 +594,16 @@ export function DraftEditor(props: {
                   />
                   {item.name}
                 </label>
-              )) ?? <p className="editor-hint">Connect to load available tags.</p>}
+              )) ?? (
+                <p className="editor-hint text-[0.8125rem] text-muted">
+                  Connect to load available tags.
+                </p>
+              )}
             </div>
           </fieldset>
         </div>
-        <div className="editor-metadata">
-          <div className="editor-field">
+        <div className="editor-metadata grid items-start gap-5 md:grid-cols-2">
+          <div className="editor-field grid min-w-0 gap-1.5">
             <label htmlFor={`${prefix}-cover`}>Cover image</label>
             <select
               id={`${prefix}-cover`}
@@ -607,7 +631,7 @@ export function DraftEditor(props: {
             </select>
           </div>
           {draft.content.coverMediaId && (
-            <div className="editor-field">
+            <div className="editor-field grid min-w-0 gap-1.5">
               <label htmlFor={`${prefix}-cover-alt`}>Cover alt text</label>
               <input
                 id={`${prefix}-cover-alt`}
@@ -615,7 +639,7 @@ export function DraftEditor(props: {
                 value={draft.content.coverAltText ?? ''}
                 onChange={(event) => update({ coverAltText: event.target.value })}
               />
-              <label className="editor-check">
+              <label className="editor-check mr-4">
                 <input
                   type="checkbox"
                   checked={draft.content.coverDecorative}
@@ -632,7 +656,11 @@ export function DraftEditor(props: {
           )}
         </div>
       </fieldset>
-      <div className="editor-tabs" role="tablist" aria-label="Editor view">
+      <div
+        className="editor-tabs inline-flex self-start rounded-[10px] bg-sunk p-[3px] shadow-[inset_0_0_0_1px_var(--color-hairline)] [&>button]:min-h-9 [&>button]:min-w-24 [&>button]:rounded-lg [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-4 [&>button]:text-[0.8125rem] [&>button]:font-medium [&>button]:text-muted [&>button:hover]:text-text [&>button[aria-selected=true]]:bg-raised [&>button[aria-selected=true]]:text-text [&>button[aria-selected=true]]:shadow-[0_0_0_1px_var(--color-accent)]"
+        role="tablist"
+        aria-label="Editor view"
+      >
         <button
           type="button"
           role="tab"
@@ -668,14 +696,17 @@ export function DraftEditor(props: {
           Preview
         </button>
       </div>
-      <div className="editor-canvas" data-view={tab}>
+      <div className="editor-canvas grid gap-5 xl:grid-cols-2" data-view={tab}>
         <div
-          className="editor-write"
+          className={`editor-write min-w-0 overflow-hidden rounded-xl bg-surface shadow-[0_0_0_1px_var(--color-hairline)] [&>.editor-hint]:border-t [&>.editor-hint]:border-hairline [&>.editor-hint]:px-4 [&>.editor-hint]:py-3 ${tab === 'preview' ? 'max-xl:hidden' : ''}`}
           id={`${prefix}-write`}
           role="tabpanel"
           aria-labelledby={`${prefix}-write-tab`}
         >
-          <div className="editor-toolbar" aria-label="Markdown formatting">
+          <div
+            className="editor-toolbar flex flex-wrap gap-0.5 border-b border-hairline p-1.5 [&>button]:min-h-9 [&>button]:rounded-md [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-2.5 [&>button]:text-[0.8125rem] [&>button]:font-medium [&>button]:text-muted [&>button:hover:not(:disabled)]:bg-raised [&>button:hover:not(:disabled)]:text-text"
+            aria-label="Markdown formatting"
+          >
             {(
               [
                 ['Heading', '## ', '', 'Heading'],
@@ -713,12 +744,12 @@ export function DraftEditor(props: {
               Add image
             </button>
           </div>
-          <label className="editor-source-label" htmlFor={`${prefix}-markdown`}>
+          <label className="editor-source-label block px-4 pt-3" htmlFor={`${prefix}-markdown`}>
             Markdown
           </label>
           <textarea
             ref={markdown}
-            className="editor-source"
+            className="editor-source block min-h-[36rem] w-full rounded-none border-0 bg-surface p-4 font-mono text-sm leading-[1.7] focus-visible:-outline-offset-2 max-md:min-h-[26rem]"
             id={`${prefix}-markdown`}
             value={draft.content.markdown}
             disabled={!canEdit}
@@ -726,13 +757,13 @@ export function DraftEditor(props: {
             onChange={(event) => update({ markdown: event.target.value })}
             aria-describedby={`${prefix}-markdown-help`}
           />
-          <p className="editor-hint" id={`${prefix}-markdown-help`}>
+          <p className="editor-hint text-[0.8125rem] text-muted" id={`${prefix}-markdown-help`}>
             CommonMark, fenced code, and simple tables. Raw HTML is disabled. Images stay private
             until published.
           </p>
         </div>
         <div
-          className="editor-preview-panel"
+          className={`editor-preview-panel min-w-0 rounded-xl bg-bg shadow-[0_0_0_1px_var(--color-hairline)] ${tab === 'write' ? 'max-xl:hidden' : ''}`}
           id={`${prefix}-preview`}
           role="tabpanel"
           aria-labelledby={`${prefix}-preview-tab`}
@@ -741,7 +772,10 @@ export function DraftEditor(props: {
         </div>
       </div>
       {draft.images.length > 0 && (
-        <aside className="editor-pending-images" aria-label="Pending images">
+        <aside
+          className="editor-pending-images rounded-xl bg-surface px-5 py-4 shadow-[0_0_0_1px_var(--color-hairline)] [&_h2]:text-lg [&_li_span]:block [&>*+*]:mt-2"
+          aria-label="Pending images"
+        >
           <h2>Images on this device</h2>
           <ul>
             {draft.images.map((image) => (
@@ -761,7 +795,10 @@ export function DraftEditor(props: {
         </aside>
       )}
       {issues.length > 0 && (
-        <aside className="editor-error" aria-label="Draft validation">
+        <aside
+          className={`editor-error ${studio.danger} [&_h2]:text-lg`}
+          aria-label="Draft validation"
+        >
           <h2>Check before Sync</h2>
           <ul>
             {issues.map((issue) => (
@@ -773,10 +810,10 @@ export function DraftEditor(props: {
           </p>
         </aside>
       )}
-      <div className="editor-actions">
+      <div className="editor-actions flex flex-wrap items-center gap-2.5 max-md:[&>button]:flex-auto">
         <button
           type="button"
-          className="button-primary"
+          className={buttonPrimary}
           disabled={
             busy ||
             staffBusy ||
@@ -793,7 +830,7 @@ export function DraftEditor(props: {
         {pendingWorkflow && (
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={busy || staffBusy || editor.paused || !!compatibility}
             onClick={() => void run(pendingWorkflow.kind)}
           >
@@ -802,7 +839,7 @@ export function DraftEditor(props: {
         )}
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           onClick={() => {
             exportRecovery([recoveryItem(editor.current.current ?? draft)]);
             setNotice('Markdown exported. Pending image files remain on this device.');
@@ -813,7 +850,7 @@ export function DraftEditor(props: {
         {draft.base?.allowedActions.includes('SUBMIT') && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={
               busy ||
               staffBusy ||
@@ -830,7 +867,7 @@ export function DraftEditor(props: {
         {draft.base?.allowedActions.includes('WITHDRAW_REVIEW') && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={busy || staffBusy || editor.paused}
             onClick={() => void run('withdraw-review')}
           >
@@ -839,7 +876,7 @@ export function DraftEditor(props: {
         )}
       </div>
       {(notice || editor.saving) && (
-        <p className="editor-notice" role="status">
+        <p className="editor-notice py-1 text-sm text-accent-ink" role="status">
           {editor.saving ? 'Saving on this device…' : notice}
         </p>
       )}
@@ -865,7 +902,7 @@ export function DraftEditor(props: {
       )}
       <dialog
         ref={imageDialog}
-        className="auth-dialog"
+        className={studio.dialog}
         aria-labelledby={`${prefix}-image-heading`}
         onCancel={(event) => {
           if (imageBusy) event.preventDefault();
@@ -874,7 +911,7 @@ export function DraftEditor(props: {
       >
         <h2 id={`${prefix}-image-heading`}>Add an image</h2>
         <p>JPEG, PNG or WebP · up to 5 MiB and 12 million pixels.</p>
-        <div className="editor-field">
+        <div className="editor-field grid min-w-0 gap-1.5">
           <label htmlFor={`${prefix}-file`}>Image file</label>
           <input
             id={`${prefix}-file`}
@@ -883,7 +920,7 @@ export function DraftEditor(props: {
             onChange={(event) => setImageFile(event.target.files?.[0] ?? null)}
           />
         </div>
-        <div className="editor-field">
+        <div className="editor-field grid min-w-0 gap-1.5">
           <label htmlFor={`${prefix}-alt`}>Alt text</label>
           <input
             id={`${prefix}-alt`}
@@ -891,9 +928,11 @@ export function DraftEditor(props: {
             disabled={decorative}
             onChange={(event) => setImageAlt(event.target.value)}
           />
-          <p className="editor-hint">Describe the information the image adds.</p>
+          <p className="editor-hint text-[0.8125rem] text-muted">
+            Describe the information the image adds.
+          </p>
         </div>
-        <label className="editor-check">
+        <label className="editor-check mr-4">
           <input
             type="checkbox"
             checked={decorative}
@@ -901,7 +940,7 @@ export function DraftEditor(props: {
           />
           Decorative image
         </label>
-        <label className="editor-check">
+        <label className="editor-check mr-4">
           <input
             type="checkbox"
             checked={useAsCover}
@@ -910,14 +949,14 @@ export function DraftEditor(props: {
           Use as cover image
         </label>
         {imageError && (
-          <p role="alert" className="editor-error">
+          <p role="alert" className={`editor-error ${studio.danger} [&_h2]:text-lg`}>
             {imageError}
           </p>
         )}
-        <div className="auth-actions">
+        <div className={studio.actions}>
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={imageBusy}
             onClick={() => void insertImage()}
           >
@@ -925,7 +964,7 @@ export function DraftEditor(props: {
           </button>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={imageBusy}
             onClick={() => {
               imageDialog.current?.close();
@@ -938,7 +977,7 @@ export function DraftEditor(props: {
       </dialog>
       <dialog
         ref={conflictDialog}
-        className="auth-dialog editor-conflict"
+        className={`${wideDialog} editor-conflict`}
         aria-labelledby={`${prefix}-conflict-heading`}
         onCancel={() => setNotice('Conflict kept. Export or reopen its comparison before syncing.')}
       >
@@ -947,7 +986,7 @@ export function DraftEditor(props: {
           The server version changed. Your original base, current server version, and local changes
           are kept. No version conflict is retried automatically.
         </p>
-        <div className="editor-comparison">
+        <div className="editor-comparison grid gap-4 md:grid-cols-3 [&_h3]:mb-2 [&_h3]:text-base [&_pre]:max-h-[25rem] [&_section]:min-w-0 [&_section]:rounded-xl [&_section]:p-4 [&_section]:shadow-[0_0_0_1px_var(--color-hairline)]">
           {[
             ['Original base', draft.conflict?.base?.workingRevision?.content],
             ['Current server', draft.conflict?.server?.workingRevision?.content],
@@ -964,7 +1003,7 @@ export function DraftEditor(props: {
           ))}
         </div>
         {combine && (
-          <div className="editor-field">
+          <div className="editor-field grid min-w-0 gap-1.5">
             <label htmlFor={`${prefix}-combined`}>Combined Markdown</label>
             <textarea
               id={`${prefix}-combined`}
@@ -979,10 +1018,10 @@ export function DraftEditor(props: {
             </p>
           </div>
         )}
-        <div className="auth-actions">
+        <div className={studio.actions}>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={conflictBusy}
             onClick={() => void resolve('server')}
           >
@@ -990,7 +1029,7 @@ export function DraftEditor(props: {
           </button>
           <button
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={conflictBusy}
             onClick={() => {
               if (!combine) {
@@ -1003,7 +1042,7 @@ export function DraftEditor(props: {
           </button>
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={conflictBusy}
             onClick={() => void resolve('copy')}
           >
@@ -1011,7 +1050,7 @@ export function DraftEditor(props: {
           </button>
           <button
             type="button"
-            className="text-link"
+            className={textLink}
             disabled={conflictBusy}
             onClick={() => {
               exportRecovery([recoveryItem(draft)]);
@@ -1025,7 +1064,7 @@ export function DraftEditor(props: {
       {draft.conflict && (
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           onClick={() => conflictDialog.current?.showModal()}
         >
           Review conflict

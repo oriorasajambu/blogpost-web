@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest } from '@/features/staff/staff-api';
 import { StaffError, StaffTime, ConfirmAction } from '@/features/staff/staff-ui';
@@ -166,16 +167,16 @@ export function ReassignmentPanel() {
     }
   }
   return (
-    <section className="staff-card" aria-labelledby="reassignment-heading">
+    <section className={studio.card} aria-labelledby="reassignment-heading">
       <h2 id="reassignment-heading">Author reassignment</h2>
       <p>
         Transfer working ownership to an active staff member. This is an audited administrator
         action. The previous owner may lose access to the draft.
       </p>
-      <div className="staff-grid">
+      <div className={studio.grid}>
         <div>
           <h3>Choose an article</h3>
-          <ul className="staff-list">
+          <ul className={studio.list}>
             {posts.map((item) => (
               <li key={item.id}>
                 <div>
@@ -184,10 +185,10 @@ export function ReassignmentPanel() {
                     {item.author.displayName} · {item.publicationState.toLowerCase()} ·{' '}
                     {item.workflowState.toLowerCase().replaceAll('_', ' ')}
                   </p>
-                  <p className="staff-muted">Article ID: {item.id}</p>
+                  <p className={studio.muted}>Article ID: {item.id}</p>
                 </div>
                 <button
-                  className="button-secondary"
+                  className={buttonSecondary}
                   type="button"
                   disabled={blocked || confirming}
                   onClick={() => {
@@ -217,10 +218,10 @@ export function ReassignmentPanel() {
               </li>
             ))}
           </ul>
-          <div className="staff-actions">
+          <div className={studio.actions}>
             <button
               type="button"
-              className="button-secondary"
+              className={buttonSecondary}
               disabled={blocked}
               onClick={() => {
                 void guarded(() => loadPosts());
@@ -231,7 +232,7 @@ export function ReassignmentPanel() {
             {postPage?.hasMore && postPage.nextCursor && (
               <button
                 type="button"
-                className="button-secondary"
+                className={buttonSecondary}
                 disabled={blocked}
                 onClick={() => {
                   void guarded(() => loadPosts(postPage.nextCursor!));
@@ -244,7 +245,7 @@ export function ReassignmentPanel() {
         </div>
         <div>
           <h3>Choose a new author</h3>
-          <ul className="staff-list">
+          <ul className={studio.list}>
             {targets.map((member) => (
               <li key={member.id}>
                 <div>
@@ -255,7 +256,7 @@ export function ReassignmentPanel() {
                 </div>
                 <button
                   type="button"
-                  className="button-secondary"
+                  className={buttonSecondary}
                   disabled={blocked || confirming}
                   onClick={() => {
                     if (
@@ -274,10 +275,10 @@ export function ReassignmentPanel() {
               </li>
             ))}
           </ul>
-          <div className="staff-actions">
+          <div className={studio.actions}>
             <button
               type="button"
-              className="button-secondary"
+              className={buttonSecondary}
               disabled={blocked}
               onClick={() => {
                 void guarded(() => loadTargets());
@@ -288,7 +289,7 @@ export function ReassignmentPanel() {
             {targetPage?.hasMore && targetPage.nextCursor && (
               <button
                 type="button"
-                className="button-secondary"
+                className={buttonSecondary}
                 disabled={blocked}
                 onClick={() => {
                   void guarded(() => loadTargets(targetPage.nextCursor!));
@@ -306,7 +307,7 @@ export function ReassignmentPanel() {
         <p>Load the latest article ownership and review it before starting another reassignment.</p>
       )}
       {post && (
-        <div className="staff-card">
+        <div className={studio.card}>
           <h3>
             Selected article: {post.workingRevision?.content.title || post.slug || 'Untitled draft'}
           </h3>
@@ -329,7 +330,7 @@ export function ReassignmentPanel() {
           <button
             ref={confirmationTrigger}
             type="button"
-            className="button-primary"
+            className={buttonPrimary}
             disabled={
               blocked ||
               confirming ||
@@ -377,7 +378,7 @@ export function ReassignmentPanel() {
       {post && (
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={!canRefresh}
           onClick={() => {
             void guarded(async () => {

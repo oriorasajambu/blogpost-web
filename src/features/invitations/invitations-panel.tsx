@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, staffError, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest, StaffApiError } from '@/features/staff/staff-api';
 import { StaffError, StaffTime, ConfirmAction } from '@/features/staff/staff-ui';
@@ -166,7 +167,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
     }
   }
   return (
-    <section className="staff-card" aria-labelledby="invitations-heading">
+    <section className={studio.card} aria-labelledby="invitations-heading">
       <h2 id="invitations-heading">Invitations</h2>
       <p>
         Only the invited, verified Google account can accept a single-use invitation. Copy and share
@@ -178,7 +179,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         </p>
       )}
       <form
-        className="staff-form"
+        className={studio.form}
         onSubmit={(event) => {
           event.preventDefault();
           const submitter = (event.nativeEvent as SubmitEvent).submitter;
@@ -209,7 +210,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
             <option value="EDITOR">Editor</option>
             <option value="ADMIN">Admin</option>
           </select>
-          <button ref={createInvitationTrigger} type="submit" className="button-primary">
+          <button ref={createInvitationTrigger} type="submit" className={buttonPrimary}>
             Review invitation
           </button>
         </fieldset>
@@ -260,13 +261,13 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         </ConfirmAction>
       )}
       {pendingInvitationExists && (
-        <div className="staff-error" role="alert">
+        <div className={staffError} role="alert">
           <p>
             A pending invitation already exists. Cancel this request, then review, reissue or revoke
             the existing invitation in the list.
           </p>
           {command.error instanceof StaffApiError && command.error.traceId && (
-            <p className="staff-muted">
+            <p className={studio.muted}>
               Support reference: <code>{command.error.traceId}</code>
             </p>
           )}
@@ -280,7 +281,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       />
       {!blocked && !!command.error && proposal?.kind !== 'create' && (
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           type="button"
           onClick={() => {
             void refreshProposal()
@@ -297,7 +298,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         </button>
       )}
       {issued && (
-        <section className="staff-card" aria-labelledby="issued-invitation-heading">
+        <section className={studio.card} aria-labelledby="issued-invitation-heading">
           <h3 id="issued-invitation-heading">Invitation receipt</h3>
           <p>
             {issued.invitation.email} · {issued.invitation.role.toLowerCase()} · expires{' '}
@@ -313,15 +314,15 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                 onFocus={(event) => event.currentTarget.select()}
                 autoComplete="off"
               />
-              <div className="staff-actions">
+              <div className={studio.actions}>
                 <button
                   type="button"
-                  className="button-secondary"
+                  className={buttonSecondary}
                   onClick={() => void copyInvitationLink()}
                 >
                   Copy invitation link
                 </button>
-                <button type="button" className="button-secondary" onClick={() => setIssued(null)}>
+                <button type="button" className={buttonSecondary} onClick={() => setIssued(null)}>
                   Hide private link
                 </button>
               </div>
@@ -335,7 +336,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               {webOrigin && (
                 <button
                   type="button"
-                  className="button-secondary"
+                  className={buttonSecondary}
                   disabled={blocked}
                   onClick={(event) => {
                     confirmationTrigger.current = event.currentTarget;
@@ -351,7 +352,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       )}
       <p role="status">{notice}</p>
       <form
-        className="staff-actions"
+        className={studio.actions}
         onSubmit={(event) => {
           event.preventDefault();
           void load().catch(() => {});
@@ -367,7 +368,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
             <option value="EXPIRED">Expired</option>
           </select>
         </label>
-        <button type="submit" className="button-secondary" disabled={loading}>
+        <button type="submit" className={buttonSecondary} disabled={loading}>
           Apply invitation filter
         </button>
       </form>
@@ -377,7 +378,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       ) : !error && !invitations.length ? (
         <p>No invitations match this filter.</p>
       ) : null}
-      <ul className="staff-list">
+      <ul className={studio.list}>
         {invitations.map((invitation) => (
           <li key={invitation.id}>
             <div>
@@ -403,11 +404,11 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               )}
             </div>
             {invitation.status !== 'ACCEPTED' && (
-              <div className="staff-actions">
+              <div className={studio.actions}>
                 {webOrigin && (
                   <button
                     type="button"
-                    className="button-secondary"
+                    className={buttonSecondary}
                     disabled={blocked || !!proposal}
                     onClick={(event) => {
                       confirmationTrigger.current = event.currentTarget;
@@ -420,7 +421,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                 {invitation.status !== 'REVOKED' && (
                   <button
                     type="button"
-                    className="button-secondary"
+                    className={buttonSecondary}
                     disabled={blocked || !!proposal}
                     onClick={(event) => {
                       confirmationTrigger.current = event.currentTarget;
@@ -435,10 +436,10 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
           </li>
         ))}
       </ul>
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={loading}
           onClick={() => {
             void load().catch(() => {});
@@ -449,7 +450,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         {page?.hasMore && page.nextCursor && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={loading}
             onClick={() => {
               void load(page.nextCursor!).catch(() => {});

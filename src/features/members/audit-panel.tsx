@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonSecondary, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest } from '@/features/staff/staff-api';
 import { StaffError, StaffTime } from '@/features/staff/staff-ui';
@@ -57,20 +58,20 @@ export function AuditPanel() {
     };
   }, []);
   return (
-    <section className="staff-card" aria-labelledby="audit-heading">
+    <section className={studio.card} aria-labelledby="audit-heading">
       <h2 id="audit-heading">Staff audit log</h2>
       <p>
         Server-recorded actions identify the acting staff member, affected resource and time. Audit
         entries are read-only.
       </p>
       <form
-        className="staff-form"
+        className={studio.form}
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
-        <div className="staff-grid">
+        <div className={studio.grid}>
           <label>
             Resource type
             <input
@@ -99,7 +100,7 @@ export function AuditPanel() {
             />
           </label>
         </div>
-        <button type="submit" className="button-secondary" disabled={loading}>
+        <button type="submit" className={buttonSecondary} disabled={loading}>
           Apply audit filters
         </button>
       </form>
@@ -109,7 +110,7 @@ export function AuditPanel() {
       ) : !error && !events.length ? (
         <p>No audit events match these filters.</p>
       ) : null}
-      <ol className="staff-list">
+      <ol className={studio.list}>
         {events.map((event) => (
           <li key={event.id}>
             <article>
@@ -129,10 +130,10 @@ export function AuditPanel() {
           </li>
         ))}
       </ol>
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={loading}
           onClick={() => {
             void load();
@@ -143,7 +144,7 @@ export function AuditPanel() {
         {page?.hasMore && page.nextCursor && (
           <button
             type="button"
-            className="button-secondary"
+            className={buttonSecondary}
             disabled={loading}
             onClick={() => {
               void load(page.nextCursor!);

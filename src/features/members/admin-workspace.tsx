@@ -1,3 +1,4 @@
+import { eyebrow, studio } from '@/components/ui/styles';
 import { MembersPanel } from './members-panel';
 import { InvitationsPanel } from '@/features/invitations/invitations-panel';
 import { ReassignmentPanel } from './reassignment-panel';
@@ -11,8 +12,8 @@ export function AdminWorkspace({
   webOrigin: string | null;
 }) {
   return (
-    <section className="staff-workspace" aria-labelledby="admin-heading">
-      <p className="eyebrow">Administrator access</p>
+    <section className={studio.workspace} aria-labelledby="admin-heading">
+      <p className={eyebrow}>Administrator access</p>
       <h1 id="admin-heading">Staff access administration</h1>
       <p>
         Manage invitations, staff permissions and article attribution. The server verifies every

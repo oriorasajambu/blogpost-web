@@ -3,7 +3,6 @@ import { getConfig } from '@/lib/config';
 import { AuthPanel } from '@/features/auth/auth-panel';
 import { staffNamespace } from '@/features/auth/staff-access';
 import { EmptyState } from '@/components/ui/empty-state';
-import '@/features/auth/auth.css';
 export const metadata: Metadata = {
   title: 'Staff invitation',
   robots: { index: false, follow: false },

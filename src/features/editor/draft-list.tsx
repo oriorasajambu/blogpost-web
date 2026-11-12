@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -10,7 +11,6 @@ import type { LocalDraft } from './draft-types';
 import { openDraftStore } from './draft-store';
 import { isDraftDirty } from './draft-model';
 import { notifyEditorAccess } from './use-durable-draft';
-import './editor.css';
 
 export function DraftList({ member, namespace }: { member: StaffMember; namespace: string }) {
   const [local, setLocal] = useState<LocalDraft[]>([]);
@@ -72,17 +72,17 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
   // them. Absence from a paged response is not proof of deletion or permission.
   const localOnly = local.filter((draft) => !draft.postId);
   return (
-    <div className="draft-list">
-      <div className="auth-actions">
-        <Link className="button-primary" href="/studio/posts/new" prefetch={false}>
+    <div className="draft-list my-6 flex flex-col gap-4 [&>ul]:m-0 [&>ul]:grid [&>ul]:list-none [&>ul]:gap-3 [&>ul]:p-0 [&_li]:rounded-xl [&_li]:bg-surface [&_li]:px-5 [&_li]:py-4 [&_li]:shadow-[0_0_0_1px_var(--color-hairline)] [&_li_a]:font-medium [&_li_a]:text-text [&_li_a]:no-underline [&_li_a:hover]:text-accent-ink [&_li_p]:mt-1.5 [&_li_p]:text-sm [&_li_p]:text-muted [&>h2]:text-xl">
+      <div className={studio.actions}>
+        <Link className={buttonPrimary} href="/studio/posts/new" prefetch={false}>
           Write a draft
         </Link>
-        <Link className="text-link" href="/studio/profile" prefetch={false}>
+        <Link className={textLink} href="/studio/profile" prefetch={false}>
           View your staff profile
         </Link>
       </div>
       {error && (
-        <p role="alert" className="editor-error">
+        <p role="alert" className={`editor-error ${studio.danger}`}>
           {error} Local work has been kept. Reconnect or sign in again to load the workspace.
         </p>
       )}
@@ -125,7 +125,7 @@ export function DraftList({ member, namespace }: { member: StaffMember; namespac
       {cursor && (
         <button
           type="button"
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={busy}
           onClick={() => void more()}
         >

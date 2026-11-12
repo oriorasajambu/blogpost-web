@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonPrimary, buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -80,17 +81,17 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
     }
   };
   return (
-    <section className="staff-workspace" aria-labelledby="trash-heading">
-      <p className="eyebrow">Recoverable work</p>
+    <section className={studio.workspace} aria-labelledby="trash-heading">
+      <p className={eyebrow}>Recoverable work</p>
       <h1 id="trash-heading">Trash</h1>
       <p>
         Trashed articles are unavailable to new public requests. Restore before the purge date to
         recover an unpublished draft.
       </p>
       <StaffError error={error ?? command.error} />
-      <div className="staff-actions">
+      <div className={studio.actions}>
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={busy || command.busy || command.uncertain}
           onClick={() => void load()}
         >
@@ -98,7 +99,7 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
         </button>
         {command.uncertain && (
           <button
-            className="button-primary"
+            className={buttonPrimary}
             disabled={command.busy}
             onClick={() => void command.execute()}
           >
@@ -109,9 +110,9 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
       {busy && <p role="status">Loading recoverable work…</p>}
       {command.notice && <p role="status">{command.notice}</p>}
       {loaded && !items.length && <p>No recoverable articles in trash.</p>}
-      <div className="staff-grid">
+      <div className={studio.grid}>
         {items.map((post) => (
-          <article className="staff-card" key={post.id}>
+          <article className={studio.card} key={post.id}>
             <h2>{post.slug || `Article by ${post.author.displayName}`}</h2>
             <p>
               Post <code>{post.id}</code>
@@ -122,17 +123,13 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
               Permanent purge{' '}
               {post.purgeAfter ? <StaffTime value={post.purgeAfter} /> : 'date unavailable'}
             </p>
-            <div className="staff-actions">
-              <Link
-                className="text-link"
-                href={`/studio/posts/${post.id}/history`}
-                prefetch={false}
-              >
+            <div className={studio.actions}>
+              <Link className={textLink} href={`/studio/posts/${post.id}/history`} prefetch={false}>
                 Read retained history
               </Link>
               {post.allowedActions.includes('RESTORE') && (
                 <button
-                  className="button-secondary"
+                  className={buttonSecondary}
                   disabled={busy || command.busy || command.uncertain || command.needsRefresh}
                   onClick={(event) => {
                     confirmationTrigger.current = event.currentTarget;
@@ -148,7 +145,7 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
       </div>
       {cursor && (
         <button
-          className="button-secondary"
+          className={buttonSecondary}
           disabled={busy || command.busy || command.uncertain || command.needsRefresh}
           onClick={() => void load(cursor)}
         >

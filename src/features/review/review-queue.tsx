@@ -1,5 +1,6 @@
 'use client';
 
+import { buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useState } from 'react';
 import Link from 'next/link';
 import { staffRequest } from '@/features/staff/staff-api';
@@ -54,24 +55,24 @@ export function ReviewQueue() {
     void Promise.resolve().then(() => initialLoad());
   }, []);
   return (
-    <section className="staff-workspace" aria-labelledby="review-heading">
-      <p className="eyebrow">Editorial desk</p>
+    <section className={studio.workspace} aria-labelledby="review-heading">
+      <p className={eyebrow}>Editorial desk</p>
       <h1 id="review-heading">Review workspace</h1>
       <p>
         Read the submitted revision beside its published snapshot. Review and publish commits the
         exact revision you select.
       </p>
-      <div className="staff-actions">
-        <button className="button-secondary" disabled={busy} onClick={() => void load()}>
+      <div className={studio.actions}>
+        <button className={buttonSecondary} disabled={busy} onClick={() => void load()}>
           Refresh review queue
         </button>
       </div>
       <StaffError error={error} />
       {busy && <p role="status">Loading submitted work…</p>}
       {loaded && !items.length && <p>No revisions are waiting for review.</p>}
-      <div className="staff-grid">
+      <div className={studio.grid}>
         {items.map((post) => (
-          <article className="staff-card" key={post.id}>
+          <article className={studio.card} key={post.id}>
             <h2>Submission by {post.author.displayName}</h2>
             <p>
               {post.publicationState === 'PUBLISHED'
@@ -84,14 +85,14 @@ export function ReviewQueue() {
             <p>
               Updated <StaffTime value={post.updatedAt} />
             </p>
-            <Link className="text-link" href={`/studio/review/${post.id}`} prefetch={false}>
+            <Link className={textLink} href={`/studio/review/${post.id}`} prefetch={false}>
               Review submitted revision
             </Link>
           </article>
         ))}
       </div>
       {cursor && (
-        <button className="button-secondary" disabled={busy} onClick={() => void load(cursor)}>
+        <button className={buttonSecondary} disabled={busy} onClick={() => void load(cursor)}>
           Load more submissions
         </button>
       )}
