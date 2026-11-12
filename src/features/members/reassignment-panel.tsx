@@ -167,7 +167,7 @@ export function ReassignmentPanel() {
     }
   }
   return (
-    <section className={studio.card} aria-labelledby="reassignment-heading">
+    <section className={studio.section} aria-labelledby="reassignment-heading">
       <h2 id="reassignment-heading">Author reassignment</h2>
       <p>
         Transfer working ownership to an active staff member. This is an audited administrator

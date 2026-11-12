@@ -10,7 +10,7 @@ import { ThemeToggle } from './theme-toggle';
 export type CategoryLink = { name: string; slug: string };
 
 const navLink =
-  'relative inline-flex min-h-11 max-w-full items-center gap-1.5 truncate px-3 text-sm text-muted no-underline hover:transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
+  'relative inline-flex min-h-11 max-w-full sm:min-h-16 sm:max-w-[14rem] items-center gap-1.5 truncate px-3 text-sm text-muted no-underline hover:transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
 
 export function SiteHeader({
   categories = [],
@@ -40,16 +40,18 @@ export function SiteHeader({
         if (menuOpen && !event.currentTarget.contains(event.relatedTarget)) setOpenPath(null);
       }}
     >
-      <div className={`${container} flex min-h-16 items-center gap-3 sm:gap-6`}>
+      <div className={`${container} flex min-h-16 items-center gap-3 sm:gap-8`}>
         <Link
           href="/"
-          className="text-[1.1875rem] font-semibold tracking-[-0.02em] text-text no-underline hover:text-text"
+          className="shrink-0 text-[1.1875rem] font-semibold tracking-[-0.02em] text-text no-underline hover:text-text"
           aria-label="Blogpost home"
         >
           blogpost<span className="text-accent">.</span>
         </Link>
-        <span className="hidden text-sm text-faint lg:inline">Ideas worth your time.</span>
-        <nav className="ml-auto flex items-center gap-1" aria-label="Utility navigation">
+        <nav
+          className="ml-auto flex shrink-0 items-center gap-1 sm:order-last"
+          aria-label="Utility navigation"
+        >
           <Link href="/search" className={iconButton} aria-label="Search articles">
             <Icon name="search" />
           </Link>
@@ -76,42 +78,44 @@ export function SiteHeader({
             <Icon name={menuOpen ? 'close' : 'menu'} />
           </button>
         </nav>
-      </div>
-      <div
-        className={`border-hairline max-sm:bg-surface sm:block ${menuOpen ? 'block max-sm:border-t' : 'hidden'}`}
-        id="main-navigation"
-      >
-        <nav
-          className="primary-nav mx-auto flex w-full max-w-[78rem] flex-wrap items-stretch max-sm:flex-col max-sm:py-2 sm:gap-x-1 sm:px-3 lg:px-5"
-          aria-label="Main navigation"
-          onClick={() => setOpenPath(null)}
+        {/* One row from 640px: brand, sections, then utilities (CSS order). The panel follows its
+            menu button in the document so keyboard focus moves into it on phones. */}
+        <div
+          id="main-navigation"
+          className={`min-w-0 flex-1 max-sm:absolute max-sm:inset-x-0 max-sm:top-full max-sm:border-y max-sm:border-hairline max-sm:bg-surface max-sm:shadow-md ${menuOpen ? 'max-sm:block' : 'max-sm:hidden'}`}
         >
-          <Link href="/" className={navLink} aria-current={pathname === '/' ? 'page' : undefined}>
-            Latest
-          </Link>
-          {categories.slice(0, 6).map((category) => (
-            <Link
-              key={category.slug}
-              href={`/categories/${encodeURIComponent(category.slug)}`}
-              className={navLink}
-              aria-current={pathname === `/categories/${category.slug}` ? 'page' : undefined}
-            >
-              <span className="truncate">{category.name}</span>
-            </Link>
-          ))}
-          <Link
-            href="/search"
-            className={`${navLink} sm:ml-auto`}
-            aria-current={pathname === '/search' ? 'page' : undefined}
+          <nav
+            className="primary-nav flex flex-wrap items-stretch max-sm:flex-col max-sm:py-2 sm:gap-x-1"
+            aria-label="Main navigation"
+            onClick={() => setOpenPath(null)}
           >
-            Explore <Icon name="arrow" size={14} />
-          </Link>
-          {loginEnabled && (
-            <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} sm:hidden`}>
-              {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
+            <Link href="/" className={navLink} aria-current={pathname === '/' ? 'page' : undefined}>
+              Latest
             </Link>
-          )}
-        </nav>
+            {categories.slice(0, 6).map((category) => (
+              <Link
+                key={category.slug}
+                href={`/categories/${encodeURIComponent(category.slug)}`}
+                className={navLink}
+                aria-current={pathname === `/categories/${category.slug}` ? 'page' : undefined}
+              >
+                <span className="truncate">{category.name}</span>
+              </Link>
+            ))}
+            <Link
+              href="/search"
+              className={navLink}
+              aria-current={pathname === '/search' ? 'page' : undefined}
+            >
+              Explore <Icon name="arrow" size={14} />
+            </Link>
+            {loginEnabled && (
+              <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} sm:hidden`}>
+                {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
+              </Link>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );

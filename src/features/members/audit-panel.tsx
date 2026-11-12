@@ -58,20 +58,20 @@ export function AuditPanel() {
     };
   }, []);
   return (
-    <section className={studio.card} aria-labelledby="audit-heading">
+    <section className={studio.section} aria-labelledby="audit-heading">
       <h2 id="audit-heading">Staff audit log</h2>
       <p>
         Server-recorded actions identify the acting staff member, affected resource and time. Audit
         entries are read-only.
       </p>
       <form
-        className={studio.form}
+        className={studio.filters}
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
-        <div className={studio.grid}>
+        <div className="contents">
           <label>
             Resource type
             <input

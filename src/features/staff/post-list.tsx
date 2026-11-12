@@ -68,7 +68,7 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
   }, [load, memberId, invalidate]);
   return (
     <section className={studio.workspace} aria-labelledby="publication-workspace-heading">
-      <header>
+      <header className="mt-6 flex flex-col gap-2 [&>h2]:text-2xl [&>p:last-child]:text-sm [&>p:last-child]:text-muted">
         <p className={eyebrow}>Publication workspace</p>
         <h2 id="publication-workspace-heading">Browse staff articles</h2>
         <p>Working revisions stay private until an editor reviews and publishes them.</p>
@@ -126,16 +126,34 @@ export function StaffPostList({ filters, memberId }: { filters: PostFilters; mem
                   {post.slug || `Unpublished article by ${post.author.displayName}`}
                 </Link>
               </h3>
-              <p>
-                {post.author.displayName} ·{' '}
-                {post.publicationState === 'PUBLISHED'
-                  ? 'Published'
-                  : post.publicationState === 'WITHDRAWN'
-                    ? 'Withdrawn from public view'
-                    : 'Never published'}{' '}
-                · {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+              <p className="flex flex-wrap items-center gap-2">
+                <span className="sr-only">{post.author.displayName} · </span>
+                <span
+                  className={studio.statusChip}
+                  data-tone={post.publicationState === 'PUBLISHED' ? 'success' : undefined}
+                >
+                  {post.publicationState === 'PUBLISHED'
+                    ? 'Published'
+                    : post.publicationState === 'WITHDRAWN'
+                      ? 'Withdrawn from public view'
+                      : 'Never published'}
+                </span>
+                <span className="sr-only"> · </span>
+                <span
+                  className={studio.statusChip}
+                  data-tone={
+                    post.workflowState === 'IN_REVIEW'
+                      ? 'warning'
+                      : post.workflowState === 'CHANGES_REQUESTED'
+                        ? 'danger'
+                        : undefined
+                  }
+                >
+                  {post.workflowState.replaceAll('_', ' ').toLowerCase()}
+                </span>
               </p>
               <p className={studio.muted}>
+                <span aria-hidden="true">{post.author.displayName} · </span>
                 Working revision: {post.workingRevisionId ?? 'none'}
                 <br />
                 Published revision: {post.publishedRevisionId ?? 'none'}

@@ -35,6 +35,12 @@ export const studio = {
   pageHead:
     'mb-2 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 [&_h1]:text-[1.875rem] [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] sm:[&_h1]:text-[2.25rem]',
   pageTitle: 'flex min-w-0 max-w-[48rem] flex-col gap-2 [&>p:not([class])]:text-muted',
+  /** A workspace section: heading on the page ground, content in its own surfaces. */
+  section:
+    'flex min-w-0 flex-col gap-4 [&>h2]:text-2xl [&>h2]:tracking-[-0.01em] [&>p:not([class])]:max-w-[60rem] [&>p:not([class])]:text-sm [&>p:not([class])]:text-muted',
+  /** Segmented control for a pressed-state button pair. */
+  segmented:
+    'inline-flex self-start rounded-[10px] bg-sunk p-[3px] shadow-[inset_0_0_0_1px_var(--color-hairline)] [&>button]:min-h-9 [&>button]:rounded-lg [&>button]:border-0 [&>button]:bg-transparent [&>button]:px-4 [&>button]:text-[0.8125rem] [&>button]:font-medium [&>button]:text-muted [&>button:hover]:text-text [&>button[aria-pressed=true]]:bg-raised [&>button[aria-pressed=true]]:text-text [&>button[aria-pressed=true]]:shadow-[0_0_0_1px_var(--color-divider)]',
   workspace: 'staff-workspace flex min-w-0 flex-col gap-5 [overflow-wrap:anywhere]',
   card: 'staff-card min-w-0 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] sm:p-6 [&>*+*]:mt-3.5',
   confirm: 'staff-confirm min-w-0 rounded-xl bg-raised p-4 shadow-md sm:p-6 [&>*+*]:mt-3.5',
@@ -44,7 +50,7 @@ export const studio = {
   form: 'staff-form grid max-w-[68ch] gap-3.5',
   actions: 'flex flex-wrap items-center gap-2.5 max-sm:items-stretch',
   filters:
-    'staff-filters flex flex-wrap items-end gap-3 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] max-sm:flex-col max-sm:items-stretch [&>label]:flex-[1_1_12rem] max-sm:[&>label]:flex-initial',
+    'staff-filters flex flex-wrap items-end gap-3 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] max-sm:flex-col max-sm:items-stretch sm:[&>label]:w-60 sm:[&>label]:flex-none',
   muted: 'text-sm text-muted',
   /** Danger banner: tinted ground and edge; the copy itself names the problem. */
   danger:
@@ -61,7 +67,7 @@ export const studio = {
   fieldLabel: 'mb-2 block text-[0.8125rem] text-muted',
   /** Routine states read as chips; colour comes from data-tone and an icon always names it too. */
   statusChip:
-    'inline-flex min-h-6 items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium whitespace-normal bg-chip-bg text-chip-ink data-[tone=danger]:bg-danger-bg data-[tone=danger]:text-danger data-[tone=info]:bg-info-bg data-[tone=info]:text-info data-[tone=success]:bg-success-bg data-[tone=success]:text-success data-[tone=warning]:bg-warning-bg data-[tone=warning]:text-warning',
+    'inline-flex min-h-6 items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap bg-chip-bg text-chip-ink data-[tone=accent]:bg-tag-bg data-[tone=accent]:text-tag-ink data-[tone=danger]:bg-danger-bg data-[tone=danger]:text-danger data-[tone=info]:bg-info-bg data-[tone=info]:text-info data-[tone=success]:bg-success-bg data-[tone=success]:text-success data-[tone=warning]:bg-warning-bg data-[tone=warning]:text-warning',
   /** Centred card for sign-in, invitations and access states. */
   authPanel:
     'auth-panel mx-auto my-10 w-full max-w-[36rem] rounded-2xl bg-surface p-5 shadow-md [overflow-wrap:anywhere] sm:my-14 sm:p-10 [&_h1]:text-[1.75rem] [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] [&>p]:my-4 [&_[role=alert]]:rounded-xl [&_[role=alert]]:bg-danger-bg [&_[role=alert]]:px-5 [&_[role=alert]]:py-4 [&_[role=alert]]:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-danger)_45%,transparent)]',

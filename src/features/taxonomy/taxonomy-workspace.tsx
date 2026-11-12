@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  buttonGhost,
   buttonPrimary,
   buttonSecondary,
   eyebrow,
@@ -66,11 +67,10 @@ export function TaxonomyWorkspace() {
           </p>
         </div>
       </header>
-      <div className={studio.actions} role="group" aria-label="Vocabulary type">
+      <div className={studio.segmented} role="group" aria-label="Vocabulary type">
         <button
           type="button"
           disabled={locked}
-          className={kind === 'categories' ? buttonPrimary : buttonSecondary}
           aria-pressed={kind === 'categories'}
           onClick={() => {
             if (!lockRef.current) setKind('categories');
@@ -81,7 +81,6 @@ export function TaxonomyWorkspace() {
         <button
           type="button"
           disabled={locked}
-          className={kind === 'tags' ? buttonPrimary : buttonSecondary}
           aria-pressed={kind === 'tags'}
           onClick={() => {
             if (!lockRef.current) setKind('tags');
@@ -166,8 +165,8 @@ function TaxonomyCollection({
 
   return (
     <>
-      <div className={studio.actions}>
-        <label>
+      <div className={`${studio.actions} justify-between`}>
+        <label className="!flex items-center !gap-3 font-normal text-muted">
           Show {kind}
           <select
             value={filter}
@@ -183,7 +182,7 @@ function TaxonomyCollection({
         </label>
         <button
           type="button"
-          className={buttonPrimary}
+          className={`${buttonPrimary} sm:ml-auto`}
           disabled={locked}
           onClick={() => {
             if (lockRef.current) return;
@@ -214,106 +213,119 @@ function TaxonomyCollection({
           {kind} were found.
         </p>
       )}
-      {items && items.length > 0 && (
-        <div
-          className={studio.tableWrap}
-          role="region"
-          aria-label={`${kind === 'categories' ? 'Categories' : 'Tags'} table`}
-          tabIndex={0}
-        >
-          <p className={studio.muted}>Scroll horizontally to read all columns.</p>
-          <table>
-            <caption>
-              {kind === 'categories' ? 'Categories' : 'Tags'} · page {page}
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Name and slug</th>
-                <th scope="col">State</th>
-                <th scope="col">Current use</th>
-                <th scope="col">Updated</th>
-                <th scope="col">Manage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((taxon) => (
-                <tr key={taxon.id}>
-                  <th scope="row">
-                    {taxon.name}
-                    <br />
-                    <small>{taxon.slug}</small>
-                  </th>
-                  <td>
-                    {taxon.active ? 'Active' : 'Archived'}
-                    <br />
-                    <small>Version {taxon.version}</small>
-                  </td>
-                  <td>
-                    {taxon.usage.publishedCount} published · {taxon.usage.draftCount} working
-                    revisions
-                  </td>
-                  <td>
-                    <StaffTime value={taxon.updatedAt} />
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className={buttonSecondary}
-                      disabled={locked}
-                      onClick={() => void edit(taxon)}
-                    >
-                      Manage {taxon.name}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <div className="flex min-w-0 flex-col gap-4">
+          {items && items.length > 0 && (
+            <div
+              className={`${studio.tableWrap} flex flex-col [&_caption]:sr-only [&_table]:min-w-[50rem] [&_:is(td,th)]:[overflow-wrap:normal] [&_tbody_th]:font-medium [&_tbody_th_small]:font-mono [&_tbody_th_small]:text-xs`}
+              role="region"
+              aria-label={`${kind === 'categories' ? 'Categories' : 'Tags'} table`}
+              tabIndex={0}
+            >
+              <p
+                className={`${studio.muted} order-last border-t border-hairline px-4 py-3 text-[0.8125rem]`}
+              >
+                Scroll horizontally to read all columns.
+              </p>
+              <table>
+                <caption>
+                  {kind === 'categories' ? 'Categories' : 'Tags'} · page {page}
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Name and slug</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Current use</th>
+                    <th scope="col">Updated</th>
+                    <th scope="col">Manage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((taxon) => (
+                    <tr key={taxon.id}>
+                      <th scope="row">
+                        {taxon.name}
+                        <br />
+                        <small>{taxon.slug}</small>
+                      </th>
+                      <td>
+                        <span
+                          className={studio.statusChip}
+                          data-tone={taxon.active ? 'success' : undefined}
+                        >
+                          {taxon.active ? 'Active' : 'Archived'}
+                        </span>
+                        <br />
+                        <small>Version {taxon.version}</small>
+                      </td>
+                      <td>
+                        {taxon.usage.publishedCount} published · {taxon.usage.draftCount} working
+                        revisions
+                      </td>
+                      <td>
+                        <StaffTime value={taxon.updatedAt} />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          className={buttonGhost}
+                          disabled={locked}
+                          onClick={() => void edit(taxon)}
+                        >
+                          Manage {taxon.name}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {pagination && (
+            <div className={studio.actions} aria-label={`${kind} pages`}>
+              <button
+                type="button"
+                className={buttonSecondary}
+                disabled={busy || page <= 1}
+                onClick={() => setPage((current) => current - 1)}
+              >
+                Previous page
+              </button>
+              <p>
+                {pagination.totalItems} {kind} · page {page} of {Math.max(1, pagination.totalPages)}
+              </p>
+              <button
+                type="button"
+                className={buttonSecondary}
+                disabled={busy || !pagination.hasMore}
+                onClick={() => setPage((current) => current + 1)}
+              >
+                Next page
+              </button>
+            </div>
+          )}
         </div>
-      )}
-      {pagination && (
-        <div className={studio.actions} aria-label={`${kind} pages`}>
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={busy || page <= 1}
-            onClick={() => setPage((current) => current - 1)}
-          >
-            Previous page
-          </button>
-          <p>
-            {pagination.totalItems} {kind} · page {page} of {Math.max(1, pagination.totalPages)}
-          </p>
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={busy || !pagination.hasMore}
-            onClick={() => setPage((current) => current + 1)}
-          >
-            Next page
-          </button>
-        </div>
-      )}
-      {selection && (
-        <TaxonEditor
-          key={selectionKey}
-          kind={kind}
-          initial={selection.mode === 'edit' ? selection.taxon : null}
-          setLocked={(value) => {
-            if (value) selectionGeneration.current++;
-            setLocked(value);
-          }}
-          onClose={() => {
-            selectionGeneration.current++;
-            setSelection(null);
-          }}
-          onSaved={(taxon) => {
-            setSelection({ mode: 'edit', taxon });
-            setSelectionKey((current) => current + 1);
-            setRefresh((current) => current + 1);
-          }}
-        />
-      )}
+        {selection && (
+          <TaxonEditor
+            key={selectionKey}
+            kind={kind}
+            initial={selection.mode === 'edit' ? selection.taxon : null}
+            setLocked={(value) => {
+              if (value) selectionGeneration.current++;
+              setLocked(value);
+            }}
+            onClose={() => {
+              selectionGeneration.current++;
+              setSelection(null);
+            }}
+            onSaved={(taxon) => {
+              setSelection({ mode: 'edit', taxon });
+              setSelectionKey((current) => current + 1);
+              setRefresh((current) => current + 1);
+            }}
+          />
+        )}
+      </div>
     </>
   );
 }
