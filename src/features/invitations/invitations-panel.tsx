@@ -391,13 +391,13 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
           <div className={studio.table}>
             <ListHead
               columns={['Invitation', 'Role · status · version', '']}
-              template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
+              template="lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)]"
             />
             <ul className={`staff-list ${studio.rows}`}>
               {invitations.map((invitation) => (
                 <li
                   key={invitation.id}
-                  className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] md:[&>div:first-child]:contents md:[&_h3]:col-start-1 md:[&_h3]:row-start-1 md:[&>div:first-child>p:nth-of-type(1)]:col-start-2 md:[&>div:first-child>p:nth-of-type(1)]:row-start-1 md:[&>div:first-child>p:nth-of-type(n+2)]:col-start-1 md:[&>div:last-child:not(:first-child)]:col-start-3 md:[&>div:last-child:not(:first-child)]:row-span-3 md:[&>div:last-child:not(:first-child)]:row-start-1`}
+                  className={`${studio.row} lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,14rem)] lg:[&>div:first-child]:contents lg:[&_h3]:col-start-1 lg:[&_h3]:row-start-1 lg:[&>div:first-child>p:nth-of-type(1)]:col-start-2 lg:[&>div:first-child>p:nth-of-type(1)]:row-start-1 lg:[&>div:first-child>p:nth-of-type(n+2)]:col-start-1 lg:[&>div:last-child:not(:first-child)]:col-start-3 lg:[&>div:last-child:not(:first-child)]:row-span-3 lg:[&>div:last-child:not(:first-child)]:row-start-1`}
                 >
                   <div>
                     <h3>{invitation.email}</h3>

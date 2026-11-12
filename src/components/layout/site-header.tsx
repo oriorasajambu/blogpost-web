@@ -10,7 +10,7 @@ import { ThemeToggle } from './theme-toggle';
 export type CategoryLink = { name: string; slug: string };
 
 const navLink =
-  'relative inline-flex min-h-11 max-w-full sm:min-h-16 sm:max-w-[14rem] items-center gap-1.5 truncate px-3 text-sm text-muted no-underline hover:transition-colors hover:text-text aria-[current=page]:text-text max-sm:min-h-12 max-sm:w-full max-sm:px-4 max-sm:text-base sm:after:absolute sm:after:inset-x-3 sm:after:bottom-0 sm:after:h-0.5 sm:after:rounded-full sm:aria-[current=page]:after:bg-accent max-sm:aria-[current=page]:text-accent-ink max-sm:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
+  'relative inline-flex min-h-11 max-w-full lg:min-h-16 lg:max-w-[14rem] items-center gap-1.5 truncate px-3 text-sm text-muted no-underline hover:transition-colors hover:text-text aria-[current=page]:text-text max-lg:min-h-12 max-lg:w-full max-lg:px-4 max-lg:text-base lg:after:absolute lg:after:inset-x-3 lg:after:bottom-0 lg:after:h-0.5 lg:after:rounded-full lg:aria-[current=page]:after:bg-accent max-lg:aria-[current=page]:text-accent-ink max-lg:aria-[current=page]:shadow-[inset_2px_0_0_var(--color-accent)]';
 
 export function SiteHeader({
   categories = [],
@@ -40,7 +40,7 @@ export function SiteHeader({
         if (menuOpen && !event.currentTarget.contains(event.relatedTarget)) setOpenPath(null);
       }}
     >
-      <div className={`${container} flex min-h-16 items-center gap-3 sm:gap-8`}>
+      <div className={`${container} flex min-h-16 items-center gap-3 lg:gap-8`}>
         <Link
           href="/"
           className="shrink-0 text-[1.1875rem] font-semibold tracking-[-0.02em] text-text no-underline hover:text-text"
@@ -49,7 +49,7 @@ export function SiteHeader({
           blogpost<span className="text-accent">.</span>
         </Link>
         <nav
-          className="ml-auto flex shrink-0 items-center gap-1 sm:order-last"
+          className="ml-auto flex shrink-0 items-center gap-1 lg:order-last"
           aria-label="Utility navigation"
         >
           <Link href="/search" className={iconButton} aria-label="Search articles">
@@ -57,19 +57,19 @@ export function SiteHeader({
           </Link>
           <ThemeToggle />
           {loginEnabled && staffSession && (
-            <Link href="/studio" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-sm:hidden`}>
+            <Link href="/studio" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-lg:hidden`}>
               Studio <Icon name="arrow" size={15} />
             </Link>
           )}
           {loginEnabled && !staffSession && (
-            <Link href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-sm:hidden`}>
+            <Link href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-lg:hidden`}>
               Staff sign in <Icon name="arrow" size={15} />
             </Link>
           )}
           <button
             ref={menuButton}
             type="button"
-            className={`${iconButton} sm:hidden`}
+            className={`${iconButton} lg:hidden`}
             aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={menuOpen}
             aria-controls="main-navigation"
@@ -78,14 +78,14 @@ export function SiteHeader({
             <Icon name={menuOpen ? 'close' : 'menu'} />
           </button>
         </nav>
-        {/* One row from 640px: brand, sections, then utilities (CSS order). The panel follows its
+        {/* One row from 1024px: brand, sections, then utilities (CSS order); narrower screens use the menu panel so long sections never stack inside the sticky header. The panel follows its
             menu button in the document so keyboard focus moves into it on phones. */}
         <div
           id="main-navigation"
-          className={`min-w-0 flex-1 max-sm:absolute max-sm:inset-x-0 max-sm:top-full max-sm:border-y max-sm:border-hairline max-sm:bg-surface max-sm:shadow-md ${menuOpen ? 'max-sm:block' : 'max-sm:hidden'}`}
+          className={`min-w-0 flex-1 max-lg:absolute max-lg:inset-x-0 max-lg:top-full max-lg:border-y max-lg:border-hairline max-lg:bg-surface max-lg:shadow-md ${menuOpen ? 'max-lg:block' : 'max-lg:hidden'}`}
         >
           <nav
-            className="primary-nav flex flex-wrap items-stretch max-sm:flex-col max-sm:py-2 sm:gap-x-1"
+            className="primary-nav flex flex-wrap items-stretch max-lg:flex-col max-lg:py-2 lg:gap-x-1"
             aria-label="Main navigation"
             onClick={() => setOpenPath(null)}
           >
@@ -110,7 +110,7 @@ export function SiteHeader({
               Explore <Icon name="arrow" size={14} />
             </Link>
             {loginEnabled && (
-              <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} sm:hidden`}>
+              <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} lg:hidden`}>
                 {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
               </Link>
             )}

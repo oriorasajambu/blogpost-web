@@ -117,12 +117,12 @@ export function TrashWorkspace({ member }: { member: StaffMember }) {
       <div className={studio.table}>
         <ListHead
           columns={['Article', 'Owner', 'Moved · purge', '']}
-          template="md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)]"
+          template="lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)]"
         />
         <div className="grid divide-y divide-hairline">
           {items.map((post) => (
             <article
-              className={`${studio.row} md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)] md:[&>h2]:col-start-1 md:[&>h2]:row-start-1 md:[&>p:nth-of-type(1)]:col-start-1 md:[&>p:nth-of-type(1)]:row-start-2 md:[&>p:nth-of-type(2)]:col-start-2 md:[&>p:nth-of-type(2)]:row-start-1 md:[&>p:nth-of-type(3)]:col-start-3 md:[&>p:nth-of-type(3)]:row-start-1 md:[&>p:nth-of-type(4)]:col-start-3 md:[&>p:nth-of-type(4)]:row-start-2 md:[&>div]:col-start-4 md:[&>div]:row-span-2 md:[&>div]:row-start-1`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,12rem)] lg:[&>h2]:col-start-1 lg:[&>h2]:row-start-1 lg:[&>p:nth-of-type(1)]:col-start-1 lg:[&>p:nth-of-type(1)]:row-start-2 lg:[&>p:nth-of-type(2)]:col-start-2 lg:[&>p:nth-of-type(2)]:row-start-1 lg:[&>p:nth-of-type(3)]:col-start-3 lg:[&>p:nth-of-type(3)]:row-start-1 lg:[&>p:nth-of-type(4)]:col-start-3 lg:[&>p:nth-of-type(4)]:row-start-2 lg:[&>div]:col-start-4 lg:[&>div]:row-span-2 lg:[&>div]:row-start-1`}
               key={post.id}
             >
               <h2>{post.slug || `Article by ${post.author.displayName}`}</h2>

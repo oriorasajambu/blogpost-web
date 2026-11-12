@@ -113,12 +113,12 @@ export function AuditPanel() {
       <div className={studio.table}>
         <ListHead
           columns={['Event', 'Actor · time', 'Subject']}
-          template="md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)]"
+          template="lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)]"
         />
         <ol className={`staff-list ${studio.rows}`}>
           {events.map((event) => (
             <li key={event.id} className={studio.row}>
-              <article className="grid min-w-0 gap-x-6 gap-y-1.5 md:items-start md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)] [&>details]:col-span-full">
+              <article className="grid min-w-0 gap-x-6 gap-y-1.5 lg:items-start lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)] [&>details]:col-span-full">
                 <h3>{event.action.replaceAll('_', ' ').toLowerCase()}</h3>
                 <p>
                   {event.actor.displayName} ({event.actor.handle}) ·{' '}

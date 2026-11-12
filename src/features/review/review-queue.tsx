@@ -77,12 +77,12 @@ export function ReviewQueue() {
       <div className={studio.table}>
         <ListHead
           columns={['Submission', 'Submitted revision', 'Updated', '']}
-          template="md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto]"
+          template="lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto]"
         />
         <div className="grid divide-y divide-hairline">
           {items.map((post) => (
             <article
-              className={`${studio.row} md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto] md:[&>h2]:col-start-1 md:[&>h2]:row-start-1 md:[&>p:nth-of-type(1)]:col-start-1 md:[&>p:nth-of-type(1)]:row-start-2 md:[&>p:nth-of-type(2)]:col-start-2 md:[&>p:nth-of-type(2)]:row-start-1 md:[&>p:nth-of-type(3)]:col-start-3 md:[&>p:nth-of-type(3)]:row-start-1 md:[&>a]:col-start-4 md:[&>a]:row-start-1`}
+              className={`${studio.row} lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto] lg:[&>h2]:col-start-1 lg:[&>h2]:row-start-1 lg:[&>p:nth-of-type(1)]:col-start-1 lg:[&>p:nth-of-type(1)]:row-start-2 lg:[&>p:nth-of-type(2)]:col-start-2 lg:[&>p:nth-of-type(2)]:row-start-1 lg:[&>p:nth-of-type(3)]:col-start-3 lg:[&>p:nth-of-type(3)]:row-start-1 lg:[&>a]:col-start-4 lg:[&>a]:row-start-1`}
               key={post.id}
             >
               <h2>Submission by {post.author.displayName}</h2>

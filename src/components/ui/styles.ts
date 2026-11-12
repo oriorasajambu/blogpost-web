@@ -67,7 +67,7 @@ export const studio = {
   fieldLabel: 'mb-2 block text-[0.8125rem] text-muted',
   /** Routine states read as chips; colour comes from data-tone and an icon always names it too. */
   statusChip:
-    'inline-flex min-h-6 items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap bg-chip-bg text-chip-ink data-[tone=accent]:bg-tag-bg data-[tone=accent]:text-tag-ink data-[tone=danger]:bg-danger-bg data-[tone=danger]:text-danger data-[tone=info]:bg-info-bg data-[tone=info]:text-info data-[tone=success]:bg-success-bg data-[tone=success]:text-success data-[tone=warning]:bg-warning-bg data-[tone=warning]:text-warning',
+    'inline-flex min-h-6 items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium whitespace-normal [overflow-wrap:break-word] bg-chip-bg text-chip-ink data-[tone=accent]:bg-tag-bg data-[tone=accent]:text-tag-ink data-[tone=danger]:bg-danger-bg data-[tone=danger]:text-danger data-[tone=info]:bg-info-bg data-[tone=info]:text-info data-[tone=success]:bg-success-bg data-[tone=success]:text-success data-[tone=warning]:bg-warning-bg data-[tone=warning]:text-warning',
   /** Centred card for sign-in, invitations and access states. */
   authPanel:
     'auth-panel mx-auto my-10 w-full max-w-[36rem] rounded-2xl bg-surface p-5 shadow-md [overflow-wrap:anywhere] sm:my-14 sm:p-10 [&_h1]:text-[1.75rem] [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] [&>p]:my-4 [&_[role=alert]]:rounded-xl [&_[role=alert]]:bg-danger-bg [&_[role=alert]]:px-5 [&_[role=alert]]:py-4 [&_[role=alert]]:shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-danger)_45%,transparent)]',
@@ -77,7 +77,7 @@ export const studio = {
   table:
     'hidden min-w-0 overflow-hidden rounded-xl has-[article]:block has-[li]:block bg-surface shadow-[0_0_0_1px_var(--color-hairline)]',
   rows: 'm-0 grid list-none divide-y divide-hairline p-0',
-  row: 'grid min-w-0 gap-x-6 [&_button]:[overflow-wrap:anywhere] gap-y-1.5 px-4 py-4 sm:px-5 md:items-center [&_p]:m-0 [&_p]:text-sm [&_p]:text-muted [&_h2]:text-base [&_h2]:font-medium [&_h3]:text-base [&_h3]:font-medium',
+  row: 'grid min-w-0 gap-x-6 [&_button]:[overflow-wrap:anywhere] gap-y-1.5 px-4 py-4 sm:px-5 lg:items-center [&_p]:m-0 [&_p]:text-sm [&_p]:text-muted [&_h2]:text-base [&_h2]:font-medium [&_h3]:text-base [&_h3]:font-medium',
 } as const;
 
 /** The staff error banner keeps its `staff-error` hook; tests select `.staff-error[role="alert"]`. */
