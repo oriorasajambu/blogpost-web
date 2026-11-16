@@ -50,7 +50,7 @@ export const studio = {
   form: 'staff-form grid max-w-[68ch] gap-3.5',
   actions: 'flex flex-wrap items-center gap-2.5 max-sm:items-stretch',
   filters:
-    'staff-filters flex flex-wrap items-end gap-3 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] max-sm:flex-col max-sm:items-stretch sm:[&>label]:w-60 sm:[&>label]:flex-none',
+    'staff-filters flex flex-wrap items-end gap-3 rounded-xl bg-surface p-4 shadow-[0_0_0_1px_var(--color-hairline)] max-sm:flex-col max-sm:items-stretch [&>label]:min-w-0 [&>label]:gap-1.5 sm:[&>label]:max-w-80 sm:[&>label]:flex-[1_1_15rem] [&_:is(input,select)]:h-10 [&_:is(input,select)]:min-h-10 [&>button]:h-10 [&>button]:shrink-0 [&>button]:whitespace-nowrap max-sm:[&>button]:w-full',
   muted: 'text-sm text-muted',
   /** Danger banner: tinted ground and edge; the copy itself names the problem. */
   danger:

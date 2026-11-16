@@ -3,7 +3,14 @@
 import { buttonPrimary, buttonSecondary, staffError, studio } from '@/components/ui/styles';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { staffRequest, StaffApiError } from '@/features/staff/staff-api';
-import { ConfirmAction, ListHead, StaffError, StaffTime } from '@/features/staff/staff-ui';
+import {
+  ConfirmAction,
+  ListHead,
+  StaffCursorPagination,
+  StaffError,
+  StaffTime,
+} from '@/features/staff/staff-ui';
+import { STAFF_PAGE_SIZE, useCursorPager } from '@/features/staff/use-cursor-pager';
 import type { CursorPagination } from '@/features/editor/editor-contract';
 import {
   adminList,
@@ -17,10 +24,15 @@ import { AdminCommandRecovery, useAdminCommand } from '@/features/members/use-ad
 type Proposal =
   | { kind: 'create'; email: string; role: Invitation['role'] }
   | { kind: 'reissue' | 'revoke'; invitation: Invitation };
+const INVITATION_FILTERS = ['status'] as const;
+
 export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
+  const pager = useCursorPager('invitation', INVITATION_FILTERS);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [page, setPage] = useState<CursorPagination | null>(null);
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState(pager.filters.status);
+  const listHeading = useRef<HTMLHeadingElement>(null);
+  const focusAfterLoad = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [email, setEmail] = useState('');
@@ -54,13 +66,14 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       value,
       proposal && proposal.kind !== 'create' ? proposal.invitation.id : undefined,
     );
-  async function load(cursor?: string) {
+  async function load() {
     const epoch = ++loadEpoch.current;
+    const { cursor, filters } = pager;
     setLoading(true);
     setError(null);
     try {
-      const query = new URLSearchParams({ pageSize: '20' });
-      if (status) query.set('status', status);
+      const query = new URLSearchParams({ pageSize: String(STAFF_PAGE_SIZE) });
+      if (filters.status) query.set('status', filters.status);
       if (cursor) query.set('cursor', cursor);
       const result = await staffRequest(
         `/admin/invitations?${query}`,
@@ -71,30 +84,52 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         throw new Error('Invitation pagination is unavailable.');
       setInvitations(result.data);
       setPage(result.pagination);
+      if (focusAfterLoad.current) listHeading.current?.focus();
     } catch (failure) {
       if (epoch !== loadEpoch.current) return;
+      if (failure instanceof StaffApiError && failure.code === 'INVALID_CURSOR' && cursor) {
+        setNotice('That page link expired. Showing the newest invitations.');
+        pager.recover();
+        return;
+      }
       setError(failure);
       setInvitations([]);
       setPage(null);
       throw failure;
     } finally {
-      if (epoch === loadEpoch.current) setLoading(false);
+      if (epoch === loadEpoch.current) {
+        setLoading(false);
+        focusAfterLoad.current = false;
+      }
     }
   }
-  const initiallyLoad = useEffectEvent(() => load().catch(() => {}));
+  const loadLocation = useEffectEvent(() => {
+    // Back/Forward and shared links decide the applied filter; show it in the select.
+    setStatus(pager.filters.status);
+    void load().catch(() => {});
+  });
   const invalidateLoads = useEffectEvent(() => {
     loadEpoch.current++;
   });
   useEffect(() => {
     let cancelled = false;
     queueMicrotask(() => {
-      if (!cancelled) void initiallyLoad();
+      if (!cancelled) loadLocation();
     });
     return () => {
       cancelled = true;
       invalidateLoads();
     };
-  }, []);
+  }, [pager.locationKey]);
+  function turn(move: () => void) {
+    setNotice('');
+    focusAfterLoad.current = true;
+    move();
+  }
+  /** After a write, show the newest page so the changed invitation is visible. */
+  async function reloadNewest() {
+    if (!pager.applyFilters(pager.filters)) await load().catch(() => {});
+  }
   async function completed(result: Invitation | InvitationIssueResult | null) {
     if (!result) return;
     setProposal(null);
@@ -109,7 +144,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       setIssued(null);
       setNotice('The invitation was revoked.');
     }
-    await load().catch(() => {});
+    await reloadNewest();
   }
   function execute() {
     if (!proposal) return;
@@ -168,7 +203,9 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
   }
   return (
     <section className={studio.section} aria-labelledby="invitations-heading">
-      <h2 id="invitations-heading">Invitations</h2>
+      <h2 id="invitations-heading" ref={listHeading} tabIndex={-1}>
+        Invitations
+      </h2>
       <p>
         Only the invited, verified Google account can accept a single-use invitation. Copy and share
         a link yourself; issuing an invitation does not send an email.
@@ -365,7 +402,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
             className={studio.filters}
             onSubmit={(event) => {
               event.preventDefault();
-              void load().catch(() => {});
+              if (!pager.applyFilters({ status })) void load().catch(() => {});
             }}
           >
             <label>
@@ -469,6 +506,19 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               ))}
             </ul>
           </div>
+          <StaffCursorPagination
+            kind="invitations"
+            count={invitations.length}
+            pageSize={STAFF_PAGE_SIZE}
+            pageNumber={pager.position.pageNumber}
+            canGoBack={pager.position.previous !== null}
+            canReturnToNewest={pager.position.canReturnToNewest}
+            hasMore={!!(page?.hasMore && page.nextCursor)}
+            disabled={loading}
+            onPrevious={() => turn(pager.previous)}
+            onNewest={() => turn(pager.newest)}
+            onNext={() => turn(() => pager.next(page!.nextCursor!))}
+          />
           <div className={studio.actions}>
             <button
               type="button"
@@ -480,18 +530,6 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
             >
               Refresh invitations
             </button>
-            {page?.hasMore && page.nextCursor && (
-              <button
-                type="button"
-                className={buttonSecondary}
-                disabled={loading}
-                onClick={() => {
-                  void load(page.nextCursor!).catch(() => {});
-                }}
-              >
-                Next invitations
-              </button>
-            )}
           </div>
         </div>
       </div>
