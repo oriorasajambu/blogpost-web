@@ -738,6 +738,8 @@ export interface components {
         VariantName: "w480" | "w960" | "w1600";
         /** @enum {string} */
         InvitationStatus: "PENDING" | "ACCEPTED" | "REVOKED" | "EXPIRED";
+        /** @enum {string} */
+        InvitationDeliveryStatus: "NOT_REQUESTED" | "QUEUED" | "SENT" | "FAILED" | "CANCELLED";
         AuthorSummary: {
             /** Format: uuid */
             id: string;
@@ -1015,6 +1017,13 @@ export interface components {
             expiresAt: string;
             acceptedAt: string | null;
             revokedAt: string | null;
+            delivery: components["schemas"]["InvitationDelivery"];
+        };
+        InvitationDelivery: {
+            status: components["schemas"]["InvitationDeliveryStatus"];
+            attempts: number;
+            lastAttemptAt: string | null;
+            sentAt: string | null;
         };
         InvitationIssueResult: {
             invitation: components["schemas"]["Invitation"];

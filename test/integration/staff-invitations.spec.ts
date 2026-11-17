@@ -240,7 +240,10 @@ test('invitation status filters show accepted, expired, revoked and pending audi
       await expect(time).toContainText(/\([A-Za-z_/+-]+\)/);
     }
     await expect(
-      row.getByRole('button', { name: `Reissue for ${expected.invitation.email}`, exact: true }),
+      row.getByRole('button', {
+        name: `Resend invitation to ${expected.invitation.email}`,
+        exact: true,
+      }),
     ).toHaveCount(expected.reissue ? 1 : 0);
     await expect(
       row.getByRole('button', { name: `Revoke for ${expected.invitation.email}`, exact: true }),

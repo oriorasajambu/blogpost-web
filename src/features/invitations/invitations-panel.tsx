@@ -207,8 +207,9 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
         Invitations
       </h2>
       <p>
-        Only the invited, verified Google account can accept a single-use invitation. Copy and share
-        a link yourself; issuing an invitation does not send an email.
+        Only the invited, verified Google account can accept a single-use invitation. When
+        invitation email is set up, the link is emailed to the invited address; you can always copy
+        and share it yourself too.
       </p>
       {!webOrigin && (
         <p role="status">
@@ -263,14 +264,14 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                 proposal.kind === 'create'
                   ? 'Confirm staff invitation'
                   : proposal.kind === 'reissue'
-                    ? 'Reissue this invitation?'
+                    ? 'Resend this invitation?'
                     : 'Revoke this invitation?'
               }
               confirmLabel={
                 proposal.kind === 'create'
                   ? 'Issue invitation'
                   : proposal.kind === 'reissue'
-                    ? 'Issue replacement link'
+                    ? 'Resend invitation'
                     : 'Revoke invitation'
               }
               danger={proposal.kind === 'revoke'}
@@ -280,11 +281,17 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               onConfirm={execute}
             >
               {proposal.kind === 'create' ? (
-                <p>
-                  Invite <strong>{proposal.email}</strong> with the{' '}
-                  <strong>{proposal.role.toLowerCase()}</strong> role. Acceptance grants that staff
-                  access.
-                </p>
+                <>
+                  <p>
+                    Invite <strong>{proposal.email}</strong> with the{' '}
+                    <strong>{proposal.role.toLowerCase()}</strong> role. Acceptance grants that
+                    staff access.
+                  </p>
+                  <p className={studio.muted}>
+                    If invitation email is set up, a single-use link is emailed to {proposal.email}.
+                    The receipt also shows the link once so you can share it yourself.
+                  </p>
+                </>
               ) : (
                 <>
                   <p>
@@ -294,7 +301,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                   </p>
                   <p>
                     {proposal.kind === 'reissue'
-                      ? 'The prior invitation is revoked and a replacement is issued. Its link is shown once; anyone holding the prior link will need the replacement.'
+                      ? `A new single-use link replaces the old one, which stops working immediately. If invitation email is set up, the new link is emailed to ${proposal.invitation.email}; the receipt also shows it once.`
                       : 'The current link will stop granting access. This does not disable an account that has already accepted.'}
                   </p>
                 </>
@@ -304,9 +311,22 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
           {pendingInvitationExists && (
             <div className={staffError} role="alert">
               <p>
-                A pending invitation already exists. Cancel this request, then review, reissue or
-                revoke the existing invitation in the list.
+                A pending invitation already exists. Cancel this request, then resend or revoke the
+                existing invitation in the list. It may have expired: expired invitations still need
+                to be resent or revoked before inviting that address again.
               </p>
+              <div className={studio.actions}>
+                <button
+                  type="button"
+                  className={buttonSecondary}
+                  onClick={() => {
+                    setStatus('EXPIRED');
+                    if (!pager.applyFilters({ status: 'EXPIRED' })) void load().catch(() => {});
+                  }}
+                >
+                  Show expired invitations
+                </button>
+              </div>
               {command.error instanceof StaffApiError && command.error.traceId && (
                 <p className={studio.muted}>
                   Support reference: <code>{command.error.traceId}</code>
@@ -345,6 +365,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                 {issued.invitation.email} · {issued.invitation.role.toLowerCase()} · expires{' '}
                 <StaffTime value={issued.invitation.expiresAt} />
               </p>
+              <DeliveryNote invitation={issued.invitation} />
               {issued.linkAvailable && issued.inviteUrl ? (
                 <>
                   <label htmlFor="issued-invitation-link">Private invitation link</label>
@@ -375,7 +396,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               ) : (
                 <>
                   <p>
-                    The secret link cannot be recovered from this receipt. Issue a replacement to
+                    The secret link cannot be recovered from this receipt. Resend the invitation to
                     obtain a new link.
                   </p>
                   {webOrigin && (
@@ -455,6 +476,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                       </span>
                       <span className="sr-only"> · </span>
                       <span>version {invitation.version}</span>
+                      <DeliveryChip delivery={invitation.delivery} />
                     </p>
                     <p>
                       Issued by {invitation.issuedBy.displayName} on{' '}
@@ -484,7 +506,7 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
                             setProposal({ kind: 'reissue', invitation });
                           }}
                         >
-                          Reissue for {invitation.email}
+                          Resend invitation to {invitation.email}
                         </button>
                       )}
                       {invitation.status !== 'REVOKED' && (
@@ -506,6 +528,12 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
               ))}
             </ul>
           </div>
+          {invitations.some((invitation) => invitation.delivery.status === 'QUEUED') && (
+            <p className={studio.muted}>
+              Some invitation emails are still queued. Refresh invitations to see their latest
+              delivery status.
+            </p>
+          )}
           <StaffCursorPagination
             kind="invitations"
             count={invitations.length}
@@ -535,4 +563,65 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       </div>
     </section>
   );
+}
+const DELIVERY_LABELS: Record<Invitation['delivery']['status'], string> = {
+  NOT_REQUESTED: '',
+  QUEUED: 'email queued',
+  SENT: 'email sent',
+  FAILED: 'email failed',
+  CANCELLED: 'email cancelled',
+};
+/** The text names the state; the tone only reinforces it. */
+function DeliveryChip({ delivery }: { delivery: Invitation['delivery'] }) {
+  if (delivery.status === 'NOT_REQUESTED') return null;
+  return (
+    <>
+      <span className="sr-only"> · </span>
+      <span
+        className={studio.statusChip}
+        data-tone={
+          delivery.status === 'SENT'
+            ? 'success'
+            : delivery.status === 'FAILED'
+              ? 'danger'
+              : delivery.status === 'QUEUED'
+                ? 'info'
+                : undefined
+        }
+      >
+        <span aria-hidden="true">✉</span> {DELIVERY_LABELS[delivery.status]}
+      </span>
+    </>
+  );
+}
+function DeliveryNote({ invitation }: { invitation: Invitation }) {
+  const { status, sentAt } = invitation.delivery;
+  if (status === 'NOT_REQUESTED')
+    return (
+      <p className={studio.muted}>
+        Invitation email is not set up, so share this link with {invitation.email} yourself.
+      </p>
+    );
+  if (status === 'SENT')
+    return (
+      <p>
+        Emailed to {invitation.email} <StaffTime value={sentAt} />. You can also share the link
+        below.
+      </p>
+    );
+  if (status === 'QUEUED')
+    return (
+      <p>
+        The email to {invitation.email} is queued and will be retried automatically. You can share
+        the link below in the meantime.
+      </p>
+    );
+  if (status === 'FAILED')
+    return (
+      <p role="alert">
+        The email to {invitation.email} could not be delivered. Share the link below yourself, or
+        resend the invitation later.
+      </p>
+    );
+  return <p className={studio.muted}>The email for this invitation was cancelled.</p>;
 }

@@ -288,6 +288,8 @@ test('invitation issue and revocation display a private one-time link and curren
   await panel.getByRole('button', { name: 'Issue invitation', exact: true }).click();
   const receipt = panel.getByRole('region', { name: 'Invitation receipt', exact: true });
   await expect(receipt).toBeVisible();
+  // The staff stack sends through the backend's log driver, so delivery completes immediately.
+  await expect(receipt).toContainText(`Emailed to ${email}`);
   const secret = await receipt.getByLabel('Private invitation link', { exact: true }).inputValue();
   const url = new URL(secret);
   expect(url.origin).toBe(stack.webOrigin);
@@ -299,6 +301,7 @@ test('invitation issue and revocation display a private one-time link and curren
     .getByRole('listitem')
     .filter({ has: admin.page.getByRole('heading', { name: email, exact: true }) });
   await expect(item.locator('time').first()).toBeVisible();
+  await expect(item).toContainText('email sent');
   await item.getByRole('button', { name: `Revoke for ${email}`, exact: true }).click();
   await panel.getByRole('button', { name: 'Revoke invitation', exact: true }).click();
   await expect(
@@ -309,6 +312,8 @@ test('invitation issue and revocation display a private one-time link and curren
   expect(listed.status()).toBe(200);
   const invitation = (await listed.json()).data.find((value: Invitation) => value.email === email);
   expect(invitation.status).toBe('REVOKED');
+  // Revoking after delivery keeps the record that the email was sent.
+  expect(invitation.delivery.status).toBe('SENT');
 });
 
 test('a committed invitation response loss reuses the exact operation and offers explicit secret replacement', async ({
@@ -380,7 +385,7 @@ test('a committed invitation response loss reuses the exact operation and offers
     } else await route.continue();
   });
   await panel.getByRole('button', { name: 'Review replacement invitation', exact: true }).click();
-  await panel.getByRole('button', { name: 'Issue replacement link', exact: true }).click();
+  await panel.getByRole('button', { name: 'Resend invitation', exact: true }).click();
   await expect(
     panel.getByRole('button', { name: 'Retry original request', exact: true }),
   ).toBeEnabled();
@@ -395,7 +400,7 @@ test('a committed invitation response loss reuses the exact operation and offers
     panel.getByRole('region', { name: 'Invitation receipt', exact: true }),
   ).toContainText('secret link cannot be recovered');
   await panel.getByRole('button', { name: 'Review replacement invitation', exact: true }).click();
-  await panel.getByRole('button', { name: 'Issue replacement link', exact: true }).click();
+  await panel.getByRole('button', { name: 'Resend invitation', exact: true }).click();
   await expect(panel.getByLabel('Private invitation link', { exact: true })).toBeVisible();
   const listed = await admin.session.request.get('/api/editorial/admin/invitations?pageSize=50');
   expect(listed.status()).toBe(200);
