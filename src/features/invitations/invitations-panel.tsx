@@ -68,7 +68,8 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
     );
   async function load() {
     const epoch = ++loadEpoch.current;
-    const { cursor, filters } = pager;
+    // The URL is the source of truth, also for loads started by stale callbacks.
+    const { cursor, filters } = pager.read();
     setLoading(true);
     setError(null);
     try {
@@ -83,6 +84,11 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
       if (result.pagination?.kind !== 'CURSOR')
         throw new Error('Invitation pagination is unavailable.');
       setInvitations(result.data);
+      // Keep the receipt's status current while preserving its one-time private link.
+      setIssued((receipt) => {
+        const latest = receipt && result.data.find((row) => row.id === receipt.invitation.id);
+        return receipt && latest ? { ...receipt, invitation: latest } : receipt;
+      });
       setPage(result.pagination);
       if (focusAfterLoad.current) listHeading.current?.focus();
     } catch (failure) {
@@ -542,7 +548,8 @@ export function InvitationsPanel({ webOrigin }: { webOrigin: string | null }) {
             canGoBack={pager.position.previous !== null}
             canReturnToNewest={pager.position.canReturnToNewest}
             hasMore={!!(page?.hasMore && page.nextCursor)}
-            disabled={loading}
+            // Paging mid-command would race the command's own reload.
+            disabled={loading || blocked}
             onPrevious={() => turn(pager.previous)}
             onNewest={() => turn(pager.newest)}
             onNext={() => turn(() => pager.next(page!.nextCursor!))}

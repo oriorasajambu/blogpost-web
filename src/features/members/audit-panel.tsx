@@ -25,7 +25,8 @@ export function AuditPanel() {
   const focusAfterLoad = useRef(false);
   async function load() {
     const epoch = ++loadEpoch.current;
-    const { cursor, filters } = pager;
+    // The URL is the source of truth, also for loads started by stale callbacks.
+    const { cursor, filters } = pager.read();
     setLoading(true);
     setError(null);
     try {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   advance,
@@ -15,6 +15,7 @@ import {
 export const STAFF_PAGE_SIZE = 25;
 
 const memory = new Map<string, string[]>();
+const noSubscription = () => () => {};
 function readTrail(key: string): string[] {
   try {
     if (typeof window !== 'undefined') {
@@ -37,6 +38,8 @@ export interface CursorPager<F extends string> {
   /** Changes whenever the cursor or applied filters in the URL change. */
   locationKey: string;
   position: TrailPosition;
+  /** The applied cursor and filters in the URL right now, for async work that outlives a render. */
+  read(): { cursor: string; filters: Readonly<Record<F, string>> };
   next(nextCursor: string): void;
   previous(): void;
   newest(): void;
@@ -71,11 +74,18 @@ export function useCursorPager<F extends string>(
   );
   const key = trailKey(list, filters);
   const [revision, setRevision] = useState(0);
+  // The server and the hydrating client both start from an unknown trail; the stored trail is
+  // read only after hydration, so the first client render matches the server HTML.
+  const hydrated = useSyncExternalStore(
+    noSubscription,
+    () => true,
+    () => false,
+  );
   const trail = useMemo(
-    () => readTrail(key),
+    () => (hydrated ? readTrail(key) : [NEWEST]),
     // revision re-reads the trail after this hook writes it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [key, revision],
+    [hydrated, key, revision],
   );
 
   const go = useCallback(
@@ -97,12 +107,25 @@ export function useCursorPager<F extends string>(
     [list, cursorKey],
   );
 
+  const read = useCallback(() => {
+    const search = new URLSearchParams(window.location.search);
+    return {
+      cursor: search.get(cursorKey) ?? NEWEST,
+      filters: Object.fromEntries(
+        filterNames.map((name) => [name, search.get(`${list}.${name}`) ?? '']),
+      ) as Record<F, string>,
+    };
+    // filterNames is a static list per panel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list, cursorKey]);
+
   const current = position(trail, cursor);
   return {
     cursor,
     filters,
     locationKey: `${cursor}\u0001${filterSignature}`,
     position: current,
+    read,
     next(nextCursor) {
       writeTrail(key, advance(trail, cursor, nextCursor));
       setRevision((value) => value + 1);
@@ -115,7 +138,12 @@ export function useCursorPager<F extends string>(
       if (cursor !== NEWEST) go(NEWEST, filters, 'push');
     },
     applyFilters(nextFilters) {
-      if (cursor === NEWEST && filterNames.every((name) => nextFilters[name] === filters[name]))
+      // Compare with the URL now, not this render: callers may run after later navigation.
+      const now = read();
+      if (
+        now.cursor === NEWEST &&
+        filterNames.every((name) => nextFilters[name] === now.filters[name])
+      )
         return false;
       writeTrail(trailKey(list, nextFilters), [NEWEST]);
       setRevision((value) => value + 1);
