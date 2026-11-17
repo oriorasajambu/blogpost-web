@@ -240,7 +240,10 @@ test('invitation status filters show accepted, expired, revoked and pending audi
       await expect(time).toContainText(/\([A-Za-z_/+-]+\)/);
     }
     await expect(
-      row.getByRole('button', { name: `Reissue for ${expected.invitation.email}`, exact: true }),
+      row.getByRole('button', {
+        name: `Resend invitation to ${expected.invitation.email}`,
+        exact: true,
+      }),
     ).toHaveCount(expected.reissue ? 1 : 0);
     await expect(
       row.getByRole('button', { name: `Revoke for ${expected.invitation.email}`, exact: true }),
@@ -259,7 +262,7 @@ async function pages(session: BrowserContext, path: string) {
   let cursor: string | null = null;
   for (let index = 0; index < 50; index++) {
     const url = new URL(`/api/editorial${path}`, stack.webOrigin);
-    url.searchParams.set('pageSize', '20');
+    url.searchParams.set('pageSize', '25');
     if (cursor) url.searchParams.set('cursor', cursor);
     const response = await session.request.get(url.toString());
     expect(response.status()).toBe(200);
@@ -271,43 +274,53 @@ async function pages(session: BrowserContext, path: string) {
   }
   throw new Error('Synthetic staff cursor traversal exceeded its bounded page count.');
 }
+const cursorParam = {
+  members: 'memberCursor',
+  invitations: 'invitationCursor',
+  audit: 'auditCursor',
+};
+const pagerKind = { members: 'members', invitations: 'invitations', audit: 'audit events' };
+async function expectRows(panel: Locator, expected: CursorPage, kind: keyof typeof cursorParam) {
+  const rows = panel.getByRole('listitem');
+  await expect(rows).toHaveCount(expected.data.length);
+  const wanted = expected.data.map((item) => (kind === 'audit' ? item.createdAt : item.email!));
+  const actual =
+    kind === 'audit'
+      ? panel.locator('li article time')
+      : kind === 'members'
+        ? panel.locator('li > div > p')
+        : panel.locator('li h3');
+  if (kind === 'audit') {
+    await expect(actual.first()).toHaveAttribute('datetime', wanted[0]);
+    expect(
+      await actual.evaluateAll((elements) =>
+        elements.map((element) => element.getAttribute('datetime')),
+      ),
+    ).toEqual(wanted);
+  } else {
+    await expect(actual.first()).toHaveText(wanted[0]);
+    expect(await actual.allTextContents()).toEqual(wanted);
+  }
+  return wanted;
+}
 async function walk(
   page: Page,
   panel: Locator,
   expected: CursorPage[],
-  kind: 'members' | 'invitations' | 'audit',
+  kind: keyof typeof cursorParam,
 ) {
   const values: string[] = [];
   const resourceIds: string[] = [];
+  const button = (label: 'Next' | 'Previous' | 'Newest') =>
+    panel.getByRole('button', { name: `${label} ${pagerKind[kind]}`, exact: true });
   for (let index = 0; index < expected.length; index++) {
-    const rows = panel.getByRole('listitem');
-    await expect(rows).toHaveCount(expected[index].data.length);
-    const wanted = expected[index].data.map((item) =>
-      kind === 'audit' ? item.createdAt : item.email!,
-    );
-    const actual =
-      kind === 'audit'
-        ? panel.locator('li article time')
-        : kind === 'members'
-          ? panel.locator('li > div > p')
-          : panel.locator('li h3');
-    if (kind === 'audit') {
-      await expect(actual.first()).toHaveAttribute('datetime', wanted[0]);
-      expect(
-        await actual.evaluateAll((elements) =>
-          elements.map((element) => element.getAttribute('datetime')),
-        ),
-      ).toEqual(wanted);
-    } else {
-      await expect(actual.first()).toHaveText(wanted[0]);
-      expect(await actual.allTextContents()).toEqual(wanted);
-    }
-    values.push(...wanted);
+    values.push(...(await expectRows(panel, expected[index], kind)));
     resourceIds.push(...expected[index].data.map((item) => item.id));
-    const next = panel.getByRole('button', {
-      name: kind === 'audit' ? 'Next audit events' : `Next ${kind}`,
-      exact: true,
-    });
+    await expect(panel.getByText(new RegExp(`^Page ${index + 1} · showing `))).toBeVisible();
+    if (index === 0) expect(new URL(page.url()).searchParams.has(cursorParam[kind])).toBe(false);
+    else expect(new URL(page.url()).searchParams.get(cursorParam[kind])).toBeTruthy();
+    await expect(button('Previous')).toHaveCount(index === 0 ? 0 : 1);
+    const next = button('Next');
     if (index === expected.length - 1) {
       await expect(next).toHaveCount(0);
       break;
@@ -317,12 +330,26 @@ async function walk(
       return (
         url.pathname === `/api/editorial/admin/${kind === 'audit' ? 'audit-events' : kind}` &&
         url.searchParams.has('cursor') &&
+        url.searchParams.get('pageSize') === '25' &&
         response.request().method() === 'GET'
       );
     });
     await next.click();
     expect((await response).status()).toBe(200);
   }
+  // Previous walks back through the same pages the forward pass showed.
+  for (let index = expected.length - 2; index >= 0; index--) {
+    await button('Previous').click();
+    await expectRows(panel, expected[index], kind);
+    await expect(panel.getByText(new RegExp(`^Page ${index + 1} · showing `))).toBeVisible();
+  }
+  expect(new URL(page.url()).searchParams.has(cursorParam[kind])).toBe(false);
+  // Browser Back and Forward restore pages from the URL alone.
+  await page.goBack();
+  await expectRows(panel, expected[1], kind);
+  await expect(panel.getByText(/^Page 2 · showing /)).toBeVisible();
+  await page.goForward();
+  await expectRows(panel, expected[0], kind);
   // Reissued invitations legitimately reuse an email; resource identity remains unique.
   expect(new Set(resourceIds).size).toBe(resourceIds.length);
   return values;
@@ -377,6 +404,36 @@ test('staff members, invitations and filtered audit logs traverse every real cur
     expect((await walk(admin.page, audit, auditPages, 'audit')).length).toBe(
       fixture.audit.eventCount,
     );
+    // Reloading keeps the filters, page and (same-tab) history.
+    await audit.getByRole('button', { name: 'Next audit events', exact: true }).click();
+    await expectRows(audit, auditPages[1], 'audit');
+    await admin.page.reload({ waitUntil: 'domcontentloaded' });
+    await expectRows(audit, auditPages[1], 'audit');
+    await expect(audit.getByLabel('Action', { exact: true })).toHaveValue(fixture.audit.action);
+    await expect(
+      audit.getByRole('button', { name: 'Previous audit events', exact: true }),
+    ).toHaveCount(1);
+    // A shared link opened in a new tab knows its page but not the pages before it.
+    const shared = await admin.session.newPage();
+    await shared.goto(admin.page.url(), { waitUntil: 'domcontentloaded' });
+    const sharedAudit = shared.getByRole('region', { name: 'Staff audit log', exact: true });
+    await expectRows(sharedAudit, auditPages[1], 'audit');
+    await expect(sharedAudit.getByText(/^Showing 25 audit events$/)).toBeVisible();
+    await expect(
+      sharedAudit.getByRole('button', { name: 'Previous audit events', exact: true }),
+    ).toHaveCount(0);
+    await sharedAudit.getByRole('button', { name: 'Newest audit events', exact: true }).click();
+    await expectRows(sharedAudit, auditPages[0], 'audit');
+    await shared.close();
+    // An unusable cursor falls back to the newest page with a notice.
+    const broken = new URL(admin.page.url());
+    broken.searchParams.set('auditCursor', 'not-a-signed-cursor');
+    await admin.page.goto(broken.toString(), { waitUntil: 'domcontentloaded' });
+    await expect(
+      audit.getByText('That page link expired. Showing the newest audit events.'),
+    ).toBeVisible();
+    await expectRows(audit, auditPages[0], 'audit');
+    expect(new URL(admin.page.url()).searchParams.has('auditCursor')).toBe(false);
   } finally {
     expect(control<{ cleaned: boolean }>('staff-list-cleanup').cleaned).toBe(true);
   }

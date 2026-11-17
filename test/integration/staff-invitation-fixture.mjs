@@ -4,6 +4,9 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { DatabaseService } from '../src/platform/database/database.service.js';
 
+/** More than two 25-row UI pages, so Previous/Next cross a middle page. */
+const SEED = 55;
+
 const database = new DatabaseService();
 const stateFile = '/tmp/web-staff-list-fixture.json';
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -23,7 +26,7 @@ try {
     const suffix = randomUUID();
     const subjectId = randomUUID();
     const now = Date.now();
-    const members = Array.from({ length: 25 }, (_, index) => ({
+    const members = Array.from({ length: SEED }, (_, index) => ({
       id: randomUUID(),
       identityUid: `staff-page-${suffix}-${index}`,
       email: `staff-page-${suffix}-${index}@example.test`,
@@ -35,7 +38,7 @@ try {
       createdAt: new Date(now - index * 1000),
       updatedAt: new Date(now - index * 1000),
     }));
-    const invitations = Array.from({ length: 25 }, (_, index) => ({
+    const invitations = Array.from({ length: SEED }, (_, index) => ({
       id: randomUUID(),
       email: `invite-page-${suffix}-${index}@example.test`,
       role: 'AUTHOR',
@@ -44,7 +47,7 @@ try {
       createdAt: new Date(now - index * 1000),
       expiresAt: new Date(now + 7 * 86_400_000),
     }));
-    const events = Array.from({ length: 25 }, (_, index) => ({
+    const events = Array.from({ length: SEED }, (_, index) => ({
       id: randomUUID(),
       actorId,
       action: 'STAFF_LIST_FIXTURE',
@@ -76,8 +79,8 @@ try {
   } else if (action === 'staff-list-cleanup') {
     assert.ok(previous && !previous.cleaned, 'An owned list fixture is required');
     for (const key of ['members', 'invitations', 'events']) {
-      assert.equal(previous[key].length, 25);
-      assert.equal(new Set(previous[key]).size, 25);
+      assert.equal(previous[key].length, SEED);
+      assert.equal(new Set(previous[key]).size, SEED);
       previous[key].forEach((id) => assert.match(id, uuid));
     }
     const removed = await database.prisma.$transaction(async (tx) => ({
@@ -86,7 +89,7 @@ try {
         .count,
       members: (await tx.member.deleteMany({ where: { id: { in: previous.members } } })).count,
     }));
-    for (const count of Object.values(removed)) assert.equal(count, 25);
+    for (const count of Object.values(removed)) assert.equal(count, SEED);
     await writeFile(stateFile, JSON.stringify({ ...previous, cleaned: true }), { mode: 0o600 });
     console.log(JSON.stringify({ cleaned: true, removed }));
   } else throw new Error('Unsupported owned staff list fixture action');

@@ -84,6 +84,31 @@ export function validateInvitation(value: unknown, expectedId?: string): Invitat
     expiresAt: adminDate(v.expiresAt),
     acceptedAt: v.acceptedAt === null ? null : adminDate(v.acceptedAt),
     revokedAt: v.revokedAt === null ? null : adminDate(v.revokedAt),
+    delivery: validateDelivery(v.delivery),
+  };
+}
+const NOT_REQUESTED: Invitation['delivery'] = {
+  status: 'NOT_REQUESTED',
+  attempts: 0,
+  lastAttemptAt: null,
+  sentAt: null,
+};
+/** An API without invitation email (or deployed before it) omits delivery; treat that as not requested. */
+function validateDelivery(value: unknown): Invitation['delivery'] {
+  if (value === undefined) return NOT_REQUESTED;
+  const v = adminRecord(value);
+  if (
+    !['NOT_REQUESTED', 'QUEUED', 'SENT', 'FAILED', 'CANCELLED'].includes(String(v.status)) ||
+    !Number.isInteger(v.attempts) ||
+    (v.attempts as number) < 0 ||
+    (v.attempts as number) > 6
+  )
+    throw new ContractError();
+  return {
+    status: v.status as Invitation['delivery']['status'],
+    attempts: v.attempts as number,
+    lastAttemptAt: v.lastAttemptAt === null ? null : adminDate(v.lastAttemptAt),
+    sentAt: v.sentAt === null ? null : adminDate(v.sentAt),
   };
 }
 /** Invitation URLs are usable only for the configured web origin and the fixed acceptance route. */

@@ -3,17 +3,30 @@
 import { buttonPrimary, buttonSecondary, studio } from '@/components/ui/styles';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { staffRequest } from '@/features/staff/staff-api';
-import { ConfirmAction, ListHead, StaffError, StaffTime } from '@/features/staff/staff-ui';
+import { staffRequest, StaffApiError } from '@/features/staff/staff-api';
+import {
+  ConfirmAction,
+  ListHead,
+  StaffCursorPagination,
+  StaffError,
+  StaffTime,
+} from '@/features/staff/staff-ui';
+import { STAFF_PAGE_SIZE, useCursorPager } from '@/features/staff/use-cursor-pager';
 import type { CursorPagination } from '@/features/editor/editor-contract';
 import { adminList, validateAdminMember, type AdminMember } from './admin-contract';
 import { AdminCommandRecovery, useAdminCommand } from './use-admin-command';
 
+const MEMBER_FILTERS = ['role', 'active'] as const;
+
 export function MembersPanel({ accountId }: { accountId: string }) {
+  const pager = useCursorPager('member', MEMBER_FILTERS);
   const [members, setMembers] = useState<AdminMember[]>([]);
   const [page, setPage] = useState<CursorPagination | null>(null);
-  const [role, setRole] = useState('');
-  const [active, setActive] = useState('');
+  const [role, setRole] = useState(pager.filters.role);
+  const [active, setActive] = useState(pager.filters.active);
+  const [notice, setNotice] = useState('');
+  const heading = useRef<HTMLHeadingElement>(null);
+  const focusAfterLoad = useRef(false);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<AdminMember | null>(null);
@@ -31,14 +44,16 @@ export function MembersPanel({ accountId }: { accountId: string }) {
     setEditorLocked(locked);
   }, []);
   const loadEpoch = useRef(0);
-  async function load(cursor?: string) {
+  async function load() {
     const epoch = ++loadEpoch.current;
+    // The URL is the source of truth, also for loads started by stale callbacks.
+    const { cursor, filters } = pager.read();
     setLoading(true);
     setError(null);
     try {
-      const query = new URLSearchParams({ pageSize: '20' });
-      if (role) query.set('role', role);
-      if (active) query.set('active', active);
+      const query = new URLSearchParams({ pageSize: String(STAFF_PAGE_SIZE) });
+      if (filters.role) query.set('role', filters.role);
+      if (filters.active) query.set('active', filters.active);
       if (cursor) query.set('cursor', cursor);
       const result = await staffRequest(`/admin/members?${query}`, adminList(validateAdminMember));
       if (epoch !== loadEpoch.current) return;
@@ -46,31 +61,53 @@ export function MembersPanel({ accountId }: { accountId: string }) {
         throw new Error('Member pagination is unavailable.');
       setMembers(result.data);
       setPage(result.pagination);
+      if (focusAfterLoad.current) heading.current?.focus();
     } catch (failure) {
       if (epoch !== loadEpoch.current) return;
+      if (failure instanceof StaffApiError && failure.code === 'INVALID_CURSOR' && cursor) {
+        setNotice('That page link expired. Showing the newest staff members.');
+        pager.recover();
+        return;
+      }
       setError(failure);
       setMembers([]);
       setPage(null);
       throw failure;
     } finally {
-      if (epoch === loadEpoch.current) setLoading(false);
+      if (epoch === loadEpoch.current) {
+        setLoading(false);
+        focusAfterLoad.current = false;
+      }
     }
   }
-  const initiallyLoad = useEffectEvent(() => load().catch(() => {}));
+  const loadLocation = useEffectEvent(() => {
+    // Back/Forward and shared links decide the applied filters; show them in the inputs.
+    setRole(pager.filters.role);
+    setActive(pager.filters.active);
+    void load().catch(() => {});
+  });
   const invalidateLoads = useEffectEvent(() => {
     loadEpoch.current++;
     selectionEpoch.current++;
+    // The abandoned member request can no longer clear its busy state; do it here.
+    setSelectionBusy(false);
   });
   useEffect(() => {
     let cancelled = false;
     queueMicrotask(() => {
-      if (!cancelled) void initiallyLoad();
+      if (!cancelled) loadLocation();
     });
     return () => {
       cancelled = true;
       invalidateLoads();
     };
-  }, []);
+  }, [pager.locationKey]);
+  function turn(move: () => void) {
+    if (selectionLock.current) return;
+    setNotice('');
+    focusAfterLoad.current = true;
+    move();
+  }
   async function select(id: string) {
     if (selectionLock.current) return;
     const epoch = ++selectionEpoch.current;
@@ -90,13 +127,16 @@ export function MembersPanel({ accountId }: { accountId: string }) {
   }
   return (
     <section aria-labelledby="members-heading" className={studio.section}>
-      <h2 id="members-heading">Staff members</h2>
+      <h2 id="members-heading" ref={heading} tabIndex={-1}>
+        Staff members
+      </h2>
       <form
         className={studio.filters}
         onSubmit={(event) => {
           event.preventDefault();
           if (selectionLock.current) return;
-          void load().catch(() => {});
+          setNotice('');
+          if (!pager.applyFilters({ role, active })) void load().catch(() => {});
         }}
       >
         <label>
@@ -124,6 +164,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
           Apply member filters
         </button>
       </form>
+      {notice && <p role="status">{notice}</p>}
       <StaffError error={error} />
       {loading ? (
         <p role="status">Loading staff members…</p>
@@ -174,6 +215,19 @@ export function MembersPanel({ accountId }: { accountId: string }) {
           ))}
         </ul>
       </div>
+      <StaffCursorPagination
+        kind="members"
+        count={members.length}
+        pageSize={STAFF_PAGE_SIZE}
+        pageNumber={pager.position.pageNumber}
+        canGoBack={pager.position.previous !== null}
+        canReturnToNewest={pager.position.canReturnToNewest}
+        hasMore={!!(page?.hasMore && page.nextCursor)}
+        disabled={loading || editorLocked}
+        onPrevious={() => turn(pager.previous)}
+        onNewest={() => turn(pager.newest)}
+        onNext={() => turn(() => pager.next(page!.nextCursor!))}
+      />
       <div className={studio.actions}>
         <button
           type="button"
@@ -181,24 +235,12 @@ export function MembersPanel({ accountId }: { accountId: string }) {
           disabled={loading || editorLocked}
           onClick={() => {
             if (selectionLock.current) return;
+            setNotice('');
             void load().catch(() => {});
           }}
         >
           Refresh members
         </button>
-        {page?.hasMore && page.nextCursor && (
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={loading || editorLocked}
-            onClick={() => {
-              if (selectionLock.current) return;
-              void load(page.nextCursor!).catch(() => {});
-            }}
-          >
-            Next members
-          </button>
-        )}
       </div>
       {selected && (
         <MemberEditor

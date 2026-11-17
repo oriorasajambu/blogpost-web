@@ -187,3 +187,69 @@ export function ConfirmAction({
     </section>
   );
 }
+/**
+ * Two-way paging over forward-only cursors. Accessible names keep the existing
+ * "Next {kind}" wording; "Previous" appears only when the earlier page is known.
+ */
+export function StaffCursorPagination({
+  kind,
+  count,
+  pageSize,
+  pageNumber,
+  canGoBack,
+  canReturnToNewest,
+  hasMore,
+  disabled = false,
+  onPrevious,
+  onNewest,
+  onNext,
+}: {
+  kind: string;
+  count: number;
+  pageSize: number;
+  pageNumber: number | null;
+  canGoBack: boolean;
+  canReturnToNewest: boolean;
+  hasMore: boolean;
+  disabled?: boolean;
+  onPrevious: () => void;
+  onNewest: () => void;
+  onNext: () => void;
+}) {
+  if (!count && !canReturnToNewest) return null;
+  const first = pageNumber === null ? null : (pageNumber - 1) * pageSize + 1;
+  const showNewest = canReturnToNewest && !(canGoBack && pageNumber === 2);
+  return (
+    <nav aria-label={`${kind} pages`} className={`${studio.actions} justify-between`}>
+      <p className={studio.muted}>
+        {pageNumber === null
+          ? `Showing ${count} ${kind}`
+          : count
+            ? `Page ${pageNumber} · showing ${first}–${first! + count - 1}`
+            : `Page ${pageNumber} · no ${kind}`}
+      </p>
+      <div className={studio.actions}>
+        {canGoBack && (
+          <button
+            type="button"
+            className={buttonSecondary}
+            disabled={disabled}
+            onClick={onPrevious}
+          >
+            Previous {kind}
+          </button>
+        )}
+        {showNewest && (
+          <button type="button" className={buttonSecondary} disabled={disabled} onClick={onNewest}>
+            Newest {kind}
+          </button>
+        )}
+        {hasMore && (
+          <button type="button" className={buttonSecondary} disabled={disabled} onClick={onNext}>
+            Next {kind}
+          </button>
+        )}
+      </div>
+    </nav>
+  );
+}

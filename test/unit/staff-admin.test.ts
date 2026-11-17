@@ -43,6 +43,7 @@ const invitation = {
   expiresAt: '2026-11-09T10:20:30.000Z',
   acceptedAt: null,
   revokedAt: null,
+  delivery: { status: 'NOT_REQUESTED', attempts: 0, lastAttemptAt: null, sentAt: null },
 };
 const origin = 'https://web.example.test';
 const inviteUrl = `${origin}/invitations/accept?token=${'A'.repeat(43)}`;
@@ -216,4 +217,30 @@ test('public profile input counts complete Unicode scalars rather than UTF-16 un
   assert.ok(profileValidation('  ', ''));
   assert.ok(profileValidation('\ud800', ''));
   assert.ok(profileValidation('Valid', '\udc00'));
+});
+
+test('invitation delivery defaults to not requested and rejects unknown states', () => {
+  const withoutDelivery: Record<string, unknown> = { ...invitation };
+  delete withoutDelivery.delivery;
+  assert.deepEqual(validateInvitation(withoutDelivery).delivery, {
+    status: 'NOT_REQUESTED',
+    attempts: 0,
+    lastAttemptAt: null,
+    sentAt: null,
+  });
+  const sent = {
+    status: 'SENT',
+    attempts: 1,
+    lastAttemptAt: timestamp,
+    sentAt: timestamp,
+  };
+  assert.deepEqual(validateInvitation({ ...invitation, delivery: sent }).delivery, sent);
+  for (const delivery of [
+    null,
+    { ...sent, status: 'DELIVERED' },
+    { ...sent, attempts: 7 },
+    { ...sent, attempts: 1.5 },
+    { ...sent, sentAt: 'yesterday' },
+  ])
+    assert.throws(() => validateInvitation({ ...invitation, delivery }));
 });

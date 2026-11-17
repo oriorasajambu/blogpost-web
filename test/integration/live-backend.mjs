@@ -148,6 +148,16 @@ if (action === 'start') {
     SQL_DATABASE: 'blogpost',
     SQL_APP_PASSWORD: 'disposable-web-public-app',
     CURSOR_SIGNING_KEY: '4'.repeat(64),
+    // Staff journeys exercise invitation email through the backend's local log driver;
+    // nothing is sent. No cooldown, so tests may resend immediately.
+    ...(purpose === 'staff'
+      ? {
+          EMAIL_DRIVER: 'log',
+          EMAIL_FROM: 'Blogpost <no-reply@example.test>',
+          EMAIL_PAYLOAD_KEY: '5'.repeat(64),
+          EMAIL_COOLDOWN_SECONDS: '0',
+        }
+      : {}),
   };
   docker(['network', 'create', '--label', 'blogpost.purpose=disposable-web-public-test', name]);
   docker([
