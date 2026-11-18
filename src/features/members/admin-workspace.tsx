@@ -3,6 +3,7 @@ import { MembersPanel } from './members-panel';
 import { InvitationsPanel } from '@/features/invitations/invitations-panel';
 import { ReassignmentPanel } from './reassignment-panel';
 import { AuditPanel } from './audit-panel';
+import { PasswordSetupPanel } from './password-setup-panel';
 
 export function AdminWorkspace({
   accountId,
@@ -25,6 +26,7 @@ export function AdminWorkspace({
       </header>
       <MembersPanel accountId={accountId} />
       <InvitationsPanel webOrigin={webOrigin} />
+      <PasswordSetupPanel />
       <ReassignmentPanel />
       <AuditPanel />
     </section>

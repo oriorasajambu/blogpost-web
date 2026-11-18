@@ -20,7 +20,18 @@ const config = {
 };
 test('public identity configuration explicitly selects only ordinary SDK fields', () => {
   const json = publicIdentityConfig(config);
-  assert.deepEqual(Object.keys(json).sort(), ['identity', 'loginEnabled', 'redirectEnabled']);
+  assert.deepEqual(Object.keys(json).sort(), [
+    'googleSignIn',
+    'identity',
+    'loginEnabled',
+    'redirectEnabled',
+  ]);
+  assert.equal((json as { googleSignIn: boolean }).googleSignIn, true);
+  assert.equal(
+    (publicIdentityConfig({ ...config, googleSignIn: false }) as { googleSignIn: boolean })
+      .googleSignIn,
+    false,
+  );
   assert.ok(!JSON.stringify(json).includes(config.csrfSecret));
   assert.ok(!JSON.stringify(json).includes(config.backendOrigin));
   assert.deepEqual(publicIdentityConfig({ ...config, loginEnabled: false }), {

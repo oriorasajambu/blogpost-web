@@ -31,11 +31,14 @@ export function AuthPanel({
   returnTo = '/studio/posts',
   invitation = false,
   redirectReturn = false,
+  googleSignIn = true,
 }: {
   namespace: string;
   returnTo?: string;
   invitation?: boolean;
   redirectReturn?: boolean;
+  /** False after the cutover: only email and password remain. */
+  googleSignIn?: boolean;
 }) {
   const [ready, setReady] = useState<Ready | null>(null);
   const [busy, setBusy] = useState(false);
@@ -274,7 +277,7 @@ export function AuthPanel({
       {!redirectReturn && !invitation && (
         <p>
           <a className={textLink} href="/forgot-password">
-            Forgot your password?
+            {googleSignIn ? 'Forgot your password, or never set one?' : 'Forgot your password?'}
           </a>
         </p>
       )}
@@ -286,20 +289,22 @@ export function AuthPanel({
         </p>
       )}
       <div className={studio.actions}>
-        {!redirectReturn && !(invitation && !ready && code === 'INVALID_INVITATION') && (
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={busy || (invitation && !ready && !message)}
-            onClick={() => void signIn('google')}
-          >
-            {busy
-              ? 'Completing sign-in…'
-              : code === 'INVITATION_ACCOUNT_MISMATCH'
-                ? 'Choose another Google account'
-                : 'Continue with Google'}
-          </button>
-        )}
+        {googleSignIn &&
+          !redirectReturn &&
+          !(invitation && !ready && code === 'INVALID_INVITATION') && (
+            <button
+              type="button"
+              className={buttonSecondary}
+              disabled={busy || (invitation && !ready && !message)}
+              onClick={() => void signIn('google')}
+            >
+              {busy
+                ? 'Completing sign-in…'
+                : code === 'INVITATION_ACCOUNT_MISMATCH'
+                  ? 'Choose another Google account'
+                  : 'Continue with Google'}
+            </button>
+          )}
         {code === 'auth/popup-blocked' && redirectAllowed && ready && (
           <button
             type="button"

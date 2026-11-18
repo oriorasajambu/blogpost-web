@@ -39,6 +39,10 @@ export function parseConfig(env: Record<string, string | undefined>) {
   let identity:
     { apiKey: string; authDomain: string; projectId: string; appId: string } | undefined;
   let authEmulatorOrigin: string | undefined;
+  if (env.WEB_GOOGLE_SIGN_IN_ENABLED && !['true', 'false'].includes(env.WEB_GOOGLE_SIGN_IN_ENABLED))
+    throw new Error('Invalid WEB_GOOGLE_SIGN_IN_ENABLED.');
+  // Off after the cutover from Google sign-in; on by default.
+  const googleSignIn = env.WEB_GOOGLE_SIGN_IN_ENABLED !== 'false';
   let captchaSiteKey: string | undefined;
   if (loginEnabled) {
     if (!webOrigin) throw new Error('WEB_ORIGIN is required for session/CSRF protection.');
@@ -96,6 +100,7 @@ export function parseConfig(env: Record<string, string | undefined>) {
     identity,
     authEmulatorOrigin,
     captchaSiteKey,
+    googleSignIn,
     csrfSecret: loginEnabled ? csrfSecret : undefined,
     secureCookies: !local || webOrigin?.startsWith('https:') === true,
     stackId,

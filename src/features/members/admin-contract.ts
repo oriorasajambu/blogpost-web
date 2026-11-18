@@ -184,3 +184,14 @@ export function validateAdminPost(value: unknown, expectedId: string) {
   if (post.id !== expectedId) throw new ContractError();
   return post;
 }
+
+export type PasswordSetupResult = { queued: number; skipped: number };
+export function validatePasswordSetupResult(value: unknown): PasswordSetupResult {
+  const v = adminRecord(value);
+  const count = (item: unknown) => {
+    if (!Number.isInteger(item) || Number(item) < 0 || Number(item) > 100000)
+      throw new ContractError();
+    return item as number;
+  };
+  return { queued: count(v.queued), skipped: count(v.skipped) };
+}

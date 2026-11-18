@@ -21,6 +21,7 @@ export default async function SignIn({
         namespace={staffNamespace()}
         returnTo={safeReturnTo(params.returnTo)}
         redirectReturn={params.oauth === 'return'}
+        googleSignIn={config.googleSignIn}
       />
     );
   return (

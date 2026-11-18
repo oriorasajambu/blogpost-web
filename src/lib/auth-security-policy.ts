@@ -4,6 +4,7 @@ type IdentityPolicy = {
   identity?: { authDomain: string; projectId: string };
   authEmulatorOrigin?: string;
   captchaSiteKey?: string;
+  googleSignIn?: boolean;
 };
 
 /** Screens that talk to the identity provider or show a captcha. The profile hosts re-authentication. */
@@ -74,6 +75,7 @@ export function publicIdentityConfig(
     },
     ...(config.authEmulatorOrigin ? { authEmulatorOrigin: config.authEmulatorOrigin } : {}),
     redirectEnabled: redirectSupported(config),
+    googleSignIn: config.googleSignIn !== false,
     ...(config.captchaSiteKey ? { captchaSiteKey: config.captchaSiteKey } : {}),
   };
 }

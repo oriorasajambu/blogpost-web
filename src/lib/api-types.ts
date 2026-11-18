@@ -687,6 +687,22 @@ export interface paths {
         patch: operations["updateTag"];
         trace?: never;
     };
+    "/v1/admin/members/password-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sendPasswordSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/members": {
         parameters: {
             query?: never;
@@ -1303,6 +1319,10 @@ export interface components {
             /** @description At least 12 and at most 128 characters; checked against known breaches. Never logged or stored by the API. */
             password: string;
             captchaToken?: string;
+        };
+        PasswordSetupResult: {
+            queued: number;
+            skipped: number;
         };
         ForgotPasswordInput: {
             /** Format: email */
@@ -2371,6 +2391,27 @@ export interface components {
                 contractVersion: "1.0.0";
                 pagination: null;
                 idempotency: components["schemas"]["IdempotencyMeta"];
+            };
+        };
+        SendPasswordSetupEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 200;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["PasswordSetupResult"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
             };
         };
         ListMembersEnvelope: {
@@ -5725,6 +5766,62 @@ export interface operations {
             415: components["responses"]["Error415"];
             422: components["responses"]["Error422"];
             428: components["responses"]["Error428"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    sendPasswordSetup: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmptyInput"];
+            };
+        };
+        responses: {
+            /** @description PasswordSetupResult */
+            200: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendPasswordSetupEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            409: components["responses"]["Error409"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             500: components["responses"]["Error500"];
             503: components["responses"]["Error503"];

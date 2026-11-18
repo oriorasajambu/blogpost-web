@@ -112,3 +112,33 @@ test('credential changes take exactly a proof token plus the new value', () => {
   ])
     assert.throws(() => validateEmailChange(invalid));
 });
+
+import { validatePasswordSetupResult } from '../../src/features/members/admin-contract';
+
+test('the Google sign-in switch defaults on and accepts only true or false', () => {
+  const env = {
+    APP_ENV: 'development',
+    BACKEND_ORIGIN: 'http://localhost:4010',
+    WEB_ORIGIN: 'http://localhost:3000',
+    WEB_LOGIN_ENABLED: 'false',
+  } as unknown as NodeJS.ProcessEnv;
+  assert.equal(parseConfig(env).googleSignIn, true);
+  assert.equal(parseConfig({ ...env, WEB_GOOGLE_SIGN_IN_ENABLED: 'false' }).googleSignIn, false);
+  assert.equal(parseConfig({ ...env, WEB_GOOGLE_SIGN_IN_ENABLED: 'true' }).googleSignIn, true);
+  assert.throws(() => parseConfig({ ...env, WEB_GOOGLE_SIGN_IN_ENABLED: 'no' }));
+});
+test('password setup results are two bounded counts', () => {
+  assert.deepEqual(validatePasswordSetupResult({ queued: 3, skipped: 0, extra: 'ignored' }), {
+    queued: 3,
+    skipped: 0,
+  });
+  for (const invalid of [
+    null,
+    {},
+    { queued: 1 },
+    { queued: -1, skipped: 0 },
+    { queued: 1.5, skipped: 0 },
+    { queued: '1', skipped: 0 },
+  ])
+    assert.throws(() => validatePasswordSetupResult(invalid));
+});

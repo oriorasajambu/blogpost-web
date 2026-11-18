@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 export default function InvitationPage() {
   return getConfig().loginEnabled ? (
-    <AuthPanel namespace={staffNamespace()} invitation />
+    <AuthPanel namespace={staffNamespace()} invitation googleSignIn={getConfig().googleSignIn} />
   ) : (
     <EmptyState
       headingLevel={1}

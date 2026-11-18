@@ -9,6 +9,7 @@ export type PublicIdentityConfig = {
   authEmulatorOrigin?: string;
   redirectEnabled?: boolean;
   captchaSiteKey?: string;
+  googleSignIn?: boolean;
 };
 type IdentitySdk = {
   auth: Auth;
