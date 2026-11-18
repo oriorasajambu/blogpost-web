@@ -27,6 +27,26 @@ test('public identity configuration explicitly selects only ordinary SDK fields'
     loginEnabled: false,
   });
 });
+test('captcha site key is public, opt-in and only widens the auth screens that use it', () => {
+  assert.ok(!('captchaSiteKey' in publicIdentityConfig(config)));
+  assert.equal(
+    (
+      publicIdentityConfig({ ...config, captchaSiteKey: 'site-key-123' }) as {
+        captchaSiteKey?: string;
+      }
+    ).captchaSiteKey,
+    'site-key-123',
+  );
+  const withKey = { ...config, captchaSiteKey: 'site-key-123' };
+  for (const path of ['/sign-in', '/register', '/verify-email'])
+    assert.match(contentSecurityPolicy(withKey, path, 'n', false), /challenges\.cloudflare\.com/);
+  assert.doesNotMatch(contentSecurityPolicy(withKey, '/', 'n', false), /challenges\.cloudflare/);
+  assert.doesNotMatch(
+    contentSecurityPolicy(config, '/register', 'n', false),
+    /challenges\.cloudflare/,
+  );
+  assert.match(contentSecurityPolicy(config, '/register', 'n', false), /identitytoolkit/);
+});
 test('redirect fallback requires a same-origin helper or a development emulator', () => {
   assert.equal(redirectSupported(config), true);
   assert.equal(

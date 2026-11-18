@@ -16,7 +16,7 @@ export function proxy(request: NextRequest) {
   const response = NextResponse.next({ request: { headers: forwarded } });
   response.headers.set('Content-Security-Policy', csp);
   response.headers.set('Cache-Control', 'no-store, max-age=0');
-  const staff = /^\/(?:studio|sign-in|invite|invitations|api)(?:\/|$)/.test(
+  const staff = /^\/(?:studio|sign-in|invite|invitations|register|verify-email|api)(?:\/|$)/.test(
     request.nextUrl.pathname,
   );
   const helper = request.nextUrl.pathname.startsWith('/__/auth/');

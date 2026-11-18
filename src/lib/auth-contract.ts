@@ -72,3 +72,48 @@ export function validateWebSession(value: unknown, now = Date.now()) {
   if (!member.active) throw new ContractError();
   return { sessionCookie: input.sessionCookie, expiresAt: input.expiresAt, member };
 }
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function accountEmail(value: unknown): string {
+  const email = typeof value === 'string' ? value.trim() : '';
+  if (email.length < 3 || email.length > 320 || !emailPattern.test(email))
+    throw new ContractError();
+  return email;
+}
+function captchaToken(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || value.length < 1 || value.length > 2048)
+    throw new ContractError();
+  return value;
+}
+/** Strict body for registration: only these keys, a bounded password, nothing echoed. */
+export function validateRegistration(value: unknown) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value))
+    throw new ContractError();
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).some((key) => !['email', 'password', 'captchaToken'].includes(key)))
+    throw new ContractError();
+  const length = typeof input.password === 'string' ? [...input.password].length : 0;
+  if (
+    typeof input.password !== 'string' ||
+    length < 12 ||
+    length > 128 ||
+    input.password.includes('\0')
+  )
+    throw new ContractError();
+  const token = captchaToken(input.captchaToken);
+  return {
+    email: accountEmail(input.email),
+    password: input.password,
+    ...(token ? { captchaToken: token } : {}),
+  };
+}
+export function validateVerificationResend(value: unknown) {
+  if (typeof value !== 'object' || value === null || Array.isArray(value))
+    throw new ContractError();
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).some((key) => !['email', 'captchaToken'].includes(key)))
+    throw new ContractError();
+  const token = captchaToken(input.captchaToken);
+  return { email: accountEmail(input.email), ...(token ? { captchaToken: token } : {}) };
+}

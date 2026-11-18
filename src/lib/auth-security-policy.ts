@@ -3,6 +3,7 @@ type IdentityPolicy = {
   webOrigin?: string;
   identity?: { authDomain: string; projectId: string };
   authEmulatorOrigin?: string;
+  captchaSiteKey?: string;
 };
 
 export function redirectSupported(config: IdentityPolicy) {
@@ -32,11 +33,15 @@ export function contentSecurityPolicy(
 ) {
   const helper = pathname.startsWith('/__/auth/');
   const authScreen =
-    config.loginEnabled && (pathname === '/sign-in' || pathname === '/invite' || helper);
-  const providerScripts = authScreen ? ' https://apis.google.com https://www.gstatic.com' : '';
+    config.loginEnabled &&
+    (['/sign-in', '/invite', '/register', '/verify-email'].includes(pathname) || helper);
+  const captcha = authScreen && config.captchaSiteKey ? ' https://challenges.cloudflare.com' : '';
+  const providerScripts = authScreen
+    ? ' https://apis.google.com https://www.gstatic.com' + captcha
+    : '';
   const frames =
     authScreen && config.identity
-      ? ` 'self' https://${config.identity.authDomain} https://accounts.google.com${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
+      ? ` 'self' https://${config.identity.authDomain} https://accounts.google.com${captcha}${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
       : " 'self'";
   const connections = authScreen
     ? ` https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://apis.google.com https://www.gstatic.com${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
@@ -60,5 +65,6 @@ export function publicIdentityConfig(
     },
     ...(config.authEmulatorOrigin ? { authEmulatorOrigin: config.authEmulatorOrigin } : {}),
     redirectEnabled: redirectSupported(config),
+    ...(config.captchaSiteKey ? { captchaSiteKey: config.captchaSiteKey } : {}),
   };
 }

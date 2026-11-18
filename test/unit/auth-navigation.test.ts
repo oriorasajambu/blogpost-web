@@ -39,5 +39,11 @@ test('identity failure copy distinguishes cancellation, blocking, invitation mis
   assert.match(identityError('INVITATION_EXPIRED'), /expired/);
   assert.match(identityError('INVITATION_USED'), /no longer available/);
   assert.match(identityError('ACCESS_REVOKED'), /access.*unavailable/);
+  assert.match(identityError('ACCOUNT_PENDING'), /waiting for approval/);
+  assert.match(identityError('EMAIL_NOT_VERIFIED'), /Confirm your email/);
+  for (const code of ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found'])
+    assert.match(identityError(code), /email address or password is not correct/);
+  assert.match(identityError('CAPTCHA_FAILED'), /challenge/);
+  assert.match(identityError('auth/expired-action-code'), /expired or was already used/);
   assert.match(identityError('SOME_NEW_ERROR'), /couldn’t complete sign-in/);
 });

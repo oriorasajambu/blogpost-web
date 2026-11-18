@@ -60,16 +60,38 @@ export function identityError(code: string): string {
     case 'MEMBERSHIP_REQUIRED':
     case 'MEMBER_NOT_FOUND':
     case 'MEMBERSHIP_NOT_FOUND':
-      return 'This Google account does not have staff access. Use your invited account or ask an administrator for an invitation.';
+      return 'This account does not have staff access. Use your invited account or ask an administrator for an invitation.';
+    case 'ACCOUNT_PENDING':
+      return 'Your account is waiting for approval. An administrator will enable access; you can sign in again afterwards.';
+    case 'EMAIL_NOT_VERIFIED':
+      return 'Confirm your email address first. Open the verification link we sent, or request a new one.';
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+    case 'auth/invalid-email':
+      return 'The email address or password is not correct.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Wait a few minutes before trying again.';
+    case 'auth/invalid-action-code':
+    case 'auth/expired-action-code':
+      return 'This link has expired or was already used. Request a new verification email.';
+    case 'CAPTCHA_FAILED':
+      return 'The verification challenge did not complete. Try it again.';
+    case 'VALIDATION_FAILED':
+      return 'Check the email address and use a password of 12 to 128 characters that has not appeared in a data breach.';
+    case 'RATE_LIMITED':
+      return 'Too many requests. Wait a moment before trying again.';
+    case 'DEPENDENCY_UNAVAILABLE':
+      return 'This is not available right now. Please try again later.';
     case 'AUTHENTICATION_TOO_OLD':
     case 'RECENT_AUTHENTICATION_REQUIRED':
     case 'auth/requires-recent-login':
       return 'Please sign in to Google again to start a fresh staff session.';
     case 'auth/network-request-failed':
-      return 'Google sign-in could not connect. Check your connection and try again.';
+      return 'Sign-in could not connect. Check your connection and try again.';
     case 'auth/unauthorized-domain':
     case 'auth/operation-not-allowed':
-      return 'Google sign-in is not configured for this web address. Contact the site administrator.';
+      return 'Sign-in is not configured for this web address. Contact the site administrator.';
     case 'CSRF_VALIDATION_FAILED':
     case 'OAUTH_STATE_INVALID':
       return 'The sign-in check expired or changed. Start sign-in again from this page.';

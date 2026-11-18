@@ -39,6 +39,7 @@ export function parseConfig(env: Record<string, string | undefined>) {
   let identity:
     { apiKey: string; authDomain: string; projectId: string; appId: string } | undefined;
   let authEmulatorOrigin: string | undefined;
+  let captchaSiteKey: string | undefined;
   if (loginEnabled) {
     if (!webOrigin) throw new Error('WEB_ORIGIN is required for session/CSRF protection.');
     if (
@@ -67,6 +68,11 @@ export function parseConfig(env: Record<string, string | undefined>) {
     const appId = required('IDENTITY_WEB_APP_ID');
     if (!/^1:\d+:web:[A-Za-z0-9]+$/.test(appId))
       throw new Error('IDENTITY_WEB_APP_ID must be a Firebase web app ID.');
+    if (env.TURNSTILE_SITE_KEY) {
+      if (!/^[0-9A-Za-z_-]{8,128}$/.test(env.TURNSTILE_SITE_KEY))
+        throw new Error('Invalid TURNSTILE_SITE_KEY.');
+      captchaSiteKey = env.TURNSTILE_SITE_KEY;
+    }
     identity = { apiKey: required('IDENTITY_WEB_API_KEY'), authDomain, projectId, appId };
     if (env.IDENTITY_AUTH_EMULATOR_ORIGIN) {
       if (!local) throw new Error('Identity emulator is Development only.');
@@ -89,6 +95,7 @@ export function parseConfig(env: Record<string, string | undefined>) {
     loginEnabled,
     identity,
     authEmulatorOrigin,
+    captchaSiteKey,
     csrfSecret: loginEnabled ? csrfSecret : undefined,
     secureCookies: !local || webOrigin?.startsWith('https:') === true,
     stackId,
