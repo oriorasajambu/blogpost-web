@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  AUTH_SCREENS,
   authHelperFiles,
   contentSecurityPolicy,
+  needsAuthDocument,
   publicIdentityConfig,
   redirectSupported,
 } from '../../src/lib/auth-security-policy';
@@ -101,4 +103,28 @@ test('production CSP permits exact auth endpoints only on auth screens and never
       "frame-ancestors 'self'",
     ),
   );
+});
+
+test('an auth screen reached from a document without the identity policy must be loaded afresh', () => {
+  for (const loaded of ['/', '/posts/some-article', '/studio', '/studio/posts', '/search'])
+    assert.equal(needsAuthDocument(loaded), true, loaded);
+  for (const loaded of [
+    '/sign-in',
+    '/invite',
+    '/register',
+    '/verify-email',
+    '/forgot-password',
+    '/reset-password',
+    '/confirm-email-change',
+    '/studio/profile',
+  ])
+    assert.equal(needsAuthDocument(loaded), false, loaded);
+  // The list is the one the content security policy grants identity hosts to.
+  for (const path of AUTH_SCREENS)
+    assert.match(
+      contentSecurityPolicy(config, path, 'n', false),
+      /identitytoolkit\.googleapis\.com/,
+      path,
+    );
+  assert.doesNotMatch(contentSecurityPolicy(config, '/', 'n', false), /identitytoolkit/);
 });

@@ -8,7 +8,7 @@ type IdentityPolicy = {
 };
 
 /** Screens that talk to the identity provider or show a captcha. The profile hosts re-authentication. */
-const AUTH_SCREENS = [
+export const AUTH_SCREENS = [
   '/sign-in',
   '/invite',
   '/register',
@@ -18,6 +18,17 @@ const AUTH_SCREENS = [
   '/confirm-email-change',
   '/studio/profile',
 ];
+/**
+ * The content security policy belongs to the document that was loaded, not to the page shown after a
+ * client-side navigation. A document loaded from any other path (a public article, the Studio) cannot
+ * reach the identity provider, so an auth screen reached that way has to be loaded afresh.
+ */
+export function needsAuthDocument(
+  loadedPathname: string,
+  authScreens: readonly string[] = AUTH_SCREENS,
+) {
+  return !authScreens.includes(loadedPathname);
+}
 export function redirectSupported(config: IdentityPolicy) {
   return !!(
     config.loginEnabled &&

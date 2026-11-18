@@ -62,9 +62,9 @@ export function SiteHeader({
             </Link>
           )}
           {loginEnabled && !staffSession && (
-            <Link href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-lg:hidden`}>
+            <a href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-lg:hidden`}>
               Staff sign in <Icon name="arrow" size={15} />
-            </Link>
+            </a>
           )}
           <button
             ref={menuButton}
@@ -110,9 +110,9 @@ export function SiteHeader({
               Explore <Icon name="arrow" size={14} />
             </Link>
             {loginEnabled && (
-              <Link href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} lg:hidden`}>
+              <a href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} lg:hidden`}>
                 {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
-              </Link>
+              </a>
             )}
           </nav>
         </div>

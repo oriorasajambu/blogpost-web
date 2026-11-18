@@ -16,6 +16,7 @@ import {
 } from './identity-sdk';
 import { previousStaffIdentity, rememberStaffIdentity } from './staff-storage';
 import { SignOutButton } from './sign-out-button';
+import { useAuthDocumentPolicy } from './document-policy';
 
 type FlowContext = { pending: boolean; invitation: boolean; returnTo: string };
 type Ready = { csrf: string; invitation: boolean; returnTo: string };
@@ -40,6 +41,7 @@ export function AuthPanel({
   /** False after the cutover: only email and password remain. */
   googleSignIn?: boolean;
 }) {
+  useAuthDocumentPolicy();
   const [ready, setReady] = useState<Ready | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');

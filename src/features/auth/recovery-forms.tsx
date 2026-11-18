@@ -6,6 +6,7 @@ import { identityError } from '@/lib/auth-navigation';
 import { Captcha } from './captcha';
 import { useAccountRequest } from './account-forms';
 import { confirmEmailCode } from './identity-sdk';
+import { useAuthDocumentPolicy } from './document-policy';
 
 function errorCode(error: unknown) {
   return error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
@@ -14,6 +15,7 @@ function errorCode(error: unknown) {
 }
 
 export function ForgotPasswordPanel() {
+  useAuthDocumentPolicy();
   const request = useAccountRequest('/api/account/forgot-password');
   const [email, setEmail] = useState('');
   return (
@@ -71,6 +73,7 @@ export function ForgotPasswordPanel() {
 
 /** `setup` marks the link sent to existing members when sign-in moved to email and password. */
 export function ResetPasswordPanel({ code, setup }: { code?: string; setup: boolean }) {
+  useAuthDocumentPolicy();
   const request = useAccountRequest('/api/account/reset-password', false);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -177,6 +180,7 @@ export function ResetPasswordPanel({ code, setup }: { code?: string; setup: bool
 
 type Applied = 'idle' | 'working' | 'confirmed' | 'failed';
 export function ConfirmEmailChangePanel({ code }: { code?: string }) {
+  useAuthDocumentPolicy();
   const [applied, setApplied] = useState<Applied>('idle');
   const [failure, setFailure] = useState('');
   async function confirm() {
