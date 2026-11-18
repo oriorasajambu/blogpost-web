@@ -63,7 +63,7 @@ export function SiteHeader({
           )}
           {loginEnabled && !staffSession && (
             <a href="/sign-in" className={`${buttonSecondary} ml-2 min-h-9 px-3 max-lg:hidden`}>
-              Staff sign in <Icon name="arrow" size={15} />
+              Sign in <Icon name="arrow" size={15} />
             </a>
           )}
           <button
@@ -111,7 +111,7 @@ export function SiteHeader({
             </Link>
             {loginEnabled && (
               <a href={staffSession ? '/studio' : '/sign-in'} className={`${navLink} lg:hidden`}>
-                {staffSession ? 'Studio' : 'Staff sign in'} <Icon name="arrow" size={14} />
+                {staffSession ? 'Studio' : 'Sign in'} <Icon name="arrow" size={14} />
               </a>
             )}
           </nav>

@@ -80,6 +80,42 @@ export const studio = {
   row: 'grid min-w-0 gap-x-6 [&_button]:[overflow-wrap:anywhere] gap-y-1.5 px-4 py-4 sm:px-5 lg:items-center [&_p]:m-0 [&_p]:text-sm [&_p]:text-muted [&_h2]:text-base [&_h2]:font-medium [&_h3]:text-base [&_h3]:font-medium',
 } as const;
 
+/*
+ * Account screens (sign-in, register, recovery, invitation). `auth-panel` stays first so the
+ * workspace element layer in globals.css and the tests keep selecting it.
+ */
+const authButtonBase =
+  'inline-flex min-h-12 w-full items-center justify-center gap-2.5 rounded-xl border px-5 text-center text-[0.9375rem] font-semibold leading-tight no-underline disabled:cursor-not-allowed';
+export const auth = {
+  panel:
+    'auth-panel mx-auto my-8 w-full max-w-[27.5rem] rounded-[20px] border border-hairline bg-surface p-6 shadow-md [overflow-wrap:anywhere] sm:my-14 sm:p-9 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:leading-tight [&_h1]:tracking-[-0.02em] sm:[&_h1]:text-[1.75rem]',
+  lead: 'mb-7 mt-2 text-[0.9375rem] text-muted',
+  form: 'grid gap-5',
+  field: 'grid gap-2',
+  labelRow: 'flex items-baseline justify-between gap-3',
+  input: 'min-h-12 rounded-xl px-3.5',
+  toggle:
+    'absolute right-0.5 top-0.5 inline-grid size-11 place-items-center rounded-[10px] border-0 bg-transparent p-0 text-muted hover:bg-raised hover:text-text',
+  help: 'text-[0.8125rem] text-muted',
+  error: 'flex items-start gap-1.5 text-[0.8125rem] font-medium text-danger',
+  primary: `${authButtonBase} border-transparent bg-accent text-bg hover:brightness-110 disabled:bg-raised disabled:text-faint disabled:hover:brightness-100`,
+  secondary: `${authButtonBase} border-control bg-transparent text-text hover:bg-raised disabled:text-faint disabled:hover:bg-transparent`,
+  divider:
+    "flex items-center gap-3.5 text-[0.8125rem] text-faint before:h-px before:flex-1 before:bg-hairline before:content-[''] after:h-px after:flex-1 after:bg-hairline after:content-['']",
+  switch: 'mt-6 text-center text-sm text-muted [&_a]:font-semibold',
+  fine: 'mx-auto mt-5 max-w-[27.5rem] px-4 text-center text-[0.8125rem] text-faint',
+  context:
+    'mb-6 flex gap-3 rounded-xl border border-accent-line bg-accent-tint px-4 py-3.5 text-sm [&_svg]:mt-0.5 [&_svg]:shrink-0 [&_svg]:text-accent-ink [&_span]:block [&_span]:text-muted [&_strong]:block [&_strong]:font-semibold',
+  notice:
+    'flex items-start gap-3 rounded-xl px-4 py-3.5 text-sm leading-snug [&_svg]:mt-0.5 [&_svg]:shrink-0 data-[tone=danger]:bg-danger-bg data-[tone=danger]:text-danger data-[tone=warning]:bg-warning-bg data-[tone=warning]:text-warning data-[tone=info]:bg-info-bg data-[tone=info]:text-info',
+  sent: 'grid justify-items-center gap-0 text-center',
+  sentIcon:
+    'mb-5 inline-grid size-14 place-items-center rounded-full bg-accent-tint text-accent-ink',
+  address: 'my-1 inline-block rounded-lg bg-raised px-3 py-1.5 font-semibold',
+  next: 'mt-2 w-full rounded-xl bg-raised px-4 py-3.5 text-left text-sm text-muted [&_strong]:text-text',
+  slot: 'flex min-h-6 items-center gap-2 text-[0.8125rem] text-faint',
+} as const;
+
 /** The staff error banner keeps its `staff-error` hook; tests select `.staff-error[role="alert"]`. */
 export const staffError = `staff-error ${studio.danger}`;
 /** Same dialog chrome, wide enough for the three-way conflict comparison. */

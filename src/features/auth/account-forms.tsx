@@ -1,12 +1,13 @@
 'use client';
 
-import { buttonPrimary, eyebrow, studio, textLink } from '@/components/ui/styles';
+import { auth } from '@/components/ui/styles';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { identityError } from '@/lib/auth-navigation';
 import { authJson, authMutation, freshCsrf } from './client-api';
 import { Captcha } from './captcha';
 import { confirmEmailCode } from './identity-sdk';
 import { useAuthDocumentPolicy } from './document-policy';
+import { AuthIcon, FieldError, Notice, PasswordField, SentCard, TextField } from './auth-ui';
 
 function errorCode(error: unknown) {
   return error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
@@ -53,8 +54,16 @@ export function useAccountRequest(path: string, captcha = true) {
       setBusy(false);
     }
   }
-  return { siteKey, onToken, challenge, busy, message, done, submit };
+  /** Back to the form after an answer that always reads the same. */
+  function reset() {
+    setDone(false);
+    setMessage('');
+    setChallenge((value) => value + 1);
+  }
+  return { siteKey, onToken, challenge, busy, message, done, submit, reset };
 }
+
+type Problem = { field: 'password' | 'confirm'; text: string } | null;
 
 export function RegisterForm() {
   useAuthDocumentPolicy();
@@ -62,13 +71,15 @@ export function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [problem, setProblem] = useState('');
+  const [problem, setProblem] = useState<Problem>(null);
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     const length = [...password].length;
-    if (length < 12 || length > 128) return setProblem('Use a password of 12 to 128 characters.');
-    if (password !== confirm) return setProblem('The two passwords do not match.');
-    setProblem('');
+    if (length < 12 || length > 128)
+      return setProblem({ field: 'password', text: 'Use a password of 12 to 128 characters.' });
+    if (password !== confirm)
+      return setProblem({ field: 'confirm', text: 'The two passwords do not match.' });
+    setProblem(null);
     void request.submit({ email: email.trim(), password }).finally(() => {
       setPassword('');
       setConfirm('');
@@ -76,76 +87,65 @@ export function RegisterForm() {
   }
   if (request.done)
     return (
-      <section className={studio.authPanel} aria-labelledby="register-heading">
-        <p className={eyebrow}>Create an account</p>
-        <h1 id="register-heading">Check your inbox</h1>
-        <p role="status">
-          If that address can be registered, we sent a verification link to it. Open the link, then
-          wait for an administrator to approve your account.
-        </p>
-        <p>
-          <a className={textLink} href="/sign-in">
-            Back to sign-in
-          </a>
-        </p>
-      </section>
+      <SentCard
+        headingId="register-heading"
+        title="Check your inbox"
+        onReset={request.reset}
+        extra={
+          <p className={auth.next}>
+            <strong>What happens next</strong>
+            <br />
+            Open the link to verify your address. An administrator then approves your access, and
+            you can sign in.
+          </p>
+        }
+      >
+        If that address can be registered, we sent a verification link to it.
+      </SentCard>
     );
   return (
-    <section className={studio.authPanel} aria-labelledby="register-heading">
-      <p className={eyebrow}>Create an account</p>
-      <h1 id="register-heading">Register for the workspace</h1>
-      <p>
-        Verify your email address, then an administrator approves access. Use a long, unique
-        password: at least 12 characters.
-      </p>
-      <form className={studio.form} onSubmit={onSubmit}>
-        <label htmlFor="register-email">Email address</label>
-        <input
+    <section className={auth.panel} aria-labelledby="register-heading">
+      <h1 id="register-heading">Create your account</h1>
+      <p className={auth.lead}>Verify your email, then an administrator approves your access.</p>
+      <form className={auth.form} onSubmit={onSubmit}>
+        <TextField
           id="register-email"
+          label="Email address"
           name="email"
-          type="email"
           autoComplete="email"
-          required
-          maxLength={320}
+          placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={setEmail}
         />
-        <label htmlFor="register-password">Password</label>
-        <input
+        <PasswordField
           id="register-password"
           name="password"
-          type="password"
+          label="Password"
           autoComplete="new-password"
-          required
           minLength={12}
-          maxLength={256}
+          hint="At least 12 characters. A long passphrase works best."
+          error={problem?.field === 'password' ? problem.text : undefined}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={setPassword}
         />
-        <label htmlFor="register-confirm">Repeat password</label>
-        <input
+        <PasswordField
           id="register-confirm"
           name="confirm"
-          type="password"
+          label="Repeat password"
           autoComplete="new-password"
-          required
           minLength={12}
-          maxLength={256}
+          error={problem?.field === 'confirm' ? problem.text : undefined}
           value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
+          onChange={setConfirm}
         />
         <Captcha siteKey={request.siteKey} onToken={request.onToken} resetKey={request.challenge} />
-        <div className={studio.actions}>
-          <button type="submit" className={buttonPrimary} disabled={request.busy}>
-            {request.busy ? 'Creating account…' : 'Create account'}
-          </button>
-        </div>
+        {request.message && <Notice tone="danger">{request.message}</Notice>}
+        <button type="submit" className={auth.primary} disabled={request.busy}>
+          {request.busy ? 'Creating account…' : 'Create account'}
+        </button>
       </form>
-      {(problem || request.message) && <p role="alert">{problem || request.message}</p>}
-      <p>
-        <a className={textLink} href="/sign-in">
-          Already registered? Sign in
-        </a>
+      <p className={auth.switch}>
+        Already have an account? <a href="/sign-in">Sign in</a>
       </p>
     </section>
   );
@@ -172,82 +172,84 @@ export function VerifyEmailPanel({ code }: { code?: string }) {
   }
   if (applied === 'confirmed')
     return (
-      <section className={studio.authPanel} aria-labelledby="verify-heading">
-        <p className={eyebrow}>Email</p>
+      <section className={`${auth.panel} ${auth.sent}`} aria-labelledby="verify-heading">
+        <div className={auth.sentIcon}>
+          <AuthIcon name="check" size={26} />
+        </div>
         <h1 id="verify-heading">Email confirmed</h1>
-        <p role="status">
+        <p role="status" className={`${auth.lead} mb-6`}>
           Your address is verified. If an administrator has not approved your account yet, sign-in
           will say so; try again once you are approved.
         </p>
-        <p>
-          <a className={buttonPrimary} href="/sign-in">
-            Continue to sign-in
-          </a>
-        </p>
+        <a className={auth.primary} href="/sign-in">
+          Continue to sign in
+        </a>
       </section>
     );
   const asking = !code || applied === 'failed';
+  if (asking && request.done)
+    return (
+      <SentCard headingId="verify-heading" title="Check your inbox" onReset={request.reset}>
+        If that address has an unverified account, we sent a new verification link to it.
+      </SentCard>
+    );
   return (
-    <section className={studio.authPanel} aria-labelledby="verify-heading">
-      <p className={eyebrow}>Email</p>
+    <section className={auth.panel} aria-labelledby="verify-heading">
       <h1 id="verify-heading">{asking ? 'Send a new verification email' : 'Confirm your email'}</h1>
       {code && applied !== 'failed' && (
         <>
-          <p>Confirm that this is your address to finish setting up your account.</p>
-          <div className={studio.actions}>
-            <button
-              type="button"
-              className={buttonPrimary}
-              disabled={applied === 'working'}
-              onClick={() => void confirm()}
-            >
-              {applied === 'working' ? 'Confirming…' : 'Confirm my email'}
-            </button>
-          </div>
+          <p className={auth.lead}>
+            Confirm that this is your address to finish setting up your account.
+          </p>
+          <button
+            type="button"
+            className={auth.primary}
+            disabled={applied === 'working'}
+            onClick={() => void confirm()}
+          >
+            {applied === 'working' ? 'Confirming…' : 'Confirm my email'}
+          </button>
         </>
       )}
-      {failure && <p role="alert">{failure}</p>}
-      {asking &&
-        (request.done ? (
-          <p role="status">
-            If that address has an unverified account, we sent a new verification link to it.
-          </p>
-        ) : (
+      {asking && (
+        <>
+          {failure && (
+            <div className="mb-5">
+              <Notice tone="danger">{failure}</Notice>
+            </div>
+          )}
+          <p className={auth.lead}>Enter your address and we will send a new link.</p>
           <form
-            className={studio.form}
+            className={auth.form}
             onSubmit={(event) => {
               event.preventDefault();
               void request.submit({ email: email.trim() });
             }}
           >
-            <label htmlFor="verify-email-address">Email address</label>
-            <input
+            <TextField
               id="verify-email-address"
+              label="Email address"
               name="email"
-              type="email"
               autoComplete="email"
-              required
-              maxLength={320}
+              placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={setEmail}
             />
             <Captcha
               siteKey={request.siteKey}
               onToken={request.onToken}
               resetKey={request.challenge}
             />
-            <div className={studio.actions}>
-              <button type="submit" className={buttonPrimary} disabled={request.busy}>
-                {request.busy ? 'Sending…' : 'Send verification email'}
-              </button>
-            </div>
+            {request.message && <Notice tone="danger">{request.message}</Notice>}
+            <button type="submit" className={auth.primary} disabled={request.busy}>
+              {request.busy ? 'Sending…' : 'Send verification email'}
+            </button>
           </form>
-        ))}
-      {request.message && <p role="alert">{request.message}</p>}
-      <p>
-        <a className={textLink} href="/sign-in">
-          Back to sign-in
-        </a>
+        </>
+      )}
+      {!asking && failure && <FieldError>{failure}</FieldError>}
+      <p className={auth.switch}>
+        <a href="/sign-in">Back to sign in</a>
       </p>
     </section>
   );
