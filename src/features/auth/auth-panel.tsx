@@ -1,6 +1,6 @@
 'use client';
 
-import { buttonPrimary, buttonSecondary, eyebrow, studio, textLink } from '@/components/ui/styles';
+import { auth, textLink } from '@/components/ui/styles';
 import { useEffect, useRef, useState } from 'react';
 import type { UserCredential } from 'firebase/auth';
 import type { StaffMember } from '@/lib/auth-contract';
@@ -17,6 +17,7 @@ import {
 import { previousStaffIdentity, rememberStaffIdentity } from './staff-storage';
 import { SignOutButton } from './sign-out-button';
 import { useAuthDocumentPolicy } from './document-policy';
+import { AuthIcon, Notice, PasswordField, TextField } from './auth-ui';
 
 type FlowContext = { pending: boolean; invitation: boolean; returnTo: string };
 type Ready = { csrf: string; invitation: boolean; returnTo: string };
@@ -222,146 +223,151 @@ export function AuthPanel({
       pending.current = false;
     }
   }
+  const isInvitation = invitation || ready?.invitation;
+  const formHidden = redirectReturn || (invitation && !ready && code === 'INVALID_INVITATION');
+  const warn = code === 'EMAIL_NOT_VERIFIED' || code === 'auth/too-many-requests';
   return (
-    <section className={studio.authPanel} aria-labelledby="auth-heading">
-      <p className={eyebrow}>
-        {invitation || ready?.invitation ? 'Staff invitation' : 'Staff access'}
-      </p>
-      <h1 id="auth-heading">
-        {invitation || ready?.invitation ? 'Accept your invitation' : 'Sign in to your workspace'}
-      </h1>
-      <p>
-        {invitation || ready?.invitation
-          ? 'Sign in with the verified account for the address named in your invitation. Accepting the invitation enables your staff access.'
-          : 'The journal is open to everyone. Authors, editors and administrators sign in with their email address and password.'}
-      </p>
-      {!redirectReturn && !(invitation && !ready && code === 'INVALID_INVITATION') && (
-        <form
-          className={studio.form}
-          onSubmit={(event) => {
-            event.preventDefault();
-            void signIn('password');
-          }}
-        >
-          <label htmlFor="sign-in-email">Email address</label>
-          <input
-            id="sign-in-email"
-            name="email"
-            type="email"
-            autoComplete="username"
-            required
-            maxLength={320}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label htmlFor="sign-in-password">Password</label>
-          <input
-            id="sign-in-password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            maxLength={256}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <div className={studio.actions}>
+    <>
+      <section className={auth.panel} aria-labelledby="auth-heading">
+        <h1 id="auth-heading">{isInvitation ? 'Accept your invitation' : 'Sign in'}</h1>
+        <p className={auth.lead}>
+          {isInvitation
+            ? 'Sign in to join the staff workspace.'
+            : 'Use your email address and password.'}
+        </p>
+        {isInvitation && (
+          <div className={auth.context}>
+            <AuthIcon name="mail" size={20} />
+            <p>
+              <strong>Use the address your invitation was sent to</strong>
+              <span>
+                Signing in with that account enables your staff access. Other accounts cannot accept
+                it.
+              </span>
+            </p>
+          </div>
+        )}
+        {!formHidden && (
+          <form
+            className={auth.form}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void signIn('password');
+            }}
+          >
+            <TextField
+              id="sign-in-email"
+              label="Email address"
+              name="email"
+              autoComplete="username"
+              placeholder="you@example.com"
+              value={email}
+              onChange={setEmail}
+            />
+            <PasswordField
+              id="sign-in-password"
+              name="password"
+              label="Password"
+              autoComplete="current-password"
+              action={
+                !redirectReturn && (
+                  <a className={textLink} href="/forgot-password">
+                    Forgot password?
+                  </a>
+                )
+              }
+              value={password}
+              onChange={setPassword}
+            />
+            {!ready && !message && (
+              <p role="status" className={auth.help}>
+                Checking sign-in…
+              </p>
+            )}
+            {message && <Notice tone={warn ? 'warning' : 'danger'}>{message}</Notice>}
+            {code === 'EMAIL_NOT_VERIFIED' && (
+              <a className={textLink} href="/verify-email">
+                Send a new verification email
+              </a>
+            )}
             <button
               type="submit"
-              className={buttonPrimary}
+              className={auth.primary}
               disabled={busy || (invitation && !ready && !message)}
             >
-              {busy ? 'Completing sign-in…' : 'Sign in'}
+              {busy ? 'Completing sign-in…' : isInvitation ? 'Sign in and accept' : 'Sign in'}
             </button>
-          </div>
-        </form>
-      )}
-      {!redirectReturn && !invitation && (
-        <p>
-          <a className={textLink} href="/forgot-password">
-            {googleSignIn ? 'Forgot your password, or never set one?' : 'Forgot your password?'}
-          </a>
-        </p>
-      )}
-      {code === 'EMAIL_NOT_VERIFIED' && (
-        <p>
-          <a className={textLink} href="/verify-email">
-            Send a new verification email
-          </a>
-        </p>
-      )}
-      <div className={studio.actions}>
-        {googleSignIn &&
-          !redirectReturn &&
-          !(invitation && !ready && code === 'INVALID_INVITATION') && (
-            <button
-              type="button"
-              className={buttonSecondary}
-              disabled={busy || (invitation && !ready && !message)}
-              onClick={() => void signIn('google')}
-            >
-              {busy
-                ? 'Completing sign-in…'
-                : code === 'INVITATION_ACCOUNT_MISMATCH'
-                  ? 'Choose another Google account'
-                  : 'Continue with Google'}
-            </button>
-          )}
-        {code === 'auth/popup-blocked' && redirectAllowed && ready && (
-          <button
-            type="button"
-            className={buttonSecondary}
-            disabled={busy}
-            onClick={() => void redirectSignIn()}
-          >
-            Continue with a page redirect
-          </button>
+            {googleSignIn && (
+              <>
+                <div className={auth.divider} aria-hidden="true">
+                  or
+                </div>
+                <button
+                  type="button"
+                  className={auth.secondary}
+                  disabled={busy || (invitation && !ready && !message)}
+                  onClick={() => void signIn('google')}
+                >
+                  {busy
+                    ? 'Completing sign-in…'
+                    : code === 'INVITATION_ACCOUNT_MISMATCH'
+                      ? 'Choose another Google account'
+                      : 'Continue with Google'}
+                </button>
+              </>
+            )}
+            {code === 'auth/popup-blocked' && redirectAllowed && ready && (
+              <button
+                type="button"
+                className={auth.secondary}
+                disabled={busy}
+                onClick={() => void redirectSignIn()}
+              >
+                Continue with a page redirect
+              </button>
+            )}
+          </form>
         )}
-      </div>
-      {!ready && !message && <p role="status">Checking sign-in…</p>}
-      {message && <p role="alert">{message}</p>}
-      {redirectReturn && message && (
-        <p>
-          <a
-            className={textLink}
-            href={`/sign-in?returnTo=${encodeURIComponent(recoveryReturnTo)}`}
-          >
-            Start sign-in again
-          </a>{' '}
-          If you were accepting an invitation, reopen your original invitation link to refresh its
-          sign-in check.
-        </p>
-      )}
-      {invitation && !ready && code === 'INVALID_INVITATION' && (
-        <p>
-          Reopen your original invitation link to refresh its sign-in check. If you already accepted
-          it, use staff sign-in below.
-        </p>
-      )}
-      {code === 'ACCOUNT_SWITCH_NEEDS_LOGOUT' && (
-        <SignOutButton
-          namespace={namespace}
-          destination="/sign-in"
-          label="Review local work and sign out"
-        />
-      )}
-      {(invitation || ready?.invitation) && (
-        <p>
-          <a className={textLink} href="/sign-in">
-            Already accepted? Sign in to your workspace
-          </a>
-        </p>
-      )}
-      {!invitation && !redirectReturn && (
-        <p>
-          <a className={textLink} href="/register">
-            New here? Create an account
-          </a>
-        </p>
-      )}
-      <p className={studio.fieldLabel}>
-        Credentials stay in memory during sign-in. Your staff session lasts up to five days.
+        {formHidden && message && <Notice tone="danger">{message}</Notice>}
+        {redirectReturn && message && (
+          <p className="mt-4 text-sm text-muted">
+            <a
+              className={textLink}
+              href={`/sign-in?returnTo=${encodeURIComponent(recoveryReturnTo)}`}
+            >
+              Start sign-in again
+            </a>{' '}
+            If you were accepting an invitation, reopen your original invitation link to refresh its
+            sign-in check.
+          </p>
+        )}
+        {invitation && !ready && code === 'INVALID_INVITATION' && (
+          <p className="mt-4 text-sm text-muted">
+            Reopen your original invitation link to refresh its sign-in check. If you already
+            accepted it, use sign-in below.
+          </p>
+        )}
+        {code === 'ACCOUNT_SWITCH_NEEDS_LOGOUT' && (
+          <SignOutButton
+            namespace={namespace}
+            destination="/sign-in"
+            label="Review local work and sign out"
+          />
+        )}
+        {isInvitation && (
+          <p className={auth.switch}>
+            Already accepted? <a href="/sign-in">Sign in to your workspace</a>
+          </p>
+        )}
+        {!invitation && !redirectReturn && (
+          <p className={auth.switch}>
+            New here? <a href="/register">Create an account</a>
+          </p>
+        )}
+      </section>
+      <p className={auth.fine}>
+        Your password is never stored in your browser. Sessions last up to five days.
       </p>
-    </section>
+    </>
   );
 }
