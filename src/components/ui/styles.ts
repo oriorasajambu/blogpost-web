@@ -112,7 +112,7 @@ export const auth = {
   sentIcon:
     'mb-5 inline-grid size-14 place-items-center rounded-full bg-accent-tint text-accent-ink',
   address: 'my-1 inline-block rounded-lg bg-raised px-3 py-1.5 font-semibold',
-  next: 'mt-2 w-full rounded-xl bg-raised px-4 py-3.5 text-left text-sm text-muted [&_strong]:text-text',
+  next: 'mt-2 w-full rounded-xl bg-raised px-4 py-3.5 text-center text-sm text-muted [&_strong]:text-text',
   slot: 'flex min-h-6 items-center gap-2 text-[0.8125rem] text-faint [&_svg]:shrink-0',
 } as const;
 
