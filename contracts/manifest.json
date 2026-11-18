@@ -47,7 +47,7 @@
     },
     {
       "path": "contracts/openapi-v1.0.0.json",
-      "sha256": "2fe546c2f814624995d2f3bf9d0d56056bfe88dec3f763bbb4060d78a8f5b9bd"
+      "sha256": "32efd98c9ecaf02e80a179c3dc5d9d9bc2f5fd7911c07ed2c9b7d45ccb82ccb6"
     }
   ],
   "source": "../blogpost-backend/contracts",

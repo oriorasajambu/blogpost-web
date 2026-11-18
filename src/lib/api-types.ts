@@ -5835,7 +5835,7 @@ export interface operations {
                 pageSize?: number;
                 role?: components["schemas"]["Role"];
                 active?: boolean;
-                memberStatus?: components["schemas"]["MemberStatus"];
+                memberStatus?: "ALL" | "PENDING" | "ACTIVE" | "DISABLED";
             };
             header: {
                 /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
