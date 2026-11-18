@@ -20,12 +20,51 @@ const config = {
 };
 test('public identity configuration explicitly selects only ordinary SDK fields', () => {
   const json = publicIdentityConfig(config);
-  assert.deepEqual(Object.keys(json).sort(), ['identity', 'loginEnabled', 'redirectEnabled']);
+  assert.deepEqual(Object.keys(json).sort(), [
+    'googleSignIn',
+    'identity',
+    'loginEnabled',
+    'redirectEnabled',
+  ]);
+  assert.equal((json as { googleSignIn: boolean }).googleSignIn, true);
+  assert.equal(
+    (publicIdentityConfig({ ...config, googleSignIn: false }) as { googleSignIn: boolean })
+      .googleSignIn,
+    false,
+  );
   assert.ok(!JSON.stringify(json).includes(config.csrfSecret));
   assert.ok(!JSON.stringify(json).includes(config.backendOrigin));
   assert.deepEqual(publicIdentityConfig({ ...config, loginEnabled: false }), {
     loginEnabled: false,
   });
+});
+test('captcha site key is public, opt-in and only widens the auth screens that use it', () => {
+  assert.ok(!('captchaSiteKey' in publicIdentityConfig(config)));
+  assert.equal(
+    (
+      publicIdentityConfig({ ...config, captchaSiteKey: 'site-key-123' }) as {
+        captchaSiteKey?: string;
+      }
+    ).captchaSiteKey,
+    'site-key-123',
+  );
+  const withKey = { ...config, captchaSiteKey: 'site-key-123' };
+  for (const path of [
+    '/sign-in',
+    '/register',
+    '/verify-email',
+    '/forgot-password',
+    '/reset-password',
+    '/confirm-email-change',
+    '/studio/profile',
+  ])
+    assert.match(contentSecurityPolicy(withKey, path, 'n', false), /challenges\.cloudflare\.com/);
+  assert.doesNotMatch(contentSecurityPolicy(withKey, '/', 'n', false), /challenges\.cloudflare/);
+  assert.doesNotMatch(
+    contentSecurityPolicy(config, '/register', 'n', false),
+    /challenges\.cloudflare/,
+  );
+  assert.match(contentSecurityPolicy(config, '/register', 'n', false), /identitytoolkit/);
 });
 test('redirect fallback requires a same-origin helper or a development emulator', () => {
   assert.equal(redirectSupported(config), true);

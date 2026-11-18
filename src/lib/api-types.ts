@@ -207,6 +207,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["registerAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/verify-email/resend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resendVerificationEmail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/forgot-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["forgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/me": {
         parameters: {
             query?: never;
@@ -221,6 +285,38 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["updateMe"];
+        trace?: never;
+    };
+    "/v1/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/me/email-change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["requestEmailChange"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/invitations/accept": {
@@ -589,6 +685,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["updateTag"];
+        trace?: never;
+    };
+    "/v1/admin/members/password-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["sendPasswordSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/admin/members": {
@@ -970,6 +1082,8 @@ export interface components {
             active: boolean;
             version: number;
         };
+        /** @enum {string} */
+        MemberStatus: "PENDING" | "ACTIVE" | "DISABLED";
         AdminMember: {
             /** Format: uuid */
             id: string;
@@ -981,6 +1095,7 @@ export interface components {
             role: components["schemas"]["Role"];
             active: boolean;
             version: number;
+            status: components["schemas"]["MemberStatus"];
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -1070,6 +1185,10 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             changes: Record<string, never>;
+        };
+        AccountRequestAccepted: {
+            /** @enum {string} */
+            status: "ACCEPTED";
         };
         WebSession: {
             /** @description Credential for the server proxy only; never forward this JSON to a browser or log it. */
@@ -1193,6 +1312,44 @@ export interface components {
         EmptyInput: Record<string, never>;
         WebSessionInput: {
             idToken: string;
+        };
+        RegisterAccountInput: {
+            /** Format: email */
+            email: string;
+            /** @description At least 12 and at most 128 characters; checked against known breaches. Never logged or stored by the API. */
+            password: string;
+            captchaToken?: string;
+        };
+        PasswordSetupResult: {
+            queued: number;
+            skipped: number;
+        };
+        ForgotPasswordInput: {
+            /** Format: email */
+            email: string;
+            captchaToken?: string;
+        };
+        ResetPasswordInput: {
+            /** @description One-time code from the reset email link. */
+            code: string;
+            /** @description At least 12 and at most 128 characters; checked against known breaches. */
+            password: string;
+        };
+        ChangePasswordInput: {
+            /** @description Fresh identity token from entering the current password; proves recent authentication. */
+            idToken: string;
+            newPassword: string;
+        };
+        RequestEmailChangeInput: {
+            /** @description Fresh identity token from entering the current password; proves recent authentication. */
+            idToken: string;
+            /** Format: email */
+            newEmail: string;
+        };
+        ResendVerificationInput: {
+            /** Format: email */
+            email: string;
+            captchaToken?: string;
         };
         UpdateMeInput: {
             displayName?: string;
@@ -1480,6 +1637,90 @@ export interface components {
                 idempotency: null;
             };
         };
+        RegisterAccountEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
+        ResendVerificationEmailEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
+        ForgotPasswordEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
+        ResetPasswordEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
         GetMeEnvelope: {
             /** Format: date-time */
             timestamp: string;
@@ -1520,6 +1761,48 @@ export interface components {
                 contractVersion: "1.0.0";
                 pagination: null;
                 idempotency: components["schemas"]["IdempotencyMeta"];
+            };
+        };
+        ChangePasswordEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
+        RequestEmailChangeEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 202;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["AccountRequestAccepted"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
             };
         };
         AcceptInvitationEnvelope: {
@@ -2110,6 +2393,27 @@ export interface components {
                 idempotency: components["schemas"]["IdempotencyMeta"];
             };
         };
+        SendPasswordSetupEnvelope: {
+            /** Format: date-time */
+            timestamp: string;
+            /** @constant */
+            responseKey: "SUCCESS";
+            /** @constant */
+            statusCode: 200;
+            traceId: string;
+            message: {
+                title: string;
+                descriptions: string;
+            };
+            data: components["schemas"]["PasswordSetupResult"];
+            error: null;
+            meta: {
+                /** @constant */
+                contractVersion: "1.0.0";
+                pagination: null;
+                idempotency: null;
+            };
+        };
         ListMembersEnvelope: {
             /** Format: date-time */
             timestamp: string;
@@ -2421,7 +2725,7 @@ export interface components {
                 "application/json": components["schemas"]["ErrorEnvelope"];
             };
         };
-        /** @description VALIDATION_FAILED, MARKDOWN_UNSUPPORTED, SEARCH_QUERY_NOT_SEARCHABLE */
+        /** @description VALIDATION_FAILED, CAPTCHA_FAILED, MARKDOWN_UNSUPPORTED, SEARCH_QUERY_NOT_SEARCHABLE */
         Error422: {
             headers: {
                 /** @description Matches the envelope traceId. */
@@ -2495,7 +2799,7 @@ export interface components {
                 "application/json": components["schemas"]["ErrorEnvelope"];
             };
         };
-        /** @description INSUFFICIENT_PERMISSION, ACCESS_REVOKED, INVITATION_ACCOUNT_MISMATCH, CSRF_VALIDATION_FAILED */
+        /** @description INSUFFICIENT_PERMISSION, ACCESS_REVOKED, ACCOUNT_PENDING, INVITATION_ACCOUNT_MISMATCH, CSRF_VALIDATION_FAILED */
         Error403: {
             headers: {
                 /** @description Matches the envelope traceId. */
@@ -3249,6 +3553,222 @@ export interface operations {
             504: components["responses"]["Error504"];
         };
     };
+    registerAccount: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterAccountInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterAccountEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    resendVerificationEmail: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResendVerificationInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResendVerificationEmailEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    forgotPassword: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotPasswordInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ForgotPasswordEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetPasswordInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetPasswordEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
     getMe: {
         parameters: {
             query?: never;
@@ -3361,6 +3881,118 @@ export interface operations {
             415: components["responses"]["Error415"];
             422: components["responses"]["Error422"];
             428: components["responses"]["Error428"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    changePassword: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChangePasswordEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            409: components["responses"]["Error409"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
+    requestEmailChange: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestEmailChangeInput"];
+            };
+        };
+        responses: {
+            /** @description AccountRequestAccepted */
+            202: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestEmailChangeEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            409: components["responses"]["Error409"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
             429: components["responses"]["Error429"];
             500: components["responses"]["Error500"];
             503: components["responses"]["Error503"];
@@ -5140,6 +5772,62 @@ export interface operations {
             504: components["responses"]["Error504"];
         };
     };
+    sendPasswordSetup: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-ID": components["parameters"]["X-Device-ID"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-OS": components["parameters"]["X-Device-OS"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */
+                "X-Device-Version": components["parameters"]["X-Device-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. Strict SemVer with optional build metadata. */
+                "X-App-Version": components["parameters"]["X-App-Version"];
+                /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. One well-formed BCP 47 language tag, including valid unsupported languages. */
+                "X-App-Language": components["parameters"]["X-App-Language"];
+                /** @description W3C trace context. Invalid/all-zero context is replaced, never used for authorization. */
+                traceparent?: components["parameters"]["Traceparent"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmptyInput"];
+            };
+        };
+        responses: {
+            /** @description PasswordSetupResult */
+            200: {
+                headers: {
+                    /** @description Matches the envelope traceId. */
+                    "X-Trace-ID"?: string;
+                    "X-API-Contract-Version"?: "1.0.0";
+                    "Cache-Control"?: "no-store";
+                    "X-Content-Type-Options"?: "nosniff";
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SendPasswordSetupEnvelope"];
+                };
+            };
+            400: components["responses"]["Error400"];
+            401: components["responses"]["Error401"];
+            403: components["responses"]["Error403"];
+            404: components["responses"]["Error404"];
+            405: components["responses"]["Error405"];
+            409: components["responses"]["Error409"];
+            410: components["responses"]["Error410"];
+            413: components["responses"]["Error413"];
+            415: components["responses"]["Error415"];
+            422: components["responses"]["Error422"];
+            429: components["responses"]["Error429"];
+            500: components["responses"]["Error500"];
+            503: components["responses"]["Error503"];
+            504: components["responses"]["Error504"];
+        };
+    };
     listMembers: {
         parameters: {
             query?: {
@@ -5147,6 +5835,7 @@ export interface operations {
                 pageSize?: number;
                 role?: components["schemas"]["Role"];
                 active?: boolean;
+                memberStatus?: components["schemas"]["MemberStatus"];
             };
             header: {
                 /** @description Required exactly once, including anonymous/media requests. No blank/control/comma-joined values. Probe and CORS preflight are exempt. */

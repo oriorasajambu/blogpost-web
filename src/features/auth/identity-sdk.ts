@@ -8,6 +8,8 @@ export type PublicIdentityConfig = {
   identity?: { apiKey: string; authDomain: string; projectId: string; appId: string };
   authEmulatorOrigin?: string;
   redirectEnabled?: boolean;
+  captchaSiteKey?: string;
+  googleSignIn?: boolean;
 };
 type IdentitySdk = {
   auth: Auth;
@@ -43,6 +45,17 @@ export async function googlePopup(): Promise<UserCredential> {
   const provider = new api.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
   return api.signInWithPopup(auth, provider);
+}
+/** Email and password sign-in; the password never leaves the browser except to the identity provider. */
+export async function passwordSignIn(email: string, password: string): Promise<UserCredential> {
+  const { auth, api } = await identitySdk();
+  await api.signOut(auth);
+  return api.signInWithEmailAndPassword(auth, email, password);
+}
+/** Applies the one-time code from a verification email. */
+export async function confirmEmailCode(code: string) {
+  const { auth, api } = await identitySdk();
+  await api.applyActionCode(auth, code);
 }
 export async function googleRedirect() {
   const { auth, api, config } = await identitySdk();

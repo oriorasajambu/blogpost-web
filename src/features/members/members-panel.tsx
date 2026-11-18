@@ -16,7 +16,7 @@ import type { CursorPagination } from '@/features/editor/editor-contract';
 import { adminList, validateAdminMember, type AdminMember } from './admin-contract';
 import { AdminCommandRecovery, useAdminCommand } from './use-admin-command';
 
-const MEMBER_FILTERS = ['role', 'active'] as const;
+const MEMBER_FILTERS = ['role', 'active', 'memberStatus'] as const;
 
 export function MembersPanel({ accountId }: { accountId: string }) {
   const pager = useCursorPager('member', MEMBER_FILTERS);
@@ -24,6 +24,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
   const [page, setPage] = useState<CursorPagination | null>(null);
   const [role, setRole] = useState(pager.filters.role);
   const [active, setActive] = useState(pager.filters.active);
+  const [memberStatus, setMemberStatus] = useState(pager.filters.memberStatus);
   const [notice, setNotice] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
   const focusAfterLoad = useRef(false);
@@ -54,6 +55,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
       const query = new URLSearchParams({ pageSize: String(STAFF_PAGE_SIZE) });
       if (filters.role) query.set('role', filters.role);
       if (filters.active) query.set('active', filters.active);
+      if (filters.memberStatus) query.set('memberStatus', filters.memberStatus);
       if (cursor) query.set('cursor', cursor);
       const result = await staffRequest(`/admin/members?${query}`, adminList(validateAdminMember));
       if (epoch !== loadEpoch.current) return;
@@ -84,6 +86,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
     // Back/Forward and shared links decide the applied filters; show them in the inputs.
     setRole(pager.filters.role);
     setActive(pager.filters.active);
+    setMemberStatus(pager.filters.memberStatus);
     void load().catch(() => {});
   });
   const invalidateLoads = useEffectEvent(() => {
@@ -136,7 +139,7 @@ export function MembersPanel({ accountId }: { accountId: string }) {
           event.preventDefault();
           if (selectionLock.current) return;
           setNotice('');
-          if (!pager.applyFilters({ role, active })) void load().catch(() => {});
+          if (!pager.applyFilters({ role, active, memberStatus })) void load().catch(() => {});
         }}
       >
         <label>
@@ -158,6 +161,19 @@ export function MembersPanel({ accountId }: { accountId: string }) {
             <option value="">All accounts</option>
             <option value="true">Active</option>
             <option value="false">Disabled</option>
+          </select>
+        </label>
+        <label>
+          Approval{' '}
+          <select
+            disabled={editorLocked}
+            value={memberStatus}
+            onChange={(e) => setMemberStatus(e.target.value)}
+          >
+            <option value="">All accounts</option>
+            <option value="PENDING">Waiting for approval</option>
+            <option value="ACTIVE">Approved</option>
+            <option value="DISABLED">Disabled</option>
           </select>
         </label>
         <button type="submit" className={buttonSecondary} disabled={loading || editorLocked}>
@@ -194,9 +210,15 @@ export function MembersPanel({ accountId }: { accountId: string }) {
                   <span className="sr-only"> · </span>
                   <span
                     className={studio.statusChip}
-                    data-tone={member.active ? 'success' : 'danger'}
+                    data-tone={
+                      member.status === 'PENDING' ? 'warning' : member.active ? 'success' : 'danger'
+                    }
                   >
-                    {member.active ? 'Active' : 'Disabled'}
+                    {member.status === 'PENDING'
+                      ? 'Waiting for approval'
+                      : member.active
+                        ? 'Active'
+                        : 'Disabled'}
                   </span>
                 </span>
                 <p>{member.email}</p>
@@ -329,7 +351,13 @@ function MemberEditor({
         <dt>Current role</dt>
         <dd>{member.role.toLowerCase()}</dd>
         <dt>Current access</dt>
-        <dd>{member.active ? 'Active' : 'Disabled'}</dd>
+        <dd>
+          {member.status === 'PENDING'
+            ? 'Waiting for approval'
+            : member.active
+              ? 'Active'
+              : 'Disabled'}
+        </dd>
         <dt>Created</dt>
         <dd>
           <StaffTime value={member.createdAt} />

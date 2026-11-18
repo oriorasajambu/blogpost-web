@@ -150,12 +150,14 @@ if (action === 'start') {
     CURSOR_SIGNING_KEY: '4'.repeat(64),
     // Staff journeys exercise invitation email through the backend's local log driver;
     // nothing is sent. No cooldown, so tests may resend immediately.
-    ...(purpose === 'staff'
+    ...(purpose === 'staff' || purpose === 'identity'
       ? {
           EMAIL_DRIVER: 'log',
           EMAIL_FROM: 'Blogpost <no-reply@example.test>',
           EMAIL_PAYLOAD_KEY: '5'.repeat(64),
           EMAIL_COOLDOWN_SECONDS: '0',
+          // Completes password resets against the emulator; the accounts specs need it.
+          IDENTITY_WEB_API_KEY: 'disposable-identity-key',
         }
       : {}),
   };
@@ -315,6 +317,11 @@ if (action === 'start') {
           'stale-id-token',
           'state',
           'identity-capacity',
+          'oob',
+          'account-state',
+          'approve',
+          'password-member',
+          'google-member',
         ]
       : ['draft', 'correct', 'rename', 'withdraw']
     ).includes(action)

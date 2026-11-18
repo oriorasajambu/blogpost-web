@@ -12,6 +12,7 @@ import {
   googleRedirect,
   googleRedirectResult,
   identitySdk,
+  passwordSignIn,
 } from './identity-sdk';
 import { previousStaffIdentity, rememberStaffIdentity } from './staff-storage';
 import { SignOutButton } from './sign-out-button';
@@ -30,17 +31,22 @@ export function AuthPanel({
   returnTo = '/studio/posts',
   invitation = false,
   redirectReturn = false,
+  googleSignIn = true,
 }: {
   namespace: string;
   returnTo?: string;
   invitation?: boolean;
   redirectReturn?: boolean;
+  /** False after the cutover: only email and password remain. */
+  googleSignIn?: boolean;
 }) {
   const [ready, setReady] = useState<Ready | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [code, setCode] = useState('');
   const [redirectAllowed, setRedirectAllowed] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [recoveryReturnTo, setRecoveryReturnTo] = useState(() => safeReturnTo(returnTo));
   const load = useRef<Promise<Ready> | null>(null);
   const pending = useRef(false);
@@ -137,7 +143,7 @@ export function AuthPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function signIn() {
+  async function signIn(method: 'google' | 'password' = 'google') {
     if (pending.current) return;
     pending.current = true;
     setBusy(true);
@@ -148,7 +154,12 @@ export function AuthPanel({
       setReady(context);
       const sdk = await identitySdk();
       setRedirectAllowed(sdk.config.redirectEnabled === true);
-      const credential = await googlePopup();
+      let credential: UserCredential;
+      if (method === 'password') {
+        credential = await passwordSignIn(email.trim(), password);
+        // Verification is checked here for a clear message; the API enforces it again.
+        if (!credential.user.emailVerified) throw new AuthRequestError('EMAIL_NOT_VERIFIED', 401);
+      } else credential = await googlePopup();
       await establish(credential, context);
     } catch (error) {
       const nextCode = errorCode(error);
@@ -166,6 +177,7 @@ export function AuthPanel({
       );
       await clearIdentity().catch(() => undefined);
     } finally {
+      setPassword('');
       pending.current = false;
       setBusy(false);
     }
@@ -218,24 +230,81 @@ export function AuthPanel({
       </h1>
       <p>
         {invitation || ready?.invitation
-          ? 'Use the verified Google account named in your invitation. Accepting the invitation enables your staff access.'
-          : 'The journal is open to everyone. Invited authors, editors and administrators can sign in with their Google account.'}
+          ? 'Sign in with the verified account for the address named in your invitation. Accepting the invitation enables your staff access.'
+          : 'The journal is open to everyone. Authors, editors and administrators sign in with their email address and password.'}
       </p>
+      {!redirectReturn && !(invitation && !ready && code === 'INVALID_INVITATION') && (
+        <form
+          className={studio.form}
+          onSubmit={(event) => {
+            event.preventDefault();
+            void signIn('password');
+          }}
+        >
+          <label htmlFor="sign-in-email">Email address</label>
+          <input
+            id="sign-in-email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            required
+            maxLength={320}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label htmlFor="sign-in-password">Password</label>
+          <input
+            id="sign-in-password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            maxLength={256}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <div className={studio.actions}>
+            <button
+              type="submit"
+              className={buttonPrimary}
+              disabled={busy || (invitation && !ready && !message)}
+            >
+              {busy ? 'Completing sign-in…' : 'Sign in'}
+            </button>
+          </div>
+        </form>
+      )}
+      {!redirectReturn && !invitation && (
+        <p>
+          <a className={textLink} href="/forgot-password">
+            {googleSignIn ? 'Forgot your password, or never set one?' : 'Forgot your password?'}
+          </a>
+        </p>
+      )}
+      {code === 'EMAIL_NOT_VERIFIED' && (
+        <p>
+          <a className={textLink} href="/verify-email">
+            Send a new verification email
+          </a>
+        </p>
+      )}
       <div className={studio.actions}>
-        {!redirectReturn && !(invitation && !ready && code === 'INVALID_INVITATION') && (
-          <button
-            type="button"
-            className={buttonPrimary}
-            disabled={busy || (invitation && !ready && !message)}
-            onClick={() => void signIn()}
-          >
-            {busy
-              ? 'Completing sign-in…'
-              : code === 'INVITATION_ACCOUNT_MISMATCH'
-                ? 'Choose another Google account'
-                : 'Continue with Google'}
-          </button>
-        )}
+        {googleSignIn &&
+          !redirectReturn &&
+          !(invitation && !ready && code === 'INVALID_INVITATION') && (
+            <button
+              type="button"
+              className={buttonSecondary}
+              disabled={busy || (invitation && !ready && !message)}
+              onClick={() => void signIn('google')}
+            >
+              {busy
+                ? 'Completing sign-in…'
+                : code === 'INVITATION_ACCOUNT_MISMATCH'
+                  ? 'Choose another Google account'
+                  : 'Continue with Google'}
+            </button>
+          )}
         {code === 'auth/popup-blocked' && redirectAllowed && ready && (
           <button
             type="button"
@@ -281,8 +350,15 @@ export function AuthPanel({
           </a>
         </p>
       )}
+      {!invitation && !redirectReturn && (
+        <p>
+          <a className={textLink} href="/register">
+            New here? Create an account
+          </a>
+        </p>
+      )}
       <p className={studio.fieldLabel}>
-        Google credentials stay in memory during sign-in. Your staff session lasts up to five days.
+        Credentials stay in memory during sign-in. Your staff session lasts up to five days.
       </p>
     </section>
   );

@@ -54,11 +54,17 @@ function author(value: unknown) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(handle)) throw new ContractError();
   return { id: adminId(v.id), handle, displayName: adminText(v.displayName, 80) };
 }
+function memberStatus(value: unknown, active: unknown): AdminMember['status'] {
+  if (!['PENDING', 'ACTIVE', 'DISABLED'].includes(String(value)) || (value === 'ACTIVE') !== active)
+    throw new ContractError();
+  return value as AdminMember['status'];
+}
 export function validateAdminMember(value: unknown, expectedId?: string): AdminMember {
   const v = adminRecord(value);
   if (expectedId !== undefined && v.id !== expectedId) throw new ContractError();
   return {
     ...validateStaffMember(v),
+    status: memberStatus(v.status, v.active),
     createdAt: adminDate(v.createdAt),
     updatedAt: adminDate(v.updatedAt),
   };
@@ -177,4 +183,15 @@ export function validateAdminPost(value: unknown, expectedId: string) {
   const post = validateWorkspacePost(value);
   if (post.id !== expectedId) throw new ContractError();
   return post;
+}
+
+export type PasswordSetupResult = { queued: number; skipped: number };
+export function validatePasswordSetupResult(value: unknown): PasswordSetupResult {
+  const v = adminRecord(value);
+  const count = (item: unknown) => {
+    if (!Number.isInteger(item) || Number(item) < 0 || Number(item) > 100000)
+      throw new ContractError();
+    return item as number;
+  };
+  return { queued: count(v.queued), skipped: count(v.skipped) };
 }

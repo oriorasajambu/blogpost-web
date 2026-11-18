@@ -16,6 +16,8 @@ export type StaffRequestOptions = {
   content?: unknown;
   key?: string;
   version?: number;
+  /** False for the few writes that are safe to repeat and carry no retry receipt. Defaults to true. */
+  receipt?: boolean;
 };
 export class StaffApiError extends Error {
   constructor(
@@ -188,7 +190,7 @@ export function createStaffRequest(fetcher: typeof fetch = fetch) {
         pagination: unknown;
         idempotency: StaffResult<T>['idempotency'];
       };
-      if (method !== 'GET' && !meta.idempotency) throw new Error();
+      if (method !== 'GET' && options.receipt !== false && !meta.idempotency) throw new Error();
       const data = validate(envelope.data);
       const rawVersion = response.headers.get('X-Resource-Version');
       const version = rawVersion === null ? null : Number(rawVersion);

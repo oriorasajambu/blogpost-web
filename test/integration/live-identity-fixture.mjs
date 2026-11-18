@@ -263,6 +263,60 @@ try {
         );
       await writeFile(stateFile, JSON.stringify(state), { mode: 0o600 });
       console.log(JSON.stringify({ id: state.privatePost.id }));
+    } else if (action === 'oob') {
+      // The latest one-time code the emulator issued for an address, as the email link would carry.
+      const type = process.argv[4];
+      assert.ok(label.includes('@') && type, 'Provide an address and request type');
+      const response = await fetch(
+        `http://auth:9099/emulator/v1/projects/${process.env.IDENTITY_PROJECT_ID}/oobCodes`,
+        { signal: AbortSignal.timeout(10000) },
+      );
+      const codes = (await response.json()).oobCodes.filter(
+        (entry) => entry.email === label && entry.requestType === type,
+      );
+      assert.ok(codes.length > 0, 'No code was issued');
+      console.log(JSON.stringify({ code: codes.at(-1).oobCode }));
+    } else if (action === 'account-state') {
+      assert.ok(label.includes('@'), 'Provide an address');
+      const member = await database.prisma.member.findFirst({
+        where: { email: label },
+        select: { id: true, status: true, active: true, role: true },
+      });
+      const emails = await database.prisma.emailOutbox.findMany({
+        where: { toEmail: label },
+        select: { kind: true, status: true },
+        orderBy: { createdAt: 'asc' },
+      });
+      console.log(JSON.stringify({ member, emails }));
+    } else if (action === 'approve') {
+      const row = await database.prisma.member.findFirstOrThrow({ where: { email: label } });
+      await database.prisma.member.update({
+        where: { id: row.id },
+        data: { active: true, status: 'ACTIVE', version: { increment: 1 } },
+      });
+      console.log(JSON.stringify({ approved: true }));
+    } else if (action === 'password-member' || action === 'google-member') {
+      // A fresh, approved member. The password variant is verified and has a known password.
+      const role = process.argv[4] ?? 'AUTHOR';
+      const email = `acct-${label}-${randomUUID()}@example.test`;
+      const password = `pw-${randomUUID()}-passphrase`;
+      let uid;
+      if (action === 'password-member') {
+        uid = (await admin.createUser({ email, emailVerified: true, password })).uid;
+      } else {
+        uid = (await google({ subject: randomUUID(), email })).uid;
+      }
+      await database.prisma.member.create({
+        data: {
+          identityUid: uid,
+          email,
+          role,
+          displayName: `Account ${label}`,
+          handle: `acct-${label}-${randomUUID().slice(0, 8)}`,
+          bio: 'Synthetic account integration profile.',
+        },
+      });
+      console.log(JSON.stringify({ email, password }));
     } else if (action === 'account') {
       assert.ok(account, 'Unknown fixture account');
       console.log(JSON.stringify({ email: account.email, uid: account.uid, role: account.role }));

@@ -28,6 +28,7 @@ const member = {
   email: 'admin@example.test',
   role: 'ADMIN',
   active: true,
+  status: 'ACTIVE',
   version: 1,
   createdAt: timestamp,
   updatedAt: timestamp,
@@ -243,4 +244,22 @@ test('invitation delivery defaults to not requested and rejects unknown states',
     { ...sent, sentAt: 'yesterday' },
   ])
     assert.throws(() => validateInvitation({ ...invitation, delivery }));
+});
+
+test('member status must agree with access: only active accounts are ACTIVE', () => {
+  assert.equal(
+    validateAdminMember({ ...member, active: false, status: 'PENDING' }).status,
+    'PENDING',
+  );
+  assert.equal(
+    validateAdminMember({ ...member, active: false, status: 'DISABLED' }).status,
+    'DISABLED',
+  );
+  for (const invalid of [
+    { status: 'PENDING' },
+    { active: false, status: 'ACTIVE' },
+    { status: 'UNKNOWN' },
+    { status: undefined },
+  ])
+    assert.throws(() => validateAdminMember({ ...member, ...invalid }));
 });

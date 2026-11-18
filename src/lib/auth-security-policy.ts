@@ -3,8 +3,21 @@ type IdentityPolicy = {
   webOrigin?: string;
   identity?: { authDomain: string; projectId: string };
   authEmulatorOrigin?: string;
+  captchaSiteKey?: string;
+  googleSignIn?: boolean;
 };
 
+/** Screens that talk to the identity provider or show a captcha. The profile hosts re-authentication. */
+const AUTH_SCREENS = [
+  '/sign-in',
+  '/invite',
+  '/register',
+  '/verify-email',
+  '/forgot-password',
+  '/reset-password',
+  '/confirm-email-change',
+  '/studio/profile',
+];
 export function redirectSupported(config: IdentityPolicy) {
   return !!(
     config.loginEnabled &&
@@ -31,12 +44,14 @@ export function contentSecurityPolicy(
   development: boolean,
 ) {
   const helper = pathname.startsWith('/__/auth/');
-  const authScreen =
-    config.loginEnabled && (pathname === '/sign-in' || pathname === '/invite' || helper);
-  const providerScripts = authScreen ? ' https://apis.google.com https://www.gstatic.com' : '';
+  const authScreen = config.loginEnabled && (AUTH_SCREENS.includes(pathname) || helper);
+  const captcha = authScreen && config.captchaSiteKey ? ' https://challenges.cloudflare.com' : '';
+  const providerScripts = authScreen
+    ? ' https://apis.google.com https://www.gstatic.com' + captcha
+    : '';
   const frames =
     authScreen && config.identity
-      ? ` 'self' https://${config.identity.authDomain} https://accounts.google.com${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
+      ? ` 'self' https://${config.identity.authDomain} https://accounts.google.com${captcha}${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
       : " 'self'";
   const connections = authScreen
     ? ` https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://apis.google.com https://www.gstatic.com${config.authEmulatorOrigin ? ` ${config.authEmulatorOrigin}` : ''}`
@@ -60,5 +75,7 @@ export function publicIdentityConfig(
     },
     ...(config.authEmulatorOrigin ? { authEmulatorOrigin: config.authEmulatorOrigin } : {}),
     redirectEnabled: redirectSupported(config),
+    googleSignIn: config.googleSignIn !== false,
+    ...(config.captchaSiteKey ? { captchaSiteKey: config.captchaSiteKey } : {}),
   };
 }
