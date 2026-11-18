@@ -4,6 +4,8 @@ Public reading starts with `WEB_LOGIN_ENABLED=false`, even before `WEB_ORIGIN` i
 
 The web settings are `IDENTITY_WEB_API_KEY`, `IDENTITY_AUTH_DOMAIN`, `IDENTITY_PROJECT_ID` and `IDENTITY_WEB_APP_ID`. Find them in Firebase Project settings → Your apps → the web app's configuration. A web app ID has the shape `1:<project-number>:web:<app-identifier>`; an OAuth client ID ending in `.apps.googleusercontent.com` is a different value. `/api/public-config` selects only these ordinary SDK settings and the login/redirect flags. It never returns the backend origin, CSRF secret or a session credential.
 
+Account sign-up also reads one optional public setting, `TURNSTILE_SITE_KEY` (the Cloudflare Turnstile site key). Set it together with the API's Turnstile secret, or leave both unset: with a secret but no site key the forms show no challenge and every registration, resend and forgot-password request is refused. `/api/public-config` returns it as `captchaSiteKey`, and only the sign-in, registration, verification, reset, email-confirmation and profile screens may load the Turnstile script.
+
 ## Local development
 
 Use the isolated backend-owned API, PostgreSQL, media adapter and Auth Emulator. The identity integration runner reserves separate loopback API, emulator and web ports, and uses a `demo-*` project. `LOCAL_STACK_ID` isolates the installation, session, CSRF, OAuth flow cookies and staff recovery namespace. Set `IDENTITY_AUTH_EMULATOR_ORIGIN` to the printed browser emulator origin, not a Docker-internal hostname. Emulator settings cannot activate in Staging or Production.
