@@ -99,3 +99,7 @@ or build prevents a passing acceptance record. Environment files are excluded.
 Independent cases reuse synthetic members. Before each case, the fixture reads
 the actual SQL identity quota and waits for expiry when needed. It never clears
 rate buckets, disables throttling, or retries a failed application assertion.
+
+## Email and password accounts
+
+`identity-accounts.spec.ts` runs in the same identity stack and config as the session journey (`npx playwright test --config playwright.identity.config.ts`). The stack's backend has email delivery through its local log driver and the emulator web API key, so registration, verification, forgot password, reset, password change and email change run for real. No email is sent and none is read: the one-time codes that the links carry come from the emulator, and the outbox rows are checked in SQL. Each test uses fresh members so identity quotas are never shared, and the fixture actions `oob`, `account-state`, `approve`, `password-member` and `google-member` (run inside the API container) create and inspect them. Restart the stack after changing `live-identity-fixture.mjs`: the file is copied into the container at start.

@@ -5,7 +5,7 @@ if (context.state !== 'ready')
   throw new Error('Start the isolated identity backend before running this suite.');
 export default defineConfig({
   testDir: './test/integration',
-  testMatch: 'identity-session.spec.ts',
+  testMatch: ['identity-session.spec.ts', 'identity-accounts.spec.ts'],
   fullyParallel: false,
   workers: 1,
   retries: 0,

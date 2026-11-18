@@ -26,6 +26,8 @@ export function PasswordSetupPanel() {
             method: 'POST',
             content: {},
             key: crypto.randomUUID(),
+            // Safe to repeat: members who already have a password are skipped, and no receipt is kept.
+            receipt: false,
           })
         ).data,
       );
