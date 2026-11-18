@@ -38,7 +38,15 @@ test('captcha site key is public, opt-in and only widens the auth screens that u
     'site-key-123',
   );
   const withKey = { ...config, captchaSiteKey: 'site-key-123' };
-  for (const path of ['/sign-in', '/register', '/verify-email'])
+  for (const path of [
+    '/sign-in',
+    '/register',
+    '/verify-email',
+    '/forgot-password',
+    '/reset-password',
+    '/confirm-email-change',
+    '/studio/profile',
+  ])
     assert.match(contentSecurityPolicy(withKey, path, 'n', false), /challenges\.cloudflare\.com/);
   assert.doesNotMatch(contentSecurityPolicy(withKey, '/', 'n', false), /challenges\.cloudflare/);
   assert.doesNotMatch(

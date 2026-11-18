@@ -62,3 +62,53 @@ test('the captcha site key is optional public configuration and must look like o
   );
   assert.throws(() => parseConfig({ ...env, TURNSTILE_SITE_KEY: 'bad key!' }));
 });
+
+import {
+  validateEmailChange,
+  validatePasswordChange,
+  validatePasswordReset,
+  resetCodePattern,
+} from '../../src/lib/auth-contract';
+
+const code = 'A1b2C3d4E5f6G7h8I9j0_-Kk';
+test('password reset takes exactly a URL-safe code and a bounded password', () => {
+  assert.deepEqual(validatePasswordReset({ code, password }), { code, password });
+  assert.match(code, resetCodePattern);
+  for (const invalid of [
+    null,
+    {},
+    { code },
+    { password },
+    { code: 'short', password },
+    { code: code + '/..', password },
+    { code, password: 'short' },
+    { code, password: 'x'.repeat(129) },
+    { code, password, extra: true },
+  ])
+    assert.throws(() => validatePasswordReset(invalid), JSON.stringify(invalid)?.slice(0, 40));
+});
+test('credential changes take exactly a proof token plus the new value', () => {
+  assert.deepEqual(validatePasswordChange({ idToken: 'token.value', newPassword: password }), {
+    idToken: 'token.value',
+    newPassword: password,
+  });
+  assert.deepEqual(validateEmailChange({ idToken: 'token.value', newEmail: ' b@example.test ' }), {
+    idToken: 'token.value',
+    newEmail: 'b@example.test',
+  });
+  for (const invalid of [
+    {},
+    { idToken: 'token' },
+    { idToken: '', newPassword: password },
+    { idToken: 'token', newPassword: 'short' },
+    { idToken: 'token', newPassword: password, newEmail: 'b@example.test' },
+  ])
+    assert.throws(() => validatePasswordChange(invalid));
+  for (const invalid of [
+    {},
+    { idToken: 'token', newEmail: 'not-an-email' },
+    { idToken: 'has space', newEmail: 'b@example.test' },
+    { idToken: 'token', newEmail: 'b@example.test', password },
+  ])
+    assert.throws(() => validateEmailChange(invalid));
+});

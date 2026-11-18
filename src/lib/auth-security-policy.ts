@@ -6,6 +6,17 @@ type IdentityPolicy = {
   captchaSiteKey?: string;
 };
 
+/** Screens that talk to the identity provider or show a captcha. The profile hosts re-authentication. */
+const AUTH_SCREENS = [
+  '/sign-in',
+  '/invite',
+  '/register',
+  '/verify-email',
+  '/forgot-password',
+  '/reset-password',
+  '/confirm-email-change',
+  '/studio/profile',
+];
 export function redirectSupported(config: IdentityPolicy) {
   return !!(
     config.loginEnabled &&
@@ -32,9 +43,7 @@ export function contentSecurityPolicy(
   development: boolean,
 ) {
   const helper = pathname.startsWith('/__/auth/');
-  const authScreen =
-    config.loginEnabled &&
-    (['/sign-in', '/invite', '/register', '/verify-email'].includes(pathname) || helper);
+  const authScreen = config.loginEnabled && (AUTH_SCREENS.includes(pathname) || helper);
   const captcha = authScreen && config.captchaSiteKey ? ' https://challenges.cloudflare.com' : '';
   const providerScripts = authScreen
     ? ' https://apis.google.com https://www.gstatic.com' + captcha

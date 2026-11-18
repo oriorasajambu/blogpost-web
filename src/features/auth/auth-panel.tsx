@@ -271,6 +271,13 @@ export function AuthPanel({
           </div>
         </form>
       )}
+      {!redirectReturn && !invitation && (
+        <p>
+          <a className={textLink} href="/forgot-password">
+            Forgot your password?
+          </a>
+        </p>
+      )}
       {code === 'EMAIL_NOT_VERIFIED' && (
         <p>
           <a className={textLink} href="/verify-email">

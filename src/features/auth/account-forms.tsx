@@ -13,7 +13,8 @@ function errorCode(error: unknown) {
     : 'UNKNOWN';
 }
 /** Shared by the public account forms: the captcha site key, a CSRF token and one submit path. */
-function useAccountRequest(path: string) {
+/** `captcha` is false for requests already proven by a one-time code. */
+export function useAccountRequest(path: string, captcha = true) {
   const [siteKey, setSiteKey] = useState<string | undefined>();
   const [token, setToken] = useState<string | undefined>();
   const [challenge, setChallenge] = useState(0);
@@ -21,6 +22,7 @@ function useAccountRequest(path: string) {
   const [message, setMessage] = useState('');
   const [done, setDone] = useState(false);
   useEffect(() => {
+    if (!captcha) return;
     let active = true;
     authJson<{ captchaSiteKey?: string }>('/api/public-config')
       .then((config) => active && setSiteKey(config.captchaSiteKey))
@@ -28,7 +30,7 @@ function useAccountRequest(path: string) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [captcha]);
   const onToken = useCallback((value: string | undefined) => setToken(value), []);
   async function submit(body: Record<string, string>) {
     if (busy) return;
