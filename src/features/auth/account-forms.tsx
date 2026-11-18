@@ -6,6 +6,7 @@ import { identityError } from '@/lib/auth-navigation';
 import { authJson, authMutation, freshCsrf } from './client-api';
 import { Captcha } from './captcha';
 import { confirmEmailCode } from './identity-sdk';
+import { useAuthDocumentPolicy } from './document-policy';
 
 function errorCode(error: unknown) {
   return error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
@@ -56,6 +57,7 @@ export function useAccountRequest(path: string, captcha = true) {
 }
 
 export function RegisterForm() {
+  useAuthDocumentPolicy();
   const request = useAccountRequest('/api/account/register');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -151,6 +153,7 @@ export function RegisterForm() {
 
 type Applied = 'idle' | 'working' | 'confirmed' | 'failed';
 export function VerifyEmailPanel({ code }: { code?: string }) {
+  useAuthDocumentPolicy();
   const request = useAccountRequest('/api/account/verify-email/resend');
   const [email, setEmail] = useState('');
   const [applied, setApplied] = useState<Applied>('idle');

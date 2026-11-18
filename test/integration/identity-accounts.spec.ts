@@ -293,3 +293,26 @@ test('an administrator approves a pending registration and emails password setup
   // Same account and role as before.
   expect(state(legacy.email).member).toMatchObject({ status: 'ACTIVE', role: 'AUTHOR' });
 });
+
+test('signing in again after signing out works when the sign-in page is reached by client-side navigation', async ({
+  page,
+}) => {
+  const { email, password } = member('password-member', 'renavigate');
+  await signIn(page, email, password);
+  await page.goto('/studio/profile');
+  // Sign out from the Studio, which lands on the home page.
+  await page.getByRole('button', { name: 'Sign out' }).first().click();
+  await page.waitForURL((url) => url.pathname === '/');
+  // A client-side navigation keeps the home page's content security policy. The sign-in page must
+  // notice that and load itself afresh, otherwise every identity request fails as "could not connect".
+  await page.evaluate(() =>
+    (window as unknown as { next: { router: { push(path: string): void } } }).next.router.push(
+      '/sign-in',
+    ),
+  );
+  await page.waitForURL('**/sign-in');
+  await expect(page.getByLabel('Email address')).toBeVisible();
+  await fillSignIn(page, email, password);
+  await page.waitForURL('**/studio/posts', { timeout: 30_000 });
+  await expect(alert(page)).toHaveCount(0);
+});

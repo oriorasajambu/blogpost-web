@@ -5,6 +5,7 @@ import { useState, type FormEvent } from 'react';
 import { authMutation, freshCsrf } from '@/features/auth/client-api';
 import { clearIdentity, passwordSignIn } from '@/features/auth/identity-sdk';
 import { identityError } from '@/lib/auth-navigation';
+import { useAuthDocumentPolicy } from '@/features/auth/document-policy';
 
 function errorCode(error: unknown) {
   return error && typeof error === 'object' && 'code' in error && typeof error.code === 'string'
@@ -37,6 +38,7 @@ function copyFor(code: string) {
 }
 
 export function SecuritySection({ email }: { email: string }) {
+  useAuthDocumentPolicy();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [repeat, setRepeat] = useState('');
