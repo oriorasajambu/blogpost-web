@@ -104,7 +104,7 @@ export function SecuritySection({ email }: { email: string }) {
           type="password"
           autoComplete="current-password"
           required
-          maxLength={128}
+          maxLength={256}
           value={current}
           onChange={(e) => setCurrent(e.target.value)}
         />
@@ -115,7 +115,7 @@ export function SecuritySection({ email }: { email: string }) {
           autoComplete="new-password"
           required
           minLength={12}
-          maxLength={128}
+          maxLength={256}
           value={next}
           onChange={(e) => setNext(e.target.value)}
         />
@@ -126,7 +126,7 @@ export function SecuritySection({ email }: { email: string }) {
           autoComplete="new-password"
           required
           minLength={12}
-          maxLength={128}
+          maxLength={256}
           value={repeat}
           onChange={(e) => setRepeat(e.target.value)}
         />
@@ -165,7 +165,7 @@ export function SecuritySection({ email }: { email: string }) {
               type="password"
               autoComplete="current-password"
               required
-              maxLength={128}
+              maxLength={256}
               value={emailCurrent}
               onChange={(e) => setEmailCurrent(e.target.value)}
             />

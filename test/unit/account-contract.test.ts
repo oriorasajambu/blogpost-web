@@ -142,3 +142,16 @@ test('password setup results are two bounded counts', () => {
   ])
     assert.throws(() => validatePasswordSetupResult(invalid));
 });
+
+test('password length counts Unicode scalar values, so 128 emoji are accepted and 129 are not', () => {
+  const emoji = (count: number) => '😀'.repeat(count);
+  // Two UTF-16 code units each: browser inputs must allow up to 256 units for this to be reachable.
+  assert.equal(emoji(128).length, 256);
+  assert.equal(
+    validateRegistration({ email: 'a@example.test', password: emoji(128) }).password,
+    emoji(128),
+  );
+  assert.throws(() => validateRegistration({ email: 'a@example.test', password: emoji(129) }));
+  assert.equal(validatePasswordReset({ code, password: emoji(128) }).password, emoji(128));
+  assert.throws(() => validatePasswordChange({ idToken: 'token', newPassword: emoji(129) }));
+});

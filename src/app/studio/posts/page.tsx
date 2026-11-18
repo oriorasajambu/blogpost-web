@@ -28,9 +28,10 @@ export default async function StaffPostsPage({
           </p>
         </div>
         <div className={studio.actions}>
-          <Link className={textLink} href="/studio/profile" prefetch={false}>
+          {/* A full navigation: the profile page needs a different content security policy than this one. */}
+          <a className={textLink} href="/studio/profile">
             View your staff profile
-          </Link>
+          </a>
           <Link className={buttonPrimary} href="/studio/posts/new" prefetch={false}>
             <Icon name="plus" size={16} />
             Write a draft

@@ -259,7 +259,7 @@ export function AuthPanel({
             type="password"
             autoComplete="current-password"
             required
-            maxLength={128}
+            maxLength={256}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />

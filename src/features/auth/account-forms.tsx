@@ -116,7 +116,7 @@ export function RegisterForm() {
           autoComplete="new-password"
           required
           minLength={12}
-          maxLength={128}
+          maxLength={256}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -128,7 +128,7 @@ export function RegisterForm() {
           autoComplete="new-password"
           required
           minLength={12}
-          maxLength={128}
+          maxLength={256}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
         />
