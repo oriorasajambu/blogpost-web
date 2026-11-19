@@ -13,7 +13,7 @@
 @theme static {
   --color-*: initial;
   --color-bg: #161826;
-  --color-surface: #232532;
+  --color-surface: #FFFFFF;
   --color-raised: #2b2d3b;
   --color-sunk: #12131f;
   --color-text: #e9e9ed;
